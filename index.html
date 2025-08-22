@@ -494,9 +494,7 @@
                 padding: 10px;
                 border-radius: 10px;
                 min-width: auto;
-                position: sticky;
-                top: 0;
-                z-index: 1000;
+                position: relative;
                 background: rgba(255, 255, 255, 0.98);
                 backdrop-filter: blur(15px);
                 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -753,7 +751,7 @@
                     piece.addEventListener('dragend', handleDragEnd);
                     
                     // Touch события для мобильных устройств
-                    piece.addEventListener('touchstart', handleTouchStart, {passive: false});
+                    piece.addEventListener('touchstart', handleTouchStart, {passive: true});
                     piece.addEventListener('touchmove', handleTouchMove, {passive: false});
                     piece.addEventListener('touchend', handleTouchEnd, {passive: false});
 
@@ -778,49 +776,65 @@
         let touchPiece = null;
 
         function handleTouchStart(e) {
-            e.preventDefault();
+            // Проверяем длительность касания для различения tap и drag
+            const startTime = Date.now();
             touchPiece = e.target;
-            touchPiece.classList.add('dragging');
             
             const touch = e.touches[0];
             const rect = document.getElementById('game-board').getBoundingClientRect();
             touchStartPos = {
                 x: touch.clientX - rect.left,
-                y: touch.clientY - rect.top
+                y: touch.clientY - rect.top,
+                startTime: startTime
             };
         }
 
         function handleTouchMove(e) {
-            e.preventDefault();
-            if (!touchPiece) return;
-
+            if (!touchPiece || !touchStartPos) return;
+            
             const touch = e.touches[0];
             const rect = document.getElementById('game-board').getBoundingClientRect();
             const x = touch.clientX - rect.left;
             const y = touch.clientY - rect.top;
-            const coord = positionToCoord(x, y);
+            
+            // Проверяем, является ли это движением для перетаскивания
+            const deltaX = Math.abs(x - touchStartPos.x);
+            const deltaY = Math.abs(y - touchStartPos.y);
+            const isDrag = deltaX > 10 || deltaY > 10;
+            
+            if (isDrag) {
+                e.preventDefault();
+                touchPiece.classList.add('dragging');
+                
+                const coord = positionToCoord(x, y);
 
-            // Очистить предыдущее выделение
-            document.querySelectorAll('.cell').forEach(cell => {
-                cell.classList.remove('highlight');
-            });
+                // Очистить предыдущее выделение
+                document.querySelectorAll('.cell').forEach(cell => {
+                    cell.classList.remove('highlight');
+                });
 
-            // Подсветить целевую ячейку
-            if (coord && (BOARD_CELLS.includes(coord) || Object.values(START_ZONES).flat().includes(coord))) {
-                const cell = document.querySelector(`[data-coord="${coord}"]`);
-                if (cell) cell.classList.add('highlight');
+                // Подсветить целевую ячейку
+                if (coord && (BOARD_CELLS.includes(coord) || Object.values(START_ZONES).flat().includes(coord))) {
+                    const cell = document.querySelector(`[data-coord="${coord}"]`);
+                    if (cell) cell.classList.add('highlight');
+                }
             }
         }
 
         function handleTouchEnd(e) {
-            e.preventDefault();
-            if (!touchPiece) return;
+            if (!touchPiece || !touchStartPos) return;
 
             const touch = e.changedTouches[0];
             const rect = document.getElementById('game-board').getBoundingClientRect();
             const x = touch.clientX - rect.left;
             const y = touch.clientY - rect.top;
             const targetCoord = positionToCoord(x, y);
+
+            // Проверяем, было ли это перетаскивание или быстрое касание
+            const deltaX = Math.abs(x - touchStartPos.x);
+            const deltaY = Math.abs(y - touchStartPos.y);
+            const duration = Date.now() - touchStartPos.startTime;
+            const wasDragging = touchPiece.classList.contains('dragging');
 
             // Очистить выделение
             document.querySelectorAll('.cell').forEach(cell => {
@@ -829,9 +843,13 @@
 
             touchPiece.classList.remove('dragging');
 
-            if (targetCoord && touchStartPos) {
-                // Выполнить логику перемещения (аналогичную handleDrop)
+            if (wasDragging && targetCoord) {
+                // Это было перетаскивание - выполнить перемещение
+                e.preventDefault();
                 performMove(touchPiece, targetCoord);
+            } else if (duration < 300 && deltaX < 10 && deltaY < 10) {
+                // Это было быстрое касание - дать возможность сработать click событию
+                // Не предотвращаем событие, позволяем click сработать
             }
 
             touchPiece = null;
@@ -1356,20 +1374,28 @@
         }
 
         function handlePieceClick(piece) {
+            console.log('Piece clicked:', piece.dataset.player); // Для отладки
             if (selectedPiece === piece) {
                 // Отменить выделение при повторном клике
                 selectPiece(null);
+                updateGameMessage('Выделение фишки отменено');
             } else {
                 // Выделить фишку
                 selectPiece(piece);
+                updateGameMessage('Фишка выделена. Теперь коснитесь поля для перемещения');
             }
         }
 
         function handleCellClick(coord) {
+            console.log('Cell clicked:', coord, 'Selected piece:', selectedPiece ? selectedPiece.dataset.player : 'none'); // Для отладки
             if (selectedPiece && gamePhase === 'playing') {
                 // Переместить выбранную фишку на указанную клетку
                 performMove(selectedPiece, coord);
                 selectPiece(null); // Снять выделение после хода
+            } else if (!selectedPiece) {
+                updateGameMessage('Сначала выберите фишку для перемещения');
+            } else if (gamePhase !== 'playing') {
+                updateGameMessage('Дождитесь окончания определения очередности');
             }
         }
     </script>
