@@ -196,6 +196,44 @@
             z-index: 50;
         }
 
+        .possible-move {
+            background-color: rgba(0, 123, 255, 0.1) !important;
+            border: 2px solid rgba(0, 123, 255, 0.3) !important;
+        }
+
+        .move-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #007bff;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #007bff;
+            z-index: 1001;
+            pointer-events: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            animation: hintAppear 0.3s ease-out;
+        }
+
+        @keyframes hintAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
         .game-board-container {
             position: relative;
             overflow: hidden;
@@ -649,10 +687,90 @@
         
         // Стартовые поля для выхода
         const ENTRY_CELLS = {
-            1: 'I2',  // красный
+            1: 'I1',  // красный
             2: 'G15', // желтый  
             3: 'O9',  // зеленый
             4: 'A7'   // фиолетовый
+        };
+
+        // Пути движения для каждого игрока по часовой стрелке
+        const PLAYER_PATHS = {
+            1: [ // Красный: I1 → I7 → O7 → O9 → I9 → I15 → G15 → G9 → A9 → A7 → G7 → G1 → H1 → [дом H6-H1]
+                'I1', 'I2', 'I3', 'I4', 'I5', 'I6', 'I7',
+                'J7', 'K7', 'L7', 'M7', 'N7', 'O7',
+                'O8', 'O9',
+                'N9', 'M9', 'L9', 'K9', 'J9', 'I9',
+                'I10', 'I11', 'I12', 'I13', 'I14', 'I15',
+                'H15', 'G15',
+                'G14', 'G13', 'G12', 'G11', 'G10', 'G9',
+                'F9', 'E9', 'D9', 'C9', 'B9', 'A9',
+                'A8', 'A7',
+                'B7', 'C7', 'D7', 'E7', 'F7', 'G7',
+                'G6', 'G5', 'G4', 'G3', 'G2', 'G1',
+                'H1',
+                // Дом (финишная прямая)
+                'H2', 'H3', 'H4', 'H5', 'H6'
+            ],
+            2: [ // Желтый: G15 → G9 → A9 → A7 → G7 → G1 → I1 → I7 → O7 → O9 → I9 → I15 → H15 → [дом H10-H15]
+                'G15', 'G14', 'G13', 'G12', 'G11', 'G10', 'G9',
+                'F9', 'E9', 'D9', 'C9', 'B9', 'A9',
+                'A8', 'A7',
+                'B7', 'C7', 'D7', 'E7', 'F7', 'G7',
+                'G6', 'G5', 'G4', 'G3', 'G2', 'G1',
+                'H1', 'I1',
+                'I2', 'I3', 'I4', 'I5', 'I6', 'I7',
+                'J7', 'K7', 'L7', 'M7', 'N7', 'O7',
+                'O8', 'O9',
+                'N9', 'M9', 'L9', 'K9', 'J9', 'I9',
+                'I10', 'I11', 'I12', 'I13', 'I14', 'I15',
+                'H15',
+                // Дом (финишная прямая)
+                'H14', 'H13', 'H12', 'H11', 'H10'
+            ],
+            3: [ // Зеленый: O9 → I9 → I15 → G15 → G9 → A9 → A7 → G7 → G1 → I1 → I7 → O7 → O8 → [дом J8-O8]
+                'O9', 'N9', 'M9', 'L9', 'K9', 'J9', 'I9',
+                'I10', 'I11', 'I12', 'I13', 'I14', 'I15',
+                'H15', 'G15',
+                'G14', 'G13', 'G12', 'G11', 'G10', 'G9',
+                'F9', 'E9', 'D9', 'C9', 'B9', 'A9',
+                'A8', 'A7',
+                'B7', 'C7', 'D7', 'E7', 'F7', 'G7',
+                'G6', 'G5', 'G4', 'G3', 'G2', 'G1',
+                'H1', 'I1',
+                'I2', 'I3', 'I4', 'I5', 'I6', 'I7',
+                'J7', 'K7', 'L7', 'M7', 'N7', 'O7',
+                'O8',
+                // Дом (финишная прямая)
+                'N8', 'M8', 'L8', 'K8', 'J8'
+            ],
+            4: [ // Фиолетовый: A7 → G7 → G1 → I1 → I7 → O7 → O9 → I9 → I15 → G15 → G9 → A9 → A8 → [дом G8-A8]
+                'A7', 'B7', 'C7', 'D7', 'E7', 'F7', 'G7',
+                'G6', 'G5', 'G4', 'G3', 'G2', 'G1',
+                'H1', 'I1',
+                'I2', 'I3', 'I4', 'I5', 'I6', 'I7',
+                'J7', 'K7', 'L7', 'M7', 'N7', 'O7',
+                'O8', 'O9',
+                'N9', 'M9', 'L9', 'K9', 'J9', 'I9',
+                'I10', 'I11', 'I12', 'I13', 'I14', 'I15',
+                'H15', 'G15',
+                'G14', 'G13', 'G12', 'G11', 'G10', 'G9',
+                'F9', 'E9', 'D9', 'C9', 'B9', 'A9',
+                'A8',
+                // Дом (финишная прямая)
+                'B8', 'C8', 'D8', 'E8', 'F8', 'G8'
+            ]
+        };
+
+        // Специальные поля с автоматическим перемещением
+        const SPECIAL_MOVES = {
+            'K7': 'K6',
+            'N7': 'N6', 
+            'I11': 'J11',
+            'I14': 'J14',
+            'E9': 'E10',
+            'B9': 'B10',
+            'G5': 'F5',
+            'G2': 'F2'
         };
 
         function coordToPosition(coord) {
@@ -954,10 +1072,20 @@
 
             movePiece(piece, targetCoord);
             
-            // После успешного хода
-            setTimeout(() => {
-                updateGameMessage('Ход выполнен!');
-            }, 500);
+            // Проверяем специальные поля с автоматическим перемещением
+            let finalCoord = targetCoord;
+            if (SPECIAL_MOVES[targetCoord]) {
+                finalCoord = SPECIAL_MOVES[targetCoord];
+                setTimeout(() => {
+                    movePiece(piece, finalCoord);
+                    updateGameMessage(`Фишка автоматически перемещена с ${targetCoord} на ${finalCoord}!`);
+                }, 800);
+            } else {
+                // После успешного хода
+                setTimeout(() => {
+                    updateGameMessage('Ход выполнен!');
+                }, 500);
+            }
         }
 
         function getCurrentPosition(piece) {
@@ -1391,12 +1519,121 @@
             if (selectedPiece === piece) {
                 // Отменить выделение при повторном клике
                 selectPiece(null);
+                clearMoveHints();
                 updateGameMessage('Выделение фишки отменено');
             } else {
                 // Выделить фишку
                 selectPiece(piece);
+                showMoveHints(piece);
                 updateGameMessage('Фишка выделена. Теперь коснитесь поля для перемещения');
             }
+        }
+
+        // Функция для получения текущей позиции фишки
+        function getPiecePosition(piece) {
+            // Если фишка в стартовой зоне, вернуть null (она еще не на поле)
+            const startZones = Object.values(START_ZONES).flat();
+            const currentCoord = getCurrentPosition(piece);
+            
+            if (!currentCoord || startZones.includes(currentCoord)) {
+                return null; // Фишка в стартовой зоне
+            }
+            
+            return currentCoord;
+        }
+
+        // Функция для вычисления возможных ходов фишки
+        function calculatePossibleMoves(piece, steps = 12) {
+            const playerNum = parseInt(piece.dataset.player);
+            const currentCoord = getPiecePosition(piece);
+            const path = PLAYER_PATHS[playerNum];
+            const possibleMoves = [];
+            
+            if (!currentCoord) {
+                // Фишка в стартовой зоне - может выйти на стартовое поле
+                const entryCell = ENTRY_CELLS[playerNum];
+                for (let i = 1; i <= Math.min(steps, 12); i++) {
+                    const targetIndex = path.indexOf(entryCell) + i - 1;
+                    if (targetIndex >= 0 && targetIndex < path.length) {
+                        possibleMoves.push({
+                            coord: path[targetIndex],
+                            steps: i
+                        });
+                    }
+                }
+            } else {
+                // Фишка уже на поле
+                const currentIndex = path.indexOf(currentCoord);
+                if (currentIndex >= 0) {
+                    for (let i = 1; i <= Math.min(steps, 12); i++) {
+                        const targetIndex = currentIndex + i;
+                        if (targetIndex < path.length) {
+                            let targetCoord = path[targetIndex];
+                            
+                            // Проверяем специальные поля с автоперемещением
+                            if (SPECIAL_MOVES[targetCoord]) {
+                                targetCoord = SPECIAL_MOVES[targetCoord];
+                            }
+                            
+                            possibleMoves.push({
+                                coord: targetCoord,
+                                steps: i
+                            });
+                        }
+                    }
+                }
+            }
+            
+            return possibleMoves;
+        }
+
+        // Функция для отображения подсказок ходов
+        function showMoveHints(piece) {
+            clearMoveHints(); // Очищаем предыдущие подсказки
+            
+            const possibleMoves = calculatePossibleMoves(piece);
+            
+            possibleMoves.forEach(move => {
+                const cell = document.querySelector(`[data-coord="${move.coord}"]`);
+                if (cell) {
+                    // Создаем элемент с номером хода
+                    const hint = document.createElement('div');
+                    hint.className = 'move-hint';
+                    hint.textContent = move.steps;
+                    hint.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: rgba(255, 255, 255, 0.9);
+                        border: 2px solid #007bff;
+                        border-radius: 50%;
+                        width: 20px;
+                        height: 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 12px;
+                        font-weight: bold;
+                        color: #007bff;
+                        z-index: 1000;
+                        pointer-events: none;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                    `;
+                    
+                    cell.appendChild(hint);
+                    cell.classList.add('possible-move');
+                }
+            });
+        }
+
+        // Функция для очистки подсказок ходов
+        function clearMoveHints() {
+            // Удаляем все подсказки
+            document.querySelectorAll('.move-hint').forEach(hint => hint.remove());
+            document.querySelectorAll('.possible-move').forEach(cell => {
+                cell.classList.remove('possible-move');
+            });
         }
 
         function handleCellClick(coord) {
@@ -1404,6 +1641,7 @@
             if (selectedPiece && gamePhase === 'playing') {
                 // Переместить выбранную фишку на указанную клетку
                 performMove(selectedPiece, coord);
+                clearMoveHints(); // Очищаем подсказки после хода
                 selectPiece(null); // Снять выделение после хода
             } else if (!selectedPiece) {
                 updateGameMessage('Сначала выберите фишку для перемещения');
