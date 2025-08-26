@@ -428,7 +428,7 @@
         }
 
         .dice.rolling {
-            animation: diceRoll 0.1s infinite;
+            animation: diceRoll 0.3s infinite;
         }
 
         @keyframes diceRoll {
@@ -479,12 +479,12 @@
         .dice-face.five .dice-dot:nth-child(4) { bottom: 25%; left: 25%; }
         .dice-face.five .dice-dot:nth-child(5) { bottom: 25%; right: 25%; }
 
-        .dice-face.six .dice-dot:nth-child(1) { top: 25%; left: 25%; }
-        .dice-face.six .dice-dot:nth-child(2) { top: 25%; right: 25%; }
-        .dice-face.six .dice-dot:nth-child(3) { top: 50%; left: 25%; }
-        .dice-face.six .dice-dot:nth-child(4) { top: 50%; right: 25%; }
-        .dice-face.six .dice-dot:nth-child(5) { bottom: 25%; left: 25%; }
-        .dice-face.six .dice-dot:nth-child(6) { bottom: 25%; right: 25%; }
+        .dice-face.six .dice-dot:nth-child(1) { top: 20%; left: 25%; }
+        .dice-face.six .dice-dot:nth-child(2) { top: 20%; right: 25%; }
+        .dice-face.six .dice-dot:nth-child(3) { top: 50%; left: 25%; transform: translateY(-50%); } 
+        .dice-face.six .dice-dot:nth-child(4) { top: 50%; right: 25%; transform: translateY(-50%); } 
+        .dice-face.six .dice-dot:nth-child(5) { bottom: 20%; left: 25%; }
+        .dice-face.six .dice-dot:nth-child(6) { bottom: 20%; right: 25%; }
 
         .dice-result {
             margin: 15px 0;
