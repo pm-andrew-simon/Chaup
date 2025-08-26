@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="yandex-verification" content="436ec8060c4d8c21" />
+    <title>Контакты — Чаупар онлайн игра</title>
+    <meta name="description" content="Свяжитесь с нами по поводу игры Чаупар. Вопросы, предложения и поддержка." />
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=103866554', 'ym');
+
+        ym(103866554, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/103866554" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .navigation {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.current {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: clamp(28px, 5vw, 48px);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .contact-section {
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .email-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            margin: 20px 0;
+        }
+
+        .email-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .contact-info {
+            display: grid;
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .info-card h3 {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .info-card p {
+            color: #4a5568;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .icon {
+            font-size: 24px;
+        }
+
+        .welcome-text {
+            font-size: 18px;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+
+        .highlight {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .contact-section {
+                padding: 20px;
+                margin: 20px 0;
+            }
+            
+            .nav-links {
+                gap: 10px;
+            }
+            
+            .nav-links a {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            
+            h1 {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            
+            .email-link {
+                font-size: 16px;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navigation">
+            <div class="nav-links">
+                <a href="index.html">🎮 Играть</a>
+                <a href="rules.html">📋 Правила</a>
+                <a href="situations.html">🎯 Игровые ситуации</a>
+                <a href="contacts.html" class="current">📧 Контакты</a>
+            </div>
+        </nav>
+
+        <h1>Контакты</h1>
+
+        <div class="content">
+            <p class="welcome-text">
+                Добро пожаловать на страницу контактов игры Чаупар! Мы рады общению с нашими игроками и всегда готовы помочь.
+            </p>
+
+            <div class="contact-section">
+                <h2 style="color: #667eea; margin-bottom: 20px; font-size: 24px;">📩 Связаться с нами</h2>
+                
+                <p style="margin-bottom: 20px; color: #4a5568;">
+                    По всем вопросам, связанным с игрой, вы можете обратиться к нам по электронной почте:
+                </p>
+                
+                <a href="mailto:game.chaupar@gmail.com" class="email-link">
+                    <span>📧</span>
+                    game.chaupar@gmail.com
+                </a>
+            </div>
+
+            <div class="contact-info">
+                <div class="info-card">
+                    <h3><span class="icon">🎮</span> Вопросы по игре</h3>
+                    <p>Не понимаете правила? Возникли трудности с игрой? Обнаружили баг? Пишите нам — мы поможем разобраться!</p>
+                </div>
+
+                <div class="info-card">
+                    <h3><span class="icon">💡</span> Предложения</h3>
+                    <p>У вас есть идеи по улучшению игры? Хотите предложить новую функцию? Мы всегда открыты для ваших предложений!</p>
+                </div>
+
+                <div class="info-card">
+                    <h3><span class="icon">🐛</span> Сообщить об ошибке</h3>
+                    <p>Нашли ошибку или проблему в игре? Сообщите нам об этом, и мы постараемся исправить её как можно скорее.</p>
+                </div>
+
+                <div class="info-card">
+                    <h3><span class="icon">❓</span> Общие вопросы</h3>
+                    <p>Любые другие вопросы о игре Чаупар, её истории или развитии проекта — мы с удовольствием ответим!</p>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3 style="color: #667eea; margin-bottom: 15px; font-size: 20px;">🕒 Время ответа</h3>
+                <p style="color: #4a5568; margin: 0;">
+                    Мы стараемся отвечать на все письма в течение 1-2 рабочих дней. 
+                    Благодарим вас за терпение!
+                </p>
+            </div>
+
+            <div style="margin-top: 40px; padding: 20px; background: rgba(72, 187, 120, 0.1); border-radius: 12px;">
+                <p style="font-size: 18px; font-weight: 600; color: #48bb78; margin-bottom: 10px;">
+                    🎯 Спасибо за игру!
+                </p>
+                <p style="color: #4a5568; margin: 0;">
+                    Ваша поддержка и обратная связь помогают нам делать Чаупар лучше. 
+                    Мы ценим каждого игрока нашего сообщества!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

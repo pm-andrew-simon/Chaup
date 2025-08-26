@@ -41,6 +41,40 @@
             padding: 0 10px;
         }
 
+        .navigation {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.current {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
         h1 {
             text-align: center;
             color: white;
@@ -280,6 +314,20 @@
                 margin: 10px;
                 padding: 15px;
                 border-radius: 15px;
+            }
+
+            .navigation {
+                padding: 10px 15px;
+                margin-bottom: 20px;
+            }
+
+            .nav-links {
+                gap: 10px;
+            }
+
+            .nav-links a {
+                padding: 8px 12px;
+                font-size: 14px;
             }
 
             .game-board {
@@ -591,6 +639,15 @@
 </head>
 <body>
     <div class="game-container">
+        <nav class="navigation">
+            <div class="nav-links">
+                <a href="index.html" class="current">🎮 Играть</a>
+                <a href="rules.html">📋 Правила</a>
+                <a href="situations.html">🎯 Игровые ситуации</a>
+                <a href="contacts.html">📧 Контакты</a>
+            </div>
+        </nav>
+
         <h1 style="text-align: center;">Чаупар</h1>
         
         <div id="setup-panel" class="setup-panel">

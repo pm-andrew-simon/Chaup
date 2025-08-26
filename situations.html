@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="yandex-verification" content="436ec8060c4d8c21" />
+    <title>Игровые ситуации Чаупар — разбор сложных моментов</title>
+    <meta name="description" content="Разбор сложных игровых ситуаций в Чаупар. Примеры ходов и правильные решения для улучшения вашей игры." />
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=103866554', 'ym');
+
+        ym(103866554, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/103866554" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .navigation {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.current {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: clamp(28px, 5vw, 48px);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .situation {
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .situation-number {
+            position: absolute;
+            top: -15px;
+            left: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .situation-title {
+            color: #667eea;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 10px 0 15px 0;
+        }
+
+        .situation-desc {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #4299e1;
+        }
+
+        .situation-analysis {
+            background: rgba(72, 187, 120, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .dice-values {
+            display: inline-flex;
+            gap: 8px;
+            margin: 0 5px;
+        }
+
+        .dice {
+            background: #fff;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .highlight-text {
+            background: rgba(255, 235, 59, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .situation {
+                padding: 20px 15px 20px 15px;
+                margin: 20px 0;
+            }
+            
+            .situation-number {
+                left: 15px;
+                top: -12px;
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .nav-links {
+                gap: 10px;
+            }
+            
+            .nav-links a {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            
+            h1 {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navigation">
+            <div class="nav-links">
+                <a href="index.html">🎮 Играть</a>
+                <a href="rules.html">📋 Правила</a>
+                <a href="situations.html" class="current">🎯 Игровые ситуации</a>
+                <a href="contacts.html">📧 Контакты</a>
+            </div>
+        </nav>
+
+        <h1>Игровые ситуации</h1>
+
+        <div class="content">
+            <p style="text-align: center; font-size: 18px; color: #667eea; margin-bottom: 30px;">
+                Разбор типичных и сложных ситуаций, которые возникают во время игры в Чаупар
+            </p>
+
+            <div class="situation">
+                <div class="situation-number">1</div>
+                <h2 class="situation-title">Начало игры</h2>
+                
+                <div class="situation-desc">
+                    <span class="label">Ситуация:</span>
+                    Вы только что начали игру, и на ваших кубиках выпали значения <span class="dice-values"><span class="dice">1</span><span class="dice">5</span></span>.
+                </div>
+                
+                <div class="situation-analysis">
+                    <span class="label">Разбор:</span>
+                    Чтобы ввести фишку в игру, вам нужно выбросить <span class="highlight-text">1</span>. Вы используете 1, чтобы вывести фишку на стартовую клетку, а затем сразу же делаете 5 шагов вперед, используя второе значение кубика.
+                </div>
+            </div>
+
+            <div class="situation">
+                <div class="situation-number">2</div>
+                <h2 class="situation-title">Ввод фишки при выпадении дубля</h2>
+                
+                <div class="situation-desc">
+                    <span class="label">Ситуация:</span>
+                    У вас нет фишек на поле, и на кубиках выпало <span class="dice-values"><span class="dice">1</span><span class="dice">1</span></span>.
+                </div>
+                
+                <div class="situation-analysis">
+                    <span class="label">Разбор:</span>
+                    За один ход в игру может войти только одна фишка, даже если выпало <span class="highlight-text">"1 и 1"</span>. Вы используете одну из единиц, чтобы вывести фишку на стартовую клетку, а вторую единицу — чтобы сделать 1 шаг вперед.
+                </div>
+            </div>
+
+            <div class="situation">
+                <div class="situation-number">3</div>
+                <h2 class="situation-title">Захват фишки</h2>
+                
+                <div class="situation-desc">
+                    <span class="label">Ситуация:</span>
+                    Ваша фишка находится в 5 шагах от фишки противника. На ваших кубиках выпало <span class="dice-values"><span class="dice">5</span><span class="dice">2</span></span>.
+                </div>
+                
+                <div class="situation-analysis">
+                    <span class="label">Разбор:</span>
+                    Вы можете <span class="highlight-text">"сбить"</span> фишку противника, встав на ее клетку. Вы используете значение 5, чтобы переместить свою фишку на клетку противника. Фишка противника возвращается в свою стартовую зону и затем начинает путь заново. На 2 вы можете сходить этой же фишкой или любой другой активной.
+                </div>
+            </div>
+
+            <div class="situation">
+                <div class="situation-number">4</div>
+                <h2 class="situation-title">Правило большего хода</h2>
+                
+                <div class="situation-desc">
+                    <span class="label">Ситуация:</span>
+                    Ваша фишка находится в 4 шагах от фишки противника и в 6 шагах от безопасного "Храма". На кубиках выпало <span class="dice-values"><span class="dice">4</span><span class="dice">6</span></span>.
+                </div>
+                
+                <div class="situation-analysis">
+                    <span class="label">Разбор:</span>
+                    Согласно <span class="highlight-text">"правилу большего хода"</span>, вы должны использовать большее значение, если это возможно. Вы делаете 4 шага и сбиваете фишку соперника только в том случае, если после этого у вас есть возможность сходить еще на 6 шагов.
+                </div>
+            </div>
+
+            <div class="situation">
+                <div class="situation-number">5</div>
+                <h2 class="situation-title">Вход в "Тюрьму"</h2>
+                
+                <div class="situation-desc">
+                    <span class="label">Ситуация:</span>
+                    Ваша фишка находится в 3 шагах от "Тюрьмы", а на следующем от тюрьмы поле находится фишка соперника. На кубиках выпало <span class="dice-values"><span class="dice">2</span><span class="dice">3</span></span>.
+                </div>
+                
+                <div class="situation-analysis">
+                    <span class="label">Разбор:</span>
+                    Вы используете значение 3, чтобы переместить свою фишку в <span class="highlight-text">"Тюрьму"</span>. На 2 вы сходить не можете, т.к. вам мешает фишка соперника. Теперь, чтобы выйти оттуда, вам нужно выбросить 6 на одном из кубиков и иметь возможность сходить на количество шагов, указанное на втором кубике.
+                </div>
+            </div>
+
+            <div class="situation">
+                <div class="situation-number">6</div>
+                <h2 class="situation-title">Выход из "Тюрьмы"</h2>
+                
+                <div class="situation-desc">
+                    <span class="label">Ситуация:</span>
+                    Ваша фишка застряла в "Тюрьме". На ваших кубиках выпало <span class="dice-values"><span class="dice">6</span><span class="dice">2</span></span>.
+                </div>
+                
+                <div class="situation-analysis">
+                    <span class="label">Разбор:</span>
+                    Чтобы выйти из "Тюрьмы", нужно выбросить <span class="highlight-text">6</span>. Вы используете 6, чтобы освободить фишку. Эта шестерка "сгорает", и вы делаете 2 шага вперед, используя вторую кость. Если этой фишкой нельзя сделать ход на 2, т.к. там стоит другая фишка (ваша или соперника), вам придется выбрать другую фишку для хода. Выход из тюрьмы на 6 и дальнейшее движение на 2 должны осуществляться в рамках одного хода.
+                </div>
+            </div>
+
+            <div class="situation">
+                <div class="situation-number">7</div>
+                <h2 class="situation-title">Повторный бросок кубиков</h2>
+                
+                <div class="situation-desc">
+                    <span class="label">Ситуация:</span>
+                    Вы бросили кубики, и выпало <span class="dice-values"><span class="dice">6</span><span class="dice">6</span></span>.
+                </div>
+                
+                <div class="situation-analysis">
+                    <span class="label">Разбор:</span>
+                    При выпадении <span class="highlight-text">"6:6"</span> вы получаете право на повторный бросок кубиков, независимо от возможности сделать ход на одну или две шестерки. Это позволяет вам сделать еще один ход. Вы можете бросать кубики не более трёх раз подряд.
+                </div>
+            </div>
+
+            <div class="situation">
+                <div class="situation-number">8</div>
+                <h2 class="situation-title">Заход в портал</h2>
+                
+                <div class="situation-desc">
+                    <span class="label">Ситуация:</span>
+                    Вы находитесь в пяти шагах от вашего портала, вы бросили кубики, и выпало <span class="dice-values"><span class="dice">5</span><span class="dice">6</span></span>.
+                </div>
+                
+                <div class="situation-analysis">
+                    <span class="label">Разбор:</span>
+                    При выпадении "5:6" вы можете занять свой портал и остаться в нем одной фишкой только в том случае, если у вас есть возможность сделать ход другой фишкой, в противном случае вам надо продолжить движение первой фишкой по игровому полю. <span class="highlight-text">Зайти в портал на 5 и сделать перемещение в чужой портал на 6 в рамках одного хода нельзя.</span>
+                </div>
+            </div>
+
+            <div class="situation">
+                <div class="situation-number">9</div>
+                <h2 class="situation-title">Завершение игры</h2>
+                
+                <div class="situation-desc">
+                    <span class="label">Ситуация:</span>
+                    Все ваши фишки, кроме одной, находятся в "Доме". Последней фишке для входа нужен ход на 3, а у вас на кубиках выпадают <span class="dice-values"><span class="dice">3</span><span class="dice">5</span></span>.
+                </div>
+                
+                <div class="situation-analysis">
+                    <span class="label">Разбор:</span>
+                    Ваша фишка не может зайти в Дом. Согласно <span class="highlight-text">"правилу большего хода"</span>, вы должны иметь возможность использовать 5. Так как это невозможно, вы пропускаете ход. Таким образом для победы вам нужно получить на кубиках значения 1 и 2 (в сумме получается необходимая двойка), 3 и 1 либо 3 и 2 (вы делаете ход на большее), либо 3 и 3 (в этом случае у вас также есть возможность сделать ход на большее, т.е. на 3).
+                </div>
+            </div>
+
+            <div style="background: rgba(102, 126, 234, 0.1); padding: 25px; border-radius: 15px; margin-top: 30px; text-align: center;">
+                <p style="font-size: 18px; font-weight: 600; color: #667eea; margin-bottom: 10px;">
+                    💡 Совет для игроков
+                </p>
+                <p style="color: #4a5568;">
+                    Изучение этих ситуаций поможет вам лучше понимать правила игры и принимать правильные решения во время партии. Практикуйтесь и наслаждайтесь игрой!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
