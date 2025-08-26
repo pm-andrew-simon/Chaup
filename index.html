@@ -180,6 +180,12 @@
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        .waiting-zone {
+            background: rgba(255, 255, 0, 0.3);
+            border: 2px solid rgba(255, 215, 0, 0.6);
+            box-shadow: inset 0 2px 4px rgba(255, 215, 0, 0.2);
+        }
+
         .piece {
             width: calc(min(90vw, 600px) * 30 / 600);
             height: calc(min(90vw, 600px) * 30 / 600);
@@ -698,28 +704,35 @@
 
     <script>
         const BOARD_CELLS = [
-            "G1", "H1", "I1", 
+            "K1", "K2", "K3", "K4", "G1", "H1", "I1", 
             "F2", "G2", "H2", "I2", 
             "G3", "H3", "I3", 
             "G4", "H4", "I4", 
-            "F5", "G5", "H5", "I5", 
+            "A5", "B5", "C5", "D5", "F5", "G5", "H5", "I5", 
             "G6", "H6", "I6", "K6", "N6", 
             "A7", "B7", "C7", "D7", "E7", "F7", "G7", "I7", "J7", "K7", "L7", "M7", "N7", "O7",
             "A8", "B8", "C8", "D8", "E8", "F8", "J8", "K8", "L8", "M8", "N8", "O8",
             "A9", "B9", "C9", "D9", "E9", "F9", "G9", "I9", "J9", "K9", "L9", "M9", "N9", "O9",
             "B10", "E10", "G10", "H10", "I10",
-            "G11", "H11", "I11", "J11",
-            "G12", "H12", "I12",
-            "G13", "H13", "I13",
-            "G14", "H14", "I14", "J14",
-            "G15", "H15", "I15"
+            "L11", "M11", "N11", "O11", "G11", "H11", "I11", "J11",
+            "E12", "G12", "H12", "I12",
+            "E13", "G13", "H13", "I13",
+            "E14", "G14", "H14", "I14", "J14",
+            "E15", "G15", "H15", "I15"
         ];
 
         const START_ZONES = {
-            1: ["K1", "L1", "M1", "K2", "L2", "M2"],
-            2: ["C14", "D14", "E14", "C15", "D15", "E15"],
-            3: ["N11", "O11", "N12", "O12", "N13", "O13"],
-            4: ["A3", "B3", "A4", "B4", "A5", "B5"]
+            1: ["M1", "N1", "O1", "M2", "N2", "O2"],
+            2: ["A14", "B14", "C14", "A15", "B15", "C15"],
+            3: ["N13", "O13", "N14", "O14", "N15", "O15"],
+            4: ["A1", "B1", "A2", "B2", "A3", "B3"]
+        };
+
+        const WAITING_ZONES = {
+            1: ["K1", "K2", "K3", "K4"],
+            2: ["E12", "E13", "E14", "E15"],
+            3: ["L11", "M11", "N11", "O11"],
+            4: ["A5", "B5", "C5", "D5"]
         };
 
         let gameBoard = {};
@@ -911,7 +924,30 @@
                     });
                     
                     board.appendChild(cell);
-                    gameBoard[coord] = null;
+                    gameBoard[coord] = [];
+                });
+            }
+
+            // Создать зоны ожидания
+            for (let player = 1; player <= 4; player++) {
+                WAITING_ZONES[player].forEach(coord => {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell waiting-zone';
+                    cell.dataset.coord = coord;
+                    cell.dataset.player = player;
+                    
+                    const pos = coordToPosition(coord);
+                    cell.style.left = pos.x + 'px';
+                    cell.style.top = pos.y + 'px';
+                    
+                    // Добавить обработчик клика для зон ожидания
+                    cell.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        handleCellClick(coord);
+                    });
+                    
+                    board.appendChild(cell);
+                    gameBoard[coord] = [];
                 });
             }
         }
@@ -953,7 +989,12 @@
 
                     board.appendChild(piece);
                     pieces[player].push({element: piece, position: coord});
-                    gameBoard[coord] = piece;
+                    
+                    // Инициализировать массив для стартовых зон
+                    if (!gameBoard[coord]) {
+                        gameBoard[coord] = [];
+                    }
+                    gameBoard[coord].push(piece);
                 });
             }
 
@@ -1093,7 +1134,8 @@
 
         function performMove(piece, targetCoord) {
             const isValidTarget = BOARD_CELLS.includes(targetCoord) || 
-                                Object.values(START_ZONES).flat().includes(targetCoord);
+                                Object.values(START_ZONES).flat().includes(targetCoord) ||
+                                Object.values(WAITING_ZONES).flat().includes(targetCoord);
 
             if (!isValidTarget) return;
 
@@ -1102,30 +1144,49 @@
 
             if (targetCoord === currentPos) return;
 
-            // Стартовые позиции - фишки могут перемещаться свободно
-
+            // Проверка разрешения на перемещение в специальные зоны
             const isStartZone = Object.values(START_ZONES).flat().includes(targetCoord);
+            const isWaitingZone = Object.values(WAITING_ZONES).flat().includes(targetCoord);
+            
             if (isStartZone) {
                 const targetPlayer = getPlayerForStartZone(targetCoord);
                 if (targetPlayer !== piecePlayer) return;
             }
-
-            const targetPiece = gameBoard[targetCoord];
-
-            if (targetPiece) {
-                const targetPlayer = parseInt(targetPiece.dataset.player);
-                if (targetPlayer === piecePlayer) {
-                    updateGameMessage('Нельзя ставить фишку на свою фишку!');
+            
+            if (isWaitingZone) {
+                const targetPlayer = getPlayerForWaitingZone(targetCoord);
+                if (targetPlayer !== piecePlayer) return;
+                
+                // Проверяем, можно ли добавить фишку в эту зону ожидания
+                const currentPiecesCount = gameBoard[targetCoord] ? gameBoard[targetCoord].length : 0;
+                const maxPiecesPerZone = 6;
+                const cellsInZone = WAITING_ZONES[targetPlayer].length;
+                const maxPiecesPerCell = Math.ceil(maxPiecesPerZone / cellsInZone);
+                
+                if (currentPiecesCount >= maxPiecesPerCell) {
+                    updateGameMessage('Зона ожидания заполнена!');
                     return;
                 }
+            }
 
-                const freeStartPos = findFreeStartPosition(targetPlayer);
-                if (freeStartPos) {
-                    movePiece(targetPiece, freeStartPos);
-                    updateGameMessage('Фишка противника отправлена на стартовую позицию!');
-                } else {
-                    updateGameMessage('Нет свободных стартовых позиций для противника!');
-                    return;
+            // Обработка коллизий на основном поле
+            if (BOARD_CELLS.includes(targetCoord)) {
+                const targetPiece = gameBoard[targetCoord];
+                if (targetPiece && !Array.isArray(targetPiece)) {
+                    const targetPlayer = parseInt(targetPiece.dataset.player);
+                    if (targetPlayer === piecePlayer) {
+                        updateGameMessage('Нельзя ставить фишку на свою фишку!');
+                        return;
+                    }
+
+                    const freeStartPos = findFreeStartPosition(targetPlayer);
+                    if (freeStartPos) {
+                        movePiece(targetPiece, freeStartPos);
+                        updateGameMessage('Фишка противника отправлена на стартовую позицию!');
+                    } else {
+                        updateGameMessage('Нет свободных стартовых позиций для противника!');
+                        return;
+                    }
                 }
             }
 
@@ -1145,6 +1206,15 @@
                     updateGameMessage('Ход выполнен!');
                 }, 500);
             }
+        }
+
+        function getPlayerForWaitingZone(coord) {
+            for (let player = 1; player <= 4; player++) {
+                if (WAITING_ZONES[player].includes(coord)) {
+                    return player;
+                }
+            }
+            return null;
         }
 
         function getCurrentPosition(piece) {
@@ -1167,7 +1237,10 @@
         function findFreeStartPosition(player) {
             const startCoords = START_ZONES[player];
             for (let coord of startCoords) {
-                if (!gameBoard[coord]) {
+                const currentPieces = gameBoard[coord];
+                const maxPiecesPerCell = 1; // В стартовых зонах по одной фишке на клетку
+                
+                if (!currentPieces || currentPieces.length < maxPiecesPerCell) {
                     return coord;
                 }
             }
@@ -1177,14 +1250,59 @@
         function movePiece(piece, targetCoord) {
             const currentPos = getCurrentPosition(piece);
             if (currentPos) {
-                gameBoard[currentPos] = null;
+                removePieceFromCell(piece, currentPos);
             }
 
-            const pos = coordToPosition(targetCoord);
+            // Позиционирование фишки в зависимости от типа зоны
+            const pos = calculatePiecePosition(targetCoord);
             piece.style.left = pos.x + 'px';
             piece.style.top = pos.y + 'px';
             
-            gameBoard[targetCoord] = piece;
+            addPieceToCell(piece, targetCoord);
+        }
+
+        function removePieceFromCell(piece, coord) {
+            if (gameBoard[coord]) {
+                if (Array.isArray(gameBoard[coord])) {
+                    const index = gameBoard[coord].indexOf(piece);
+                    if (index > -1) {
+                        gameBoard[coord].splice(index, 1);
+                    }
+                } else if (gameBoard[coord] === piece) {
+                    gameBoard[coord] = null;
+                }
+            }
+        }
+
+        function addPieceToCell(piece, coord) {
+            const isWaitingZone = Object.values(WAITING_ZONES).flat().includes(coord);
+            const isStartZone = Object.values(START_ZONES).flat().includes(coord);
+            
+            if (isWaitingZone || isStartZone) {
+                if (!gameBoard[coord]) {
+                    gameBoard[coord] = [];
+                }
+                gameBoard[coord].push(piece);
+            } else {
+                gameBoard[coord] = piece;
+            }
+        }
+
+        function calculatePiecePosition(coord) {
+            const basePos = coordToPosition(coord);
+            const isWaitingZone = Object.values(WAITING_ZONES).flat().includes(coord);
+            const isStartZone = Object.values(START_ZONES).flat().includes(coord);
+            
+            if (isWaitingZone || isStartZone) {
+                const piecesInCell = gameBoard[coord] ? gameBoard[coord].length : 0;
+                const offset = piecesInCell * 3;
+                return {
+                    x: basePos.x + offset,
+                    y: basePos.y + offset
+                };
+            }
+            
+            return basePos;
         }
 
         function startGame() {
@@ -1590,26 +1708,48 @@
 
         // Функция для получения текущей позиции фишки
         function getPiecePosition(piece) {
-            // Если фишка в стартовой зоне, вернуть null (она еще не на поле)
             const startZones = Object.values(START_ZONES).flat();
+            const waitingZones = Object.values(WAITING_ZONES).flat();
             const currentCoord = getCurrentPosition(piece);
             
-            if (!currentCoord || startZones.includes(currentCoord)) {
-                return null; // Фишка в стартовой зоне
+            if (!currentCoord) {
+                return {type: 'unknown', coord: null};
             }
             
-            return currentCoord;
+            if (startZones.includes(currentCoord)) {
+                return {type: 'start', coord: currentCoord};
+            }
+            
+            if (waitingZones.includes(currentCoord)) {
+                return {type: 'waiting', coord: currentCoord};
+            }
+            
+            return {type: 'board', coord: currentCoord};
         }
 
         // Функция для вычисления возможных ходов фишки
         function calculatePossibleMoves(piece, steps = 12) {
             const playerNum = parseInt(piece.dataset.player);
-            const currentCoord = getPiecePosition(piece);
+            const position = getPiecePosition(piece);
             const path = PLAYER_PATHS[playerNum];
             const possibleMoves = [];
             
-            if (!currentCoord) {
-                // Фишка в стартовой зоне - может выйти на стартовое поле
+            if (position.type === 'start') {
+                // Фишка в стартовой зоне - может перейти в зону ожидания
+                const waitingZones = WAITING_ZONES[playerNum];
+                waitingZones.forEach(coord => {
+                    const currentPieces = gameBoard[coord] ? gameBoard[coord].length : 0;
+                    const maxPiecesPerCell = Math.ceil(6 / waitingZones.length);
+                    
+                    if (currentPieces < maxPiecesPerCell) {
+                        possibleMoves.push({
+                            coord: coord,
+                            steps: 1
+                        });
+                    }
+                });
+            } else if (position.type === 'waiting') {
+                // Фишка в зоне ожидания - может выйти на стартовое поле
                 const entryCell = ENTRY_CELLS[playerNum];
                 for (let i = 1; i <= Math.min(steps, 12); i++) {
                     const targetIndex = path.indexOf(entryCell) + i - 1;
@@ -1620,9 +1760,9 @@
                         });
                     }
                 }
-            } else {
+            } else if (position.type === 'board') {
                 // Фишка уже на поле
-                const currentIndex = path.indexOf(currentCoord);
+                const currentIndex = path.indexOf(position.coord);
                 if (currentIndex >= 0) {
                     for (let i = 1; i <= Math.min(steps, 12); i++) {
                         const targetIndex = currentIndex + i;
