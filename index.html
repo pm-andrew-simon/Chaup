@@ -264,22 +264,23 @@
             position: absolute;
             width: calc(min(90vw, 600px) * 35 / 600);
             height: calc(min(90vw, 600px) * 35 / 600);
-            border: 1px solid rgba(0, 0, 0, 0.2);
+            border: 1.5px solid rgba(0, 0, 0, 0.25);
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
             transition: all 0.2s ease;
+            box-sizing: border-box;
         }
 
         .start-zone {
             background: rgba(255, 255, 255, 0.4);
-            border: 2px solid rgba(0, 0, 0, 0.3);
+            border: 1.5px solid rgba(0, 0, 0, 0.35);
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .waiting-zone {
             background: rgba(255, 255, 0, 0.3);
-            border: 2px solid rgba(255, 215, 0, 0.6);
-            box-shadow: inset 0 2px 4px rgba(255, 215, 0, 0.2);
+            border: 1.5px solid rgba(255, 180, 0, 0.8);
+            box-shadow: inset 0 2px 4px rgba(255, 180, 0, 0.2);
         }
 
         .piece {
@@ -336,7 +337,7 @@
 
         .possible-move {
             background-color: rgba(0, 123, 255, 0.1) !important;
-            border: 2px solid rgba(0, 123, 255, 0.3) !important;
+            border: 1.5px solid rgba(0, 123, 255, 0.5) !important;
         }
 
         .move-hint {
@@ -384,7 +385,7 @@
 
         .cell.highlight {
             background: rgba(255, 235, 59, 0.8);
-            border-color: #f57f17;
+            border: 1.5px solid #f57f17 !important;
             transform: scale(1.05);
             box-shadow: 0 0 15px rgba(255, 193, 7, 0.6);
         }
@@ -504,7 +505,12 @@
             padding: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             text-align: center;
-            min-width: 200px;
+            width: 280px;
+            height: min(90vw, 600px);
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            margin: 20px 0;
         }
 
         .current-player {
@@ -609,6 +615,10 @@
             border-radius: 12px;
             font-size: 14px;
             color: #4a5568;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
         
         .dice-log-title {
@@ -619,7 +629,7 @@
         }
         
         .dice-log-entries {
-            max-height: 200px;
+            flex: 1;
             overflow-y: auto;
         }
 
@@ -685,8 +695,15 @@
             margin: 5px;
         }
 
-        #next-player-btn:hover {
+        #next-player-btn:hover:not(:disabled) {
             background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+
+        #next-player-btn:disabled {
+            background: #e2e8f0;
+            color: #a0aec0;
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         /* Мобильная адаптивность для игрового макета */
@@ -739,6 +756,7 @@
                 padding: 10px;
                 border-radius: 10px;
                 min-width: auto;
+                height: auto;
                 position: relative;
                 background: rgba(255, 255, 255, 0.98);
                 backdrop-filter: blur(15px);
@@ -836,7 +854,7 @@
                 </div>
                 
                 <button id="roll-dice-btn" onclick="rollDice()">Бросить кубики</button>
-                <button id="next-player-btn" onclick="nextPlayer()" style="display: none;">Следующий игрок</button>
+                <button id="next-player-btn" onclick="nextPlayer()" disabled>Следующий игрок</button>
                 
                 <div id="dice-result" class="dice-result"></div>
                 <div id="dice-log" class="dice-log">
@@ -1003,8 +1021,8 @@
         };
 
         function coordToPosition(coord) {
-            const col = coord.charCodeAt(0) - 65;
-            const row = parseInt(coord.substring(1)) - 1;
+            const col = coord.charCodeAt(0) - 65; // A=0, B=1, ..., O=14
+            const row = parseInt(coord.substring(1)) - 1; // 1=0, 2=1, ..., 15=14
             
             let boardSize;
             if (window.innerWidth <= 768) {
@@ -1016,7 +1034,11 @@
             }
             
             const cellSize = boardSize * 35 / 600;
-            const offset = boardSize * 5 / 600;
+            
+            // Рассчитываем отступ так, чтобы сетка 15x15 была точно по центру
+            // Общая ширина/высота игрового поля: 15 * cellSize
+            const gameFieldSize = 15 * cellSize;
+            const offset = (boardSize - gameFieldSize) / 2;
             
             return {
                 x: col * cellSize + offset,
@@ -1033,7 +1055,11 @@
             }
             
             const cellSize = boardSize * 35 / 600;
-            const offset = boardSize * 5 / 600;
+            
+            // Используем тот же расчет отступа, что и в coordToPosition
+            const gameFieldSize = 15 * cellSize;
+            const offset = (boardSize - gameFieldSize) / 2;
+            
             const col = Math.floor((x - offset) / cellSize);
             const row = Math.floor((y - offset) / cellSize);
             if (col < 0 || col > 14 || row < 0 || row > 14) return null;
@@ -1517,6 +1543,9 @@
             // Отключить перемещение фишек до окончания определения очередности
             enablePieceMovement(false);
             
+            // Деактивировать кнопку "Следующий игрок" во время определения очередности
+            document.getElementById('next-player-btn').disabled = true;
+            
             // Инициализировать обработчики событий
             initializeEventHandlers();
             
@@ -1737,10 +1766,10 @@
                 // Показать кнопку сохранения игры
                 showSaveButton();
                 
-                // Разрешить перемещение всех фишек и показать кнопку смены игрока
+                // Разрешить перемещение всех фишек и активировать кнопку смены игрока
                 enablePieceMovement(true);
                 document.getElementById('roll-dice-btn').disabled = false;
-                document.getElementById('next-player-btn').style.display = 'inline-block';
+                document.getElementById('next-player-btn').disabled = false;
             }
         }
 
@@ -1762,11 +1791,11 @@
             
             updateGameMessage(message);
             
-            // Включить кнопку для следующего броска и убедиться что кнопка "Следующий игрок" видна
+            // Включить кнопку для следующего броска и активировать кнопку "Следующий игрок"
             document.getElementById('roll-dice-btn').disabled = false;
             const nextPlayerBtn = document.getElementById('next-player-btn');
             if (nextPlayerBtn) {
-                nextPlayerBtn.style.display = 'inline-block';
+                nextPlayerBtn.disabled = false;
             }
         }
 
@@ -1789,10 +1818,10 @@
                 updatePlayerDisplay();
                 updateGameMessage(`Очередь игрока: ${playerColors[currentPlayer-1]}`);
                 
-                // Включаем кнопку "Бросить кубики" и оставляем кнопку "Следующий игрок" видимой
+                // Включаем кнопку "Бросить кубики" и активируем кнопку "Следующий игрок"
                 document.getElementById('roll-dice-btn').disabled = false;
                 const nextPlayerBtn = document.getElementById('next-player-btn');
-                if (nextPlayerBtn) nextPlayerBtn.style.display = 'inline-block';
+                if (nextPlayerBtn) nextPlayerBtn.disabled = false;
                 
                 // Сброс счетчика бросков для нового игрока
                 rollCount = 0;
@@ -2034,7 +2063,7 @@
                         left: 50%;
                         transform: translate(-50%, -50%);
                         background: rgba(255, 255, 255, 0.9);
-                        border: 2px solid #007bff;
+                        border: 1.5px solid #007bff;
                         border-radius: 50%;
                         width: 20px;
                         height: 20px;
@@ -2330,8 +2359,13 @@
                         // Включаем возможность бросать кубики - игрок может продолжать ход
                         if (rollDiceBtn) rollDiceBtn.disabled = false;
                         if (nextPlayerBtn) {
-                            // Показываем кнопку "Следующий игрок" чтобы игрок мог передать ход
-                            nextPlayerBtn.style.display = 'inline-block';
+                            // Активируем кнопку "Следующий игрок" чтобы игрок мог передать ход
+                            nextPlayerBtn.disabled = false;
+                        }
+                    } else if (gamePhase === 'determining-order') {
+                        // Во время определения очередности кнопка "Следующий игрок" неактивна
+                        if (nextPlayerBtn) {
+                            nextPlayerBtn.disabled = true;
                         }
                     }
                     
