@@ -113,13 +113,11 @@
         }
 
         /* Специальные стили для игровых кнопок */
-        .nav-links a.current,
-        #load-game-btn {
+        .nav-links a.current {
             position: relative;
         }
 
-        .nav-links a.current::after,
-        #load-game-btn::after {
+        .nav-links a.current::after {
             content: '';
             position: absolute;
             bottom: -2px;
@@ -210,6 +208,20 @@
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .game-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .game-buttons button {
+            flex: 1;
+            min-width: 140px;
+            max-width: 200px;
         }
 
         button {
@@ -445,6 +457,16 @@
             .setup-panel {
                 margin: 5px;
                 padding: 12px;
+            }
+
+            .game-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .game-buttons button {
+                min-width: auto;
+                max-width: none;
             }
 
             button {
@@ -768,8 +790,7 @@
     <div class="game-container">
         <nav class="navigation">
             <div class="nav-links">
-                <a href="index.html" class="current">🎮 Новая игра</a>
-                <button id="load-game-btn" class="nav-button">📂 Загрузить игру</button>
+                <a href="index.html" class="current">🎮 Играть</a>
                 <a href="rules.html">📋 Правила</a>
                 <a href="situations.html">🎯 Игровые ситуации</a>
                 <a href="contacts.html">📧 Контакты</a>
@@ -789,7 +810,10 @@
                     <option value="4">4</option>
                 </select>
             </div>
-            <button onclick="startGame()">Начать игру</button>
+            <div class="game-buttons">
+                <button onclick="startGame()">Начать игру</button>
+                <button onclick="loadGame()">Загрузить игру</button>
+            </div>
         </div>
 
         <div class="game-layout" style="display: none;" id="game-layout">
@@ -2398,7 +2422,6 @@
             
             // Добавить обработчики событий для кнопок
             document.getElementById('save-game-btn').addEventListener('click', saveGame);
-            document.getElementById('load-game-btn').addEventListener('click', loadGame);
             
             // Изначально скрыть кнопку сохранения
             hideSaveButton();

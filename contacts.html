@@ -108,13 +108,11 @@
         }
 
         /* Специальные стили для игровых кнопок */
-        .nav-links a:first-child,
-        #load-game-btn {
+        .nav-links a:first-child {
             position: relative;
         }
 
-        .nav-links a:first-child::after,
-        #load-game-btn::after {
+        .nav-links a:first-child::after {
             content: '';
             position: absolute;
             bottom: -2px;
@@ -282,8 +280,7 @@
     <div class="container">
         <nav class="navigation">
             <div class="nav-links">
-                <a href="index.html">🎮 Новая игра</a>
-                <button onclick="location.href='index.html';" class="nav-button">📂 Загрузить игру</button>
+                <a href="index.html">🎮 Играть</a>
                 <a href="rules.html">📋 Правила</a>
                 <a href="situations.html">🎯 Игровые ситуации</a>
                 <a href="contacts.html" class="current">📧 Контакты</a>
