@@ -19,6 +19,10 @@
     </script>
     <noscript><div><img src="https://mc.yandex.ru/watch/103866554" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <!-- /Yandex.Metrika counter -->
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
         * {
             box-sizing: border-box;
@@ -58,21 +62,101 @@
             align-items: center;
         }
 
-        .nav-links a {
+        /* Единый стиль для всех элементов навигации */
+        .nav-links a,
+        .nav-links button,
+        .nav-button {
+            display: inline-block;
             text-decoration: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
             color: #4a5568;
             font-weight: 600;
-            padding: 10px 20px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            padding: 12px 24px;
+            border-radius: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
         }
 
+        /* Эффект при наведении и активном состоянии */
         .nav-links a:hover,
+        .nav-links button:hover,
+        .nav-button:hover,
+        .nav-links a.current {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Эффект при нажатии */
+        .nav-links a:active,
+        .nav-links button:active,
+        .nav-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Дополнительные эффекты для текущей страницы */
         .nav-links a.current {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            transform: translateY(-2px);
+            border-color: #667eea;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Специальные стили для игровых кнопок */
+        .nav-links a.current,
+        #load-game-btn {
+            position: relative;
+        }
+
+        .nav-links a.current::after,
+        #load-game-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            border-radius: 1px;
+        }
+
+        /* Анимация появления подчеркивания */
+        .nav-links a.current::after {
+            animation: fadeInLine 0.6s ease-out;
+        }
+
+        @keyframes fadeInLine {
+            from {
+                opacity: 0;
+                width: 0%;
+            }
+            to {
+                opacity: 1;
+                width: 80%;
+            }
+        }
+
+        /* Скрытие кнопки сохранения в зависимости от фазы игры */
+        #save-game-btn {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #save-game-btn.visible {
+            display: inline-block;
+            opacity: 1;
         }
 
         h1 {
@@ -331,9 +415,12 @@
                 gap: 10px;
             }
 
-            .nav-links a {
-                padding: 8px 12px;
-                font-size: 14px;
+            .nav-links a,
+            .nav-links button,
+            .nav-button {
+                padding: 10px 16px;
+                font-size: 13px;
+                border-radius: 12px;
             }
 
             .game-board {
@@ -681,10 +768,12 @@
     <div class="game-container">
         <nav class="navigation">
             <div class="nav-links">
-                <a href="index.html" class="current">🎮 Играть</a>
+                <a href="index.html" class="current">🎮 Новая игра</a>
+                <button id="load-game-btn" class="nav-button">📂 Загрузить игру</button>
                 <a href="rules.html">📋 Правила</a>
                 <a href="situations.html">🎯 Игровые ситуации</a>
                 <a href="contacts.html">📧 Контакты</a>
+                <button id="save-game-btn" class="nav-button">💾 Сохранить игру</button>
             </div>
         </nav>
 
@@ -776,6 +865,11 @@
         let playerCount = 2;
         let pieces = {};
         let draggedPiece = null;
+
+        // Supabase configuration
+        const SUPABASE_URL = 'https://xegejrwsaozxymhzowac.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhlZ2VqcndzYW96eHltaHpvd2FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzNzk4NDksImV4cCI6MjA3MTk1NTg0OX0.sT4t4wih618BFCjttDnmAqjZK4G3wQc7vCJ7op1xybQ';
+        let supabaseClient = null;
         
         // Игровая логика
         let currentPlayer = 1;
@@ -924,9 +1018,16 @@
 
         function createBoard() {
             const board = document.getElementById('game-board');
+            if (!board) {
+                console.error('Элемент game-board не найден при создании доски!');
+                return;
+            }
+            
+            console.log('createBoard() начинается, очищаем доску');
             board.innerHTML = '';
+            console.log('Создаем клетки для', BOARD_CELLS.length, 'координат');
 
-            BOARD_CELLS.forEach(coord => {
+            BOARD_CELLS.forEach((coord, index) => {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.dataset.coord = coord;
@@ -943,7 +1044,13 @@
                 
                 board.appendChild(cell);
                 gameBoard[coord] = null;
+                
+                if (index < 5) { // Логируем первые 5 клеток для отладки
+                    console.log(`Создана клетка ${coord} в позиции`, pos);
+                }
             });
+            
+            console.log('Основные клетки созданы:', board.children.length);
 
             for (let player = 1; player <= 4; player++) {
                 START_ZONES[player].forEach(coord => {
@@ -989,6 +1096,13 @@
                     gameBoard[coord] = [];
                 });
             }
+            
+            console.log('createBoard() завершена. Всего элементов на доске:', board.children.length);
+            console.log('Стили доски после создания:', {
+                display: window.getComputedStyle(board).display,
+                gridTemplateColumns: window.getComputedStyle(board).gridTemplateColumns,
+                visibility: window.getComputedStyle(board).visibility
+            });
         }
 
         function createPieces() {
@@ -1298,6 +1412,15 @@
             piece.style.top = pos.y + 'px';
             
             addPieceToCell(piece, targetCoord);
+            
+            // Обновляем позицию в массиве pieces
+            const piecePlayer = parseInt(piece.dataset.player);
+            if (pieces[piecePlayer]) {
+                const pieceData = pieces[piecePlayer].find(p => p.element === piece);
+                if (pieceData) {
+                    pieceData.position = targetCoord;
+                }
+            }
         }
 
         function removePieceFromCell(piece, coord) {
@@ -1587,6 +1710,9 @@
                 updatePlayerDisplay();
                 updateGameMessage(`Очередность определена! Первым ходит: ${playerColors[currentPlayer-1]}`);
                 
+                // Показать кнопку сохранения игры
+                showSaveButton();
+                
                 // Разрешить перемещение всех фишек и показать кнопку смены игрока
                 enablePieceMovement(true);
                 document.getElementById('roll-dice-btn').disabled = false;
@@ -1598,12 +1724,10 @@
             const isSpecialDouble = (dice1 === 1 && dice2 === 1) || (dice1 === 6 && dice2 === 6);
             
             let message = `Выпало: ${dice1} и ${dice2}`;
-            let extraTurn = false;
             
             // Проверка на дополнительный ход
             if (isSpecialDouble && rollCount < maxRolls - 1) {
                 message += ` - Дополнительный ход!`;
-                extraTurn = true;
                 rollCount++;
             } else if (rollCount >= maxRolls - 1) {
                 message += ` - Максимум ходов исчерпан!`;
@@ -1614,8 +1738,12 @@
             
             updateGameMessage(message);
             
-            // Включить кнопку для следующего броска
+            // Включить кнопку для следующего броска и убедиться что кнопка "Следующий игрок" видна
             document.getElementById('roll-dice-btn').disabled = false;
+            const nextPlayerBtn = document.getElementById('next-player-btn');
+            if (nextPlayerBtn) {
+                nextPlayerBtn.style.display = 'inline-block';
+            }
         }
 
         function allPiecesAtStart(player) {
@@ -1635,8 +1763,15 @@
                 currentPlayer = playersOrder[nextIndex].player;
                 
                 updatePlayerDisplay();
-                updateGameMessage('');
+                updateGameMessage(`Очередь игрока: ${playerColors[currentPlayer-1]}`);
+                
+                // Включаем кнопку "Бросить кубики" и оставляем кнопку "Следующий игрок" видимой
                 document.getElementById('roll-dice-btn').disabled = false;
+                const nextPlayerBtn = document.getElementById('next-player-btn');
+                if (nextPlayerBtn) nextPlayerBtn.style.display = 'inline-block';
+                
+                // Сброс счетчика бросков для нового игрока
+                rollCount = 0;
             }
         }
 
@@ -1918,6 +2053,357 @@
                 updateGameMessage('Дождитесь окончания определения очередности');
             }
         }
+
+        // Инициализация Supabase клиента
+        function initSupabase() {
+            if (typeof supabase !== 'undefined') {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        }
+
+        // Генерация уникального ID для игры
+        function generateGameId() {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = 'CHPR-';
+            for (let i = 0; i < 8; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        // Сериализация состояния игры
+        function serializeGameState() {
+            // Сериализуем текущие позиции фишек
+            const piecesData = {};
+            for (let player = 1; player <= playerCount; player++) {
+                if (pieces[player]) {
+                    piecesData[player] = pieces[player].map(piece => {
+                        // Используем позицию из массива pieces (должна быть актуальной после обновления)
+                        // Но также проверим текущую визуальную позицию как резерв
+                        const storedPosition = piece.position;
+                        const currentPosition = getCurrentPosition(piece.element);
+                        return {
+                            position: storedPosition || currentPosition,
+                            id: piece.element.dataset.id
+                        };
+                    });
+                }
+            }
+
+            const gameState = {
+                currentPlayer: currentPlayer,
+                gamePhase: gamePhase,
+                rollCount: rollCount,
+                maxRolls: maxRolls,
+                lastDiceRoll: lastDiceRoll,
+                playersOrder: playersOrder,
+                diceLog: diceLog,
+                orderResults: orderResults,
+                playersToRoll: playersToRoll,
+                firstMoveWinner: firstMoveWinner,
+                selectedPiece: selectedPiece ? {
+                    player: selectedPiece.dataset.player,
+                    id: selectedPiece.dataset.id
+                } : null,
+                playerCount: playerCount,
+                piecesData: piecesData,
+                timestamp: new Date().toISOString()
+            };
+            return gameState;
+        }
+
+        // Десериализация состояния игры
+        function deserializeGameState(gameState) {
+            currentPlayer = gameState.currentPlayer;
+            gamePhase = gameState.gamePhase;
+            rollCount = gameState.rollCount || 0;
+            maxRolls = gameState.maxRolls || 3;
+            lastDiceRoll = gameState.lastDiceRoll || [0, 0];
+            playersOrder = gameState.playersOrder || [];
+            diceLog = gameState.diceLog || [];
+            orderResults = gameState.orderResults || [];
+            playersToRoll = gameState.playersToRoll || [];
+            firstMoveWinner = gameState.firstMoveWinner;
+            selectedPiece = null; // Будем восстанавливать позже
+            playerCount = gameState.playerCount || 2;
+            
+            // Очищаем текущие фишки с доски
+            document.querySelectorAll('.piece').forEach(piece => piece.remove());
+            
+            // Очищаем текущее состояние игровой доски
+            gameBoard = {};
+            pieces = {};
+            
+            // Воссоздаем фишки на основе сохраненных данных
+            if (gameState.piecesData) {
+                for (let player = 1; player <= playerCount; player++) {
+                    pieces[player] = [];
+                    if (gameState.piecesData[player]) {
+                        gameState.piecesData[player].forEach((pieceData, index) => {
+                            // Проверяем валидность данных фишки
+                            if (!pieceData.position) {
+                                return;
+                            }
+                            
+                            // Создаем новый элемент фишки
+                            const piece = document.createElement('div');
+                            const colors = ['player1', 'player2', 'player3', 'player4'];
+                            piece.className = `piece ${colors[player-1]}`;
+                            piece.dataset.player = player;
+                            piece.dataset.id = pieceData.id || `p${player}_${index}`;
+                            piece.draggable = true;
+
+                            // Добавляем обработчики событий
+                            piece.addEventListener('dragstart', handleDragStart);
+                            piece.addEventListener('dragend', handleDragEnd);
+                            piece.addEventListener('touchstart', handleTouchStart, {passive: true});
+                            piece.addEventListener('touchmove', handleTouchMove, {passive: false});
+                            piece.addEventListener('touchend', handleTouchEnd, {passive: false});
+                            piece.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                handlePieceClick(piece);
+                            });
+
+                            // Устанавливаем позицию
+                            const pos = coordToPosition(pieceData.position);
+                            if (pos && piece && piece.style) {
+                                piece.style.left = pos.x + 'px';
+                                piece.style.top = pos.y + 'px';
+                            }
+
+                            // Добавляем к игровой доске и сохраняем в массивах
+                            const gameBoardElement = document.getElementById('game-board');
+                            if (gameBoardElement) {
+                                gameBoardElement.appendChild(piece);
+                            }
+                            pieces[player].push({element: piece, position: pieceData.position});
+                            
+                            if (!gameBoard[pieceData.position]) {
+                                gameBoard[pieceData.position] = [];
+                            }
+                            gameBoard[pieceData.position].push(piece);
+                        });
+                    }
+                }
+            }
+        }
+
+
+
+
+        // Сохранение игры
+        async function saveGame() {
+            if (!supabaseClient) {
+                alert('Ошибка подключения к базе данных');
+                return;
+            }
+
+            try {
+                const gameId = generateGameId();
+                const gameState = serializeGameState();
+
+                const { data, error } = await supabaseClient
+                    .from('saved_games')
+                    .insert([
+                        {
+                            CHPR_id: gameId,
+                            game_state: gameState,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (error) {
+                    throw error;
+                }
+
+                // Показать ID игры пользователю
+                const resultDiv = document.createElement('div');
+                resultDiv.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(10px);
+                    padding: 30px;
+                    border-radius: 20px;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                    z-index: 1000;
+                    text-align: center;
+                `;
+                resultDiv.innerHTML = `
+                    <h3>Игра успешно сохранена!</h3>
+                    <p>ID игры: <strong>${gameId}</strong></p>
+                    <p style="font-size: 14px; color: #666;">Скопируйте этот ID для загрузки игры</p>
+                    <button onclick="copyToClipboard('${gameId}')" style="margin: 10px; padding: 10px 20px; border-radius: 10px; border: none; background: #667eea; color: white; cursor: pointer;">Копировать ID</button>
+                    <button onclick="this.parentElement.remove()" style="margin: 10px; padding: 10px 20px; border-radius: 10px; border: none; background: #ccc; color: #333; cursor: pointer;">Закрыть</button>
+                `;
+                document.body.appendChild(resultDiv);
+
+            } catch (error) {
+                console.error('Ошибка сохранения игры:', error);
+                alert('Ошибка при сохранении игры: ' + error.message);
+            }
+        }
+
+        // Загрузка игры с исправленной логикой
+        async function loadGame() {
+            console.log('loadGame() вызвана');
+            
+            // Инициализируем стандартную новую игру с 2 участниками
+            playerCount = 2;
+            startGame();
+            
+            // Затем запрашиваем ID сохраненной игры
+            const gameId = prompt('Введите ID сохраненной игры:');
+            if (!gameId) {
+                // Если пользователь отменил ввод, остаемся в новой игре
+                return;
+            }
+
+            if (!supabaseClient) {
+                alert('Ошибка подключения к базе данных. Продолжаем с новой игрой.');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('saved_games')
+                    .select('game_state')
+                    .eq('CHPR_id', gameId.trim())
+                    .single();
+
+                if (error) {
+                    throw error;
+                }
+
+                if (!data) {
+                    alert('Игра с таким ID не найдена. Продолжаем с новой игрой.');
+                    return;
+                }
+
+                // Заменяем состояние игры на сохраненное
+                try {
+                    deserializeGameState(data.game_state);
+                    
+                    // Обновляем интерфейс после загрузки
+                    updatePlayerDisplay();
+                    updateDiceLogDisplay();
+                    
+                    // Обновляем сообщение игрока
+                    if (gamePhase === 'playing') {
+                        updateGameMessage(`Очередь игрока: ${playerColors[currentPlayer-1]}`);
+                        showSaveButton();
+                    } else if (gamePhase === 'determining-order') {
+                        updateGameMessage('Определение очередности хода. Бросайте кубики!');
+                    }
+                    
+                    // Обновляем состояние кнопок - продолжаем игру с того же состояния
+                    const rollDiceBtn = document.getElementById('roll-dice-btn');
+                    const nextPlayerBtn = document.getElementById('next-player-btn');
+                    
+                    if (gamePhase === 'playing') {
+                        // Включаем возможность бросать кубики - игрок может продолжать ход
+                        if (rollDiceBtn) rollDiceBtn.disabled = false;
+                        if (nextPlayerBtn) {
+                            // Показываем кнопку "Следующий игрок" чтобы игрок мог передать ход
+                            nextPlayerBtn.style.display = 'inline-block';
+                        }
+                    }
+                    
+                    alert('Игра успешно загружена!');
+                } catch (deserializeError) {
+                    console.error('Ошибка при десериализации:', deserializeError);
+                    alert('Ошибка при восстановлении игры. Продолжаем с новой игрой.');
+                }
+
+            } catch (error) {
+                console.error('Ошибка загрузки игры:', error);
+                alert('Ошибка при загрузке игры. Продолжаем с новой игрой.');
+            }
+        }
+
+        // Показать игровое поле для новой игры
+        function showGameFieldForNewGame() {
+            const setupSection = document.getElementById('setup-section');
+            const gameSection = document.getElementById('game-section');
+            
+            if (setupSection) setupSection.style.display = 'none';
+            if (gameSection) {
+                gameSection.style.display = 'block';
+            } else {
+                // Создаем игровую доску и фишки для новой игры
+                createBoard();
+                createPieces();
+            }
+        }
+
+
+        // Запуск новой игры (возврат к выбору количества игроков)
+        function startNewGame() {
+            // Сброс состояния игры
+            gamePhase = 'setup';
+            currentPlayer = 1;
+            playersOrder = [];
+            diceLog = [];
+            orderResults = [];
+            selectedPiece = null;
+            
+            // Скрыть кнопку сохранения
+            hideSaveButton();
+            
+            // Показать панель настройки
+            const setupPanel = document.getElementById('setup-panel');
+            const gameLayout = document.getElementById('game-layout');
+            const infoPanel = document.getElementById('info-panel');
+            
+            if (setupPanel) setupPanel.style.display = 'block';
+            if (gameLayout) gameLayout.style.display = 'none';
+            if (infoPanel) infoPanel.style.display = 'none';
+            
+            // Очистить игровое поле
+            const existingPieces = document.querySelectorAll('.piece');
+            existingPieces.forEach(piece => piece.remove());
+            
+            updateGameMessage('Выберите количество игроков для начала новой игры');
+        }
+
+        // Копирование в буфер обмена
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('ID скопирован в буфер обмена!');
+            });
+        }
+
+
+        // Управление видимостью кнопки сохранения
+        function showSaveButton() {
+            const saveBtn = document.getElementById('save-game-btn');
+            if (saveBtn) {
+                saveBtn.classList.add('visible');
+            }
+        }
+
+        function hideSaveButton() {
+            const saveBtn = document.getElementById('save-game-btn');
+            if (saveBtn) {
+                saveBtn.classList.remove('visible');
+            }
+        }
+
+
+        // Инициализация при загрузке страницы
+        window.addEventListener('load', function() {
+            initSupabase();
+            
+            // Добавить обработчики событий для кнопок
+            document.getElementById('save-game-btn').addEventListener('click', saveGame);
+            document.getElementById('load-game-btn').addEventListener('click', loadGame);
+            
+            // Изначально скрыть кнопку сохранения
+            hideSaveButton();
+            
+        });
     </script>
 </body>
 </html>

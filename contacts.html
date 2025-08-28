@@ -57,21 +57,89 @@
             align-items: center;
         }
 
-        .nav-links a {
+        /* Единый стиль для всех элементов навигации */
+        .nav-links a,
+        .nav-links button,
+        .nav-button {
+            display: inline-block;
             text-decoration: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
             color: #4a5568;
             font-weight: 600;
-            padding: 10px 20px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            padding: 12px 24px;
+            border-radius: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
         }
 
+        /* Эффект при наведении и активном состоянии */
         .nav-links a:hover,
+        .nav-links button:hover,
+        .nav-button:hover,
+        .nav-links a.current {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Эффект при нажатии */
+        .nav-links a:active,
+        .nav-links button:active,
+        .nav-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Дополнительные эффекты для текущей страницы */
         .nav-links a.current {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            transform: translateY(-2px);
+            border-color: #667eea;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Специальные стили для игровых кнопок */
+        .nav-links a:first-child,
+        #load-game-btn {
+            position: relative;
+        }
+
+        .nav-links a:first-child::after,
+        #load-game-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            border-radius: 1px;
+        }
+
+        @keyframes fadeInLine {
+            from {
+                opacity: 0;
+                width: 0%;
+            }
+            to {
+                opacity: 1;
+                width: 80%;
+            }
+        }
+
+        /* Скрытие кнопки сохранения на неигровых страницах */
+        #save-game-btn {
+            display: none;
         }
 
         h1 {
@@ -190,9 +258,12 @@
                 gap: 10px;
             }
             
-            .nav-links a {
-                padding: 8px 12px;
-                font-size: 14px;
+            .nav-links a,
+            .nav-links button,
+            .nav-button {
+                padding: 10px 16px;
+                font-size: 13px;
+                border-radius: 12px;
             }
             
             h1 {
@@ -211,10 +282,12 @@
     <div class="container">
         <nav class="navigation">
             <div class="nav-links">
-                <a href="index.html">🎮 Играть</a>
+                <a href="index.html">🎮 Новая игра</a>
+                <button onclick="location.href='index.html';" class="nav-button">📂 Загрузить игру</button>
                 <a href="rules.html">📋 Правила</a>
                 <a href="situations.html">🎯 Игровые ситуации</a>
                 <a href="contacts.html" class="current">📧 Контакты</a>
+                <button id="save-game-btn" class="nav-button">💾 Сохранить игру</button>
             </div>
         </nav>
 
