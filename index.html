@@ -493,29 +493,58 @@
             color: #4a5568;
         }
 
-        .order-results {
+        .dice-log {
             margin: 15px 0;
-            padding: 10px;
+            padding: 15px;
             background: rgba(102, 126, 234, 0.1);
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 14px;
             color: #4a5568;
         }
+        
+        .dice-log-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d3748;
+            font-size: 15px;
+        }
+        
+        .dice-log-entries {
+            max-height: 200px;
+            overflow-y: auto;
+        }
 
-        .player-result {
+        .dice-log-entry {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 5px 0;
-            padding: 5px;
+            margin: 3px 0;
+            padding: 8px 10px;
             background: white;
-            border-radius: 5px;
-            font-weight: 600;
+            border-radius: 8px;
+            font-weight: 500;
+            border-left: 4px solid transparent;
+            font-size: 13px;
         }
 
-        .player-result.winner {
+        .dice-log-entry.first-move {
             background: #e6fffa;
-            border: 2px solid #38a169;
+            border-left-color: #38a169;
+            font-weight: 600;
+        }
+        
+        .dice-log-entry .player-name {
+            font-weight: 600;
+        }
+        
+        .dice-log-entry .dice-values {
+            color: #666;
+        }
+        
+        .dice-log-entry .first-indicator {
+            color: #38a169;
+            font-size: 11px;
+            font-weight: bold;
         }
 
         .game-message {
@@ -617,10 +646,15 @@
                 font-size: 18px;
             }
 
-            .order-results {
+            .dice-log {
                 font-size: 12px;
-                padding: 8px;
+                padding: 10px;
                 margin: 10px 0;
+            }
+            
+            .dice-log-entry {
+                font-size: 11px;
+                padding: 6px 8px;
             }
 
             .player-result {
@@ -692,7 +726,10 @@
                 <button id="next-player-btn" onclick="nextPlayer()" style="display: none;">Следующий игрок</button>
                 
                 <div id="dice-result" class="dice-result"></div>
-                <div id="order-results" class="order-results" style="display: none;"></div>
+                <div id="dice-log" class="dice-log">
+                    <div class="dice-log-title">Запись бросков:</div>
+                    <div id="dice-log-entries" class="dice-log-entries"></div>
+                </div>
                 <div id="game-message" class="game-message"></div>
             </div>
         </div>
@@ -748,8 +785,10 @@
         let lastDiceRoll = [0, 0];
         let playersOrder = [];
         let playerColors = ['Красный', 'Желтый', 'Зеленый', 'Фиолетовый'];
+        let diceLog = []; // Журнал всех бросков (максимум 10)
         let orderResults = []; // Результаты определения очередности
         let playersToRoll = []; // Игроки, которые должны бросать кубики
+        let firstMoveWinner = null; // Игрок, который ходит первым
         
         // Переменные для масштабирования и выбора фишек
         let boardScale = 1;
@@ -1316,8 +1355,10 @@
             
             // Начинаем с определения очередности
             gamePhase = 'determining-order';
+            diceLog = [];
             orderResults = [];
             playersToRoll = [];
+            firstMoveWinner = null;
             for (let i = 1; i <= playerCount; i++) {
                 playersToRoll.push(i);
             }
@@ -1325,7 +1366,6 @@
             rollCount = 0;
             updatePlayerDisplay();
             updateGameMessage('Определение очередности хода. Бросайте кубики!');
-            updateOrderDisplay();
             
             // Отключить перемещение фишек до окончания определения очередности
             enablePieceMovement(false);
@@ -1402,9 +1442,57 @@
             }, animationDuration);
         }
 
+        function addDiceLogEntry(dice1, dice2, playerIndex) {
+            const sum = dice1 + dice2;
+            const entry = {
+                player: playerIndex,
+                color: playerColors[playerIndex - 1],
+                dice1: dice1,
+                dice2: dice2,
+                sum: sum,
+                isFirstMoveWinner: false
+            };
+            
+            // Добавляем в начало массива (новые записи сверху)
+            diceLog.unshift(entry);
+            
+            // Ограничиваем до 10 записей
+            if (diceLog.length > 10) {
+                diceLog.pop();
+            }
+            
+            updateDiceLogDisplay();
+        }
+
+        function updateDiceLogDisplay() {
+            const entriesDiv = document.getElementById('dice-log-entries');
+            if (!entriesDiv) return;
+            
+            entriesDiv.innerHTML = '';
+            
+            diceLog.forEach(entry => {
+                const entryDiv = document.createElement('div');
+                entryDiv.className = 'dice-log-entry';
+                if (entry.isFirstMoveWinner) {
+                    entryDiv.classList.add('first-move');
+                }
+                
+                entryDiv.innerHTML = `
+                    <span class="player-name">${entry.color}:</span>
+                    <span class="dice-values">${entry.dice1} + ${entry.dice2} = ${entry.sum}</span>
+                    ${entry.isFirstMoveWinner ? '<span class="first-indicator">Ходит первым</span>' : ''}
+                `;
+                
+                entriesDiv.appendChild(entryDiv);
+            });
+        }
+
         function handleDiceResult(dice1, dice2) {
             const sum = dice1 + dice2;
             document.getElementById('dice-result').textContent = `Результат: ${dice1} + ${dice2} = ${sum}`;
+            
+            // Добавляем запись в журнал
+            addDiceLogEntry(dice1, dice2, currentPlayer);
             
             if (gamePhase === 'determining-order') {
                 handleOrderDetermination(sum);
@@ -1423,8 +1511,6 @@
                 playersToRoll.splice(currentIndex, 1);
             }
             
-            // Обновляем отображение результатов
-            updateOrderDisplay();
             
             if (playersToRoll.length > 0) {
                 // Есть еще игроки, которые должны бросить
@@ -1453,17 +1539,52 @@
                 currentPlayer = playersToRoll[0];
                 
                 updatePlayerDisplay();
-                updateOrderDisplay();
                 updateGameMessage(`Переброс! Одинаковые результаты у: ${winners.map(w => w.color).join(', ')}`);
                 document.getElementById('roll-dice-btn').disabled = false;
             } else {
                 // Порядок определен!
-                playersOrder = [...orderResults]; // Копируем отсортированные результаты
+                firstMoveWinner = winners[0].player;
+                
+                // Помечаем победителя в журнале бросков
+                diceLog.forEach(entry => {
+                    if (entry.player === firstMoveWinner) {
+                        entry.isFirstMoveWinner = true;
+                    }
+                });
+                updateDiceLogDisplay();
+                
+                // Устанавливаем порядок ходов по часовой стрелке от победителя
+                // Порядок по часовой стрелке: Красный(1) → Зеленый(3) → Желтый(2) → Фиолетовый(4)
+                const clockwiseOrder = [1, 3, 2, 4]; // Красный, Зеленый, Желтый, Фиолетовый
+                
+                playersOrder = [];
+                
+                // Создаем список активных игроков в правильном порядке
+                const activePlayers = [];
+                for (let i = 1; i <= playerCount; i++) {
+                    activePlayers.push(i);
+                }
+                
+                // Сортируем активных игроков по часовой стрелке
+                activePlayers.sort((a, b) => {
+                    const indexA = clockwiseOrder.indexOf(a);
+                    const indexB = clockwiseOrder.indexOf(b);
+                    return indexA - indexB;
+                });
+                
+                // Находим позицию победителя в отсортированном списке
+                const winnerIndex = activePlayers.indexOf(firstMoveWinner);
+                
+                // Создаем порядок ходов, начиная с победителя
+                for (let i = 0; i < activePlayers.length; i++) {
+                    const playerIndex = activePlayers[(winnerIndex + i) % activePlayers.length];
+                    playersOrder.push({player: playerIndex, color: playerColors[playerIndex - 1]});
+                }
+                
                 currentPlayer = playersOrder[0].player;
                 gamePhase = 'playing';
                 
                 updatePlayerDisplay();
-                updateOrderDisplay();
                 updateGameMessage(`Очередность определена! Первым ходит: ${playerColors[currentPlayer-1]}`);
                 
                 // Разрешить перемещение всех фишек и показать кнопку смены игрока
@@ -1514,7 +1635,6 @@
                 currentPlayer = playersOrder[nextIndex].player;
                 
                 updatePlayerDisplay();
-                updateOrderDisplay();
                 updateGameMessage('');
                 document.getElementById('roll-dice-btn').disabled = false;
             }
@@ -1535,56 +1655,6 @@
             document.getElementById('game-message').textContent = message;
         }
 
-        function updateOrderDisplay() {
-            const orderDiv = document.getElementById('order-results');
-            
-            if (gamePhase === 'determining-order') {
-                orderDiv.style.display = 'block';
-                
-                let html = '<div style="font-weight: bold; margin-bottom: 10px;">Результаты определения очередности:</div>';
-                
-                // Показываем результаты уже бросивших
-                if (orderResults.length > 0) {
-                    const sortedResults = [...orderResults].sort((a, b) => b.sum - a.sum);
-                    const maxSum = sortedResults[0]?.sum;
-                    
-                    sortedResults.forEach(result => {
-                        const isWinner = result.sum === maxSum && gamePhase === 'playing';
-                        html += `<div class="player-result ${isWinner ? 'winner' : ''}">
-                            <span style="color: ${getPlayerColor(result.player)}">${result.color}</span>
-                            <span>${result.sum}</span>
-                        </div>`;
-                    });
-                }
-                
-                // Показываем игроков, которые еще не бросали
-                playersToRoll.forEach(playerNum => {
-                    const color = playerColors[playerNum - 1];
-                    const isCurrentPlayer = playerNum === currentPlayer;
-                    html += `<div class="player-result" style="${isCurrentPlayer ? 'border: 2px solid #667eea;' : ''}">
-                        <span style="color: ${getPlayerColor(playerNum)}">${color}</span>
-                        <span>${isCurrentPlayer ? '← сейчас бросает' : 'ожидает'}</span>
-                    </div>`;
-                });
-                
-                orderDiv.innerHTML = html;
-            } else if (gamePhase === 'playing') {
-                // В режиме игры показываем финальный порядок
-                if (playersOrder.length > 0) {
-                    let html = '<div style="font-weight: bold; margin-bottom: 10px;">Порядок ходов:</div>';
-                    playersOrder.forEach((result, index) => {
-                        const isCurrentPlayer = result.player === currentPlayer;
-                        html += `<div class="player-result ${isCurrentPlayer ? 'winner' : ''}">
-                            <span style="color: ${getPlayerColor(result.player)}">${index + 1}. ${result.color}</span>
-                            <span>${result.sum}${isCurrentPlayer ? ' ← ходит' : ''}</span>
-                        </div>`;
-                    });
-                    orderDiv.innerHTML = html;
-                }
-            } else {
-                orderDiv.style.display = 'none';
-            }
-        }
 
         function enablePieceMovement(enable) {
             const allPieces = document.querySelectorAll('.piece');

@@ -4,9 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a single-page web application implementing Chaupar, a traditional Indian board game. The entire game is contained within a single `index.html` file with embedded CSS and JavaScript.
+This is a web application implementing Chaupar, a traditional Indian board game. The game logic is contained within `index.html` with embedded CSS and JavaScript, supported by additional informational pages.
 
 **Live site:** https://chaupar.ru (configured via `CNAME` file)
+
+**Site Structure:**
+- `index.html`: Main game interface with full game logic
+- `rules.html`: Game rules and instructions
+- `situations.html`: Common game scenarios and explanations  
+- `contacts.html`: Contact information and support
 
 ## Architecture
 
@@ -21,8 +27,9 @@ The application is built as a vanilla HTML/CSS/JavaScript single-file game with 
 - `players`: Array storing game participants
 
 **Board System:**
-- `BOARD_CELLS`: Array of 60+ coordinate strings (A1-O15 grid system)
-- `START_ZONES`: Object mapping player colors to starting positions
+- `BOARD_CELLS`: Array of 70+ coordinate strings (A1-O15 grid system) including waiting zones
+- `START_ZONES`: Player starting positions (6 pieces each): Red: M1:O2, Yellow: A14:C15, Green: N13:O15, Purple: A1:B3
+- `WAITING_ZONES`: Pre-game holding areas (up to 6 pieces distributed): Red: K1:K4, Yellow: E12:E15, Green: L11:O11, Purple: A5:D5
 - `PLAYER_PATHS`: Clockwise movement paths for each player (1-4) with ~60 cells each
 - `SPECIAL_MOVES`: Auto-movement fields (K7→K6, N7→N6, etc.)
 - `ENTRY_CELLS`: Starting positions for each player on the main board
@@ -47,9 +54,10 @@ The application is built as a vanilla HTML/CSS/JavaScript single-file game with 
 - `performMove()`: Executes piece movements with validation and special field handling
 
 **Move Calculation System:**
-- `calculatePossibleMoves()`: Computes valid moves along player path (up to 12 steps)
-- `showMoveHints()` / `clearMoveHints()`: Display/hide numbered move indicators
-- `getPiecePosition()`: Determines if piece is in start zone or on board
+- `calculatePossibleMoves()`: Computes valid moves based on piece location (start→waiting→board→finish)
+- `getPiecePosition()`: Returns piece location type ('start', 'waiting', 'board') and coordinates
+- `showMoveHints()` / `clearMoveHints()`: Display/hide numbered move indicators (1-12 steps)
+- Multi-piece cell support: Arrays for start/waiting zones, single pieces on main board
 
 **Input Handling:**
 - `handleDragStart/End()`: Desktop drag-and-drop system
@@ -65,8 +73,10 @@ The application is built as a vanilla HTML/CSS/JavaScript single-file game with 
 **No Build Process:** This is a static site - edit `index.html` directly and deploy.
 
 **Game Logic Implementation:**
+- Three-phase piece movement: Start Zones → Waiting Zones → Game Board → Finish
 - Each player follows a unique clockwise path around the board perimeter
 - Player paths are stored as arrays in `PLAYER_PATHS` (Red: I1→I7→O7→..., Yellow: G15→G9→..., etc.)
+- Waiting zones support up to 6 pieces distributed across 4 cells with visual offsets
 - Special fields automatically move pieces to adjacent cells but count as normal moves
 - Move hints calculate up to 12 steps along the player's designated path
 
@@ -81,8 +91,16 @@ The application is built as a vanilla HTML/CSS/JavaScript single-file game with 
 ## Git Workflow
 
 Since this is a GitHub Pages deployment:
-1. Edit `index.html` for any changes
-2. Commit and push to `main` branch
+1. Edit files directly (`index.html` for game logic, other `.html` for content)
+2. Commit and push to `main` branch  
 3. Changes automatically deploy to https://chaupar.ru
 
 The repository uses standard Git operations - no special build or deployment scripts required.
+
+## Navigation Architecture
+
+Shared navigation component across all pages (`<nav class="navigation">`) with consistent styling:
+- Glassmorphism design with backdrop blur
+- Responsive mobile-first layout
+- Current page highlighting with `.current` class
+- All pages share the same base CSS structure and color scheme
