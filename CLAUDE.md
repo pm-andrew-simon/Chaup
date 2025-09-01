@@ -88,6 +88,11 @@ The application is built as a vanilla HTML/CSS/JavaScript single-file game with 
 
 **Analytics:** Yandex.Metrika integrated with ID `103866554` for the chaupar.ru domain.
 
+**Game Persistence:** Supabase integration for save/load functionality:
+- Client initialized via CDN: `@supabase/supabase-js@2`
+- Game state serialization/deserialization with `serializeGameState()` and `deserializeGameState()`
+- Unique game ID generation with format `CHPR-XXXXXXXX`
+
 ## Git Workflow
 
 Since this is a GitHub Pages deployment:

@@ -147,16 +147,89 @@
             }
         }
 
-        /* Скрытие кнопки сохранения в зависимости от фазы игры */
-        #save-game-btn {
+        /* Контейнер для ID игры */
+        .game-id-container {
             display: none;
             opacity: 0;
             transition: opacity 0.3s ease;
+            position: relative;
+            flex-direction: column;
+            align-items: center;
         }
 
-        #save-game-btn.visible {
-            display: inline-block;
+        .game-id-container.visible {
+            display: flex;
             opacity: 1;
+        }
+
+        .game-id-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.4;
+            white-space: normal;
+            z-index: 2000;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateX(-50%) translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            max-width: 250px;
+            top: 100%;
+            left: 50%;
+            margin-top: 5px;
+        }
+
+        .game-id-field:hover .game-id-tooltip,
+        .game-id-field.touch-active .game-id-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(5px);
+        }
+
+        .game-id-field {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            position: relative;
+        }
+
+        #game-id-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            color: #4a5568;
+            width: 140px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #game-id-input:hover {
+            border-color: rgba(102, 126, 234, 0.6);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        #copy-game-id-btn {
+            background: rgba(102, 126, 234, 0.8);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        #copy-game-id-btn:hover {
+            background: rgba(102, 126, 234, 1);
+            transform: translateY(-2px);
         }
 
         h1 {
@@ -895,7 +968,13 @@
                 <a href="rules.html">📋 Правила</a>
                 <a href="situations.html">🎯 Игровые ситуации</a>
                 <a href="contacts.html">📧 Контакты</a>
-                <button id="save-game-btn" class="nav-button">💾 Сохранить игру</button>
+                <div id="game-id-container" class="game-id-container">
+                    <div class="game-id-field">
+                        <div class="game-id-tooltip">Скопируйте ID игры и поделитесь им с друзьями или продолжить игру позже с помощью "Загрузить игру"</div>
+                        <input type="text" id="game-id-input" readonly placeholder="ID игры появится здесь" onclick="copyGameId()">
+                        <button id="copy-game-id-btn" onclick="copyGameId()">📋 Копировать</button>
+                    </div>
+                </div>
             </div>
         </nav>
 
@@ -995,6 +1074,7 @@
         const SUPABASE_URL = 'https://xegejrwsaozxymhzowac.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhlZ2VqcndzYW96eHltaHpvd2FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzNzk4NDksImV4cCI6MjA3MTk1NTg0OX0.sT4t4wih618BFCjttDnmAqjZK4G3wQc7vCJ7op1xybQ';
         let supabaseClient = null;
+        let currentGameId = null; // ID текущей игры для автосохранения
         
         // Игровая логика
         let currentPlayer = 1;
@@ -1708,6 +1788,8 @@
                 setTimeout(() => {
                     movePiece(piece, finalCoord);
                     updateGameMessage(`Фишка автоматически перемещена с ${targetCoord} на ${finalCoord}!`);
+                    // Автосохранение после автоматического перемещения
+                    autoSaveGame();
                 }, 800);
             } else {
                 // После успешного хода
@@ -1715,6 +1797,10 @@
                     updateGameMessage('Ход выполнен!');
                 }, 500);
             }
+            
+            // Автосохранение после выполнения хода
+            console.log('Вызов autoSaveGame после выполнения хода');
+            autoSaveGame();
         }
 
         function getPlayerForWaitingZone(coord) {
@@ -1824,6 +1910,7 @@
         }
 
         function startGame() {
+            console.log('Начало игры');
             playerCount = parseInt(document.getElementById('players').value);
             document.getElementById('setup-panel').style.display = 'none';
             document.getElementById('game-layout').style.display = 'flex';
@@ -1857,6 +1944,12 @@
             
             // Обработчик изменения размера экрана
             window.addEventListener('resize', handleResize);
+            
+            // Создание и сохранение начального состояния игры
+            console.log('Вызов initializeAutoSave из startGame');
+            setTimeout(() => {
+                initializeAutoSave();
+            }, 100); // Небольшая задержка для инициализации Supabase
         }
 
         function createDiceFace(value) {
@@ -1981,6 +2074,10 @@
             } else if (gamePhase === 'playing') {
                 handleGamePlay(dice1, dice2);
             }
+            
+            // Автосохранение после броска кубиков
+            console.log('Вызов autoSaveGame после броска кубиков');
+            autoSaveGame();
         }
 
         function handleOrderDetermination(sum) {
@@ -2069,13 +2166,17 @@
                 updatePlayerDisplay();
                 updateGameMessage(`Очередность определена! Первым ходит: ${playerColors[currentPlayer-1]}`);
                 
-                // Показать кнопку сохранения игры
-                showSaveButton();
+                // Показать ID игры
+                showGameId();
                 
                 // Разрешить перемещение всех фишек и активировать кнопку смены игрока
                 enablePieceMovement(true);
                 document.getElementById('roll-dice-btn').disabled = false;
                 document.getElementById('next-player-btn').disabled = false;
+                
+                // Автосохранение после определения очередности
+                console.log('Вызов autoSaveGame после определения очередности');
+                autoSaveGame();
             }
         }
 
@@ -2131,6 +2232,9 @@
                 
                 // Сброс счетчика бросков для нового игрока
                 rollCount = 0;
+                
+                // Автосохранение после смены игрока
+                autoSaveGame();
             }
         }
 
@@ -2424,6 +2528,9 @@
         function initSupabase() {
             if (typeof supabase !== 'undefined') {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('Supabase клиент инициализирован');
+            } else {
+                console.error('Supabase библиотека не загружена');
             }
         }
 
@@ -2435,6 +2542,94 @@
                 result += characters.charAt(Math.floor(Math.random() * characters.length));
             }
             return result;
+        }
+
+        // Обновление состояния игры в Supabase
+        async function updateGameState(gameId, gameState, updatedAt) {
+            if (!supabaseClient || !gameId) {
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('saved_games')
+                    .update({
+                        game_state: gameState,
+                        updated_at: updatedAt
+                    })
+                    .eq('CHPR_id', gameId);
+
+                if (error) {
+                    console.error('Ошибка обновления состояния игры:', error);
+                } else {
+                    console.log('Состояние игры успешно обновлено');
+                }
+            } catch (error) {
+                console.error('Ошибка обновления состояния игры:', error);
+            }
+        }
+
+        // Автоматическое сохранение состояния игры
+        async function autoSaveGame() {
+            if (!currentGameId) {
+                console.log('Автосохранение пропущено: нет currentGameId');
+                return;
+            }
+            
+            console.log('Выполняется автосохранение для игры:', currentGameId);
+            const gameState = serializeGameState();
+            const updatedAt = new Date().toISOString();
+            await updateGameState(currentGameId, gameState, updatedAt);
+        }
+
+        // Инициализация автосохранения при старте игры
+        async function initializeAutoSave() {
+            console.log('Инициализация автосохранения...');
+            
+            // Ждем инициализации Supabase клиента
+            if (!supabaseClient) {
+                console.log('Ожидание инициализации Supabase клиента...');
+                await new Promise(resolve => {
+                    const checkClient = () => {
+                        if (supabaseClient) {
+                            resolve();
+                        } else {
+                            setTimeout(checkClient, 100);
+                        }
+                    };
+                    checkClient();
+                });
+            }
+
+            try {
+                currentGameId = generateGameId();
+                console.log('Создан ID игры:', currentGameId);
+                const gameState = serializeGameState();
+                const now = new Date().toISOString();
+
+                const { data, error } = await supabaseClient
+                    .from('saved_games')
+                    .insert([
+                        {
+                            CHPR_id: currentGameId,
+                            game_state: gameState,
+                            created_at: now,
+                            updated_at: now
+                        }
+                    ]);
+
+                if (error) {
+                    console.error('Ошибка создания начального сохранения:', error);
+                    currentGameId = null;
+                } else {
+                    console.log('Игра успешно сохранена с ID:', currentGameId);
+                    // Показать ID игры сразу после создания
+                    showGameId();
+                }
+            } catch (error) {
+                console.error('Ошибка инициализации автосохранения:', error);
+                currentGameId = null;
+            }
         }
 
         // Сериализация состояния игры
@@ -2574,7 +2769,8 @@
                         {
                             CHPR_id: gameId,
                             game_state: gameState,
-                            created_at: new Date().toISOString()
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
                         }
                     ]);
 
@@ -2650,6 +2846,7 @@
 
                 // Заменяем состояние игры на сохраненное
                 try {
+                    currentGameId = gameId.trim(); // Устанавливаем ID для автосохранения
                     deserializeGameState(data.game_state);
                     
                     // Обновляем интерфейс после загрузки
@@ -2659,7 +2856,7 @@
                     // Обновляем сообщение игрока
                     if (gamePhase === 'playing') {
                         updateGameMessage(`Очередь игрока: ${playerColors[currentPlayer-1]}`);
-                        showSaveButton();
+                        showGameId();
                     } else if (gamePhase === 'determining-order') {
                         updateGameMessage('Определение очередности хода. Бросайте кубики!');
                     }
@@ -2748,17 +2945,75 @@
 
 
         // Управление видимостью кнопки сохранения
-        function showSaveButton() {
-            const saveBtn = document.getElementById('save-game-btn');
-            if (saveBtn) {
-                saveBtn.classList.add('visible');
+        function showGameId() {
+            const container = document.getElementById('game-id-container');
+            const input = document.getElementById('game-id-input');
+            if (container && currentGameId) {
+                container.classList.add('visible');
+                input.value = currentGameId;
             }
         }
 
-        function hideSaveButton() {
-            const saveBtn = document.getElementById('save-game-btn');
-            if (saveBtn) {
-                saveBtn.classList.remove('visible');
+        function hideGameId() {
+            const container = document.getElementById('game-id-container');
+            if (container) {
+                container.classList.remove('visible');
+            }
+        }
+
+        function copyGameId() {
+            const input = document.getElementById('game-id-input');
+            if (input && input.value) {
+                copyToClipboard(input.value);
+                
+                // Показать уведомление о копировании
+                const btn = document.getElementById('copy-game-id-btn');
+                const originalText = btn.textContent;
+                btn.textContent = '✓';
+                btn.style.background = '#4CAF50';
+                
+                // Показать уведомление в самом поле
+                const originalPlaceholder = input.placeholder;
+                input.placeholder = 'ID скопирован!';
+                input.style.background = 'rgba(76, 175, 80, 0.1)';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = 'rgba(102, 126, 234, 0.8)';
+                    input.placeholder = originalPlaceholder;
+                    input.style.background = 'rgba(255, 255, 255, 0.9)';
+                }, 1500);
+            }
+        }
+
+        // Функция для обработки тач-событий на мобильных устройствах
+        function setupGameIdTouchEvents() {
+            const gameIdField = document.querySelector('.game-id-field');
+            const input = document.getElementById('game-id-input');
+            
+            if (gameIdField && input) {
+                // Обработка длинного нажатия для показа тултипа на мобильных
+                let touchTimeout;
+                
+                gameIdField.addEventListener('touchstart', function(e) {
+                    // Показать тултип при долгом нажатии
+                    touchTimeout = setTimeout(() => {
+                        gameIdField.classList.add('touch-active');
+                    }, 500);
+                });
+                
+                gameIdField.addEventListener('touchend', function(e) {
+                    clearTimeout(touchTimeout);
+                    
+                    // Скрыть тултип через некоторое время
+                    setTimeout(() => {
+                        gameIdField.classList.remove('touch-active');
+                    }, 2000);
+                });
+                
+                gameIdField.addEventListener('touchmove', function(e) {
+                    clearTimeout(touchTimeout);
+                });
             }
         }
 
@@ -2767,11 +3022,11 @@
         window.addEventListener('load', function() {
             initSupabase();
             
-            // Добавить обработчики событий для кнопок
-            document.getElementById('save-game-btn').addEventListener('click', saveGame);
+            // Изначально скрыть контейнер с ID игры
+            hideGameId();
             
-            // Изначально скрыть кнопку сохранения
-            hideSaveButton();
+            // Настроить тач-события для ID игры
+            setupGameIdTouchEvents();
             
         });
 
