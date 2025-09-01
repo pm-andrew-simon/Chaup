@@ -1801,7 +1801,9 @@
             }
             
             // Автосохранение после выполнения хода
-            console.log('Вызов autoSaveGame после выполнения хода');
+            console.log('🔴 MOVE: Вызов autoSaveGame после выполнения хода');
+            console.log('🔴 MOVE: currentGameId:', currentGameId);
+            console.log('🔴 MOVE: isRestoringState:', isRestoringState);
             autoSaveGame();
         }
 
@@ -2086,7 +2088,9 @@
             }
             
             // Автосохранение после броска кубиков
-            console.log('Вызов autoSaveGame после броска кубиков');
+            console.log('🎲 DICE: Вызов autoSaveGame после броска кубиков');
+            console.log('🎲 DICE: currentGameId:', currentGameId);
+            console.log('🎲 DICE: isRestoringState:', isRestoringState);
             autoSaveGame();
         }
 
@@ -2847,6 +2851,9 @@
 
         // Десериализация состояния игры
         function deserializeGameState(gameState) {
+            console.log('🔄 DESERIALIZE: Начинаем десериализацию состояния');
+            console.log('🔄 DESERIALIZE: Входящее состояние:', gameState);
+            
             currentPlayer = gameState.currentPlayer;
             gamePhase = gameState.gamePhase;
             rollCount = gameState.rollCount || 0;
@@ -2919,6 +2926,11 @@
                     }
                 }
             }
+            
+            console.log('🔄 DESERIALIZE: Десериализация завершена');
+            console.log('🔄 DESERIALIZE: currentGameId после десериализации:', currentGameId);
+            console.log('🔄 DESERIALIZE: Текущий игрок:', currentPlayer);
+            console.log('🔄 DESERIALIZE: Фаза игры:', gamePhase);
         }
 
 
@@ -3019,6 +3031,9 @@
                 // Заменяем состояние игры на сохраненное
                 try {
                     currentGameId = gameId.trim(); // Устанавливаем ID для автосохранения
+                    console.log('🔵 LOAD: Установлен currentGameId:', currentGameId);
+                    
+                    // При загрузке игры не нужно использовать флаг восстановления
                     deserializeGameState(data.game_state);
                     
                     // Обновляем интерфейс после загрузки
@@ -3035,6 +3050,17 @@
                     
                     // Подписаться на изменения загруженной игры
                     subscribeToGameChanges(currentGameId);
+                    console.log('🔵 LOAD: Подписка настроена для загруженной игры:', currentGameId);
+                    
+                    // Добавляем тестовую функцию для проверки автосохранения после загрузки
+                    window.testAutoSaveAfterLoad = () => {
+                        console.log('🧪 ТЕСТ ЗАГРУЗКИ: Проверяем автосохранение');
+                        console.log('🧪 currentGameId:', currentGameId);
+                        console.log('🧪 isRestoringState:', isRestoringState);
+                        console.log('🧪 supabaseClient:', !!supabaseClient);
+                        autoSaveGame();
+                    };
+                    console.log('🧪 LOAD: Используйте window.testAutoSaveAfterLoad() для тестирования');
                     
                     // Обновляем состояние кнопок - продолжаем игру с того же состояния
                     const rollDiceBtn = document.getElementById('roll-dice-btn');
