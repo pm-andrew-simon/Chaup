@@ -1075,6 +1075,7 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhlZ2VqcndzYW96eHltaHpvd2FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzNzk4NDksImV4cCI6MjA3MTk1NTg0OX0.sT4t4wih618BFCjttDnmAqjZK4G3wQc7vCJ7op1xybQ';
         let supabaseClient = null;
         let currentGameId = null; // ID текущей игры для автосохранения
+        let gameChannel = null; // Канал для синхронизации игры в реальном времени
         
         // Игровая логика
         let currentPlayer = 1;
@@ -1911,6 +1912,14 @@
 
         function startGame() {
             console.log('Начало игры');
+            
+            // Отписываемся от предыдущего канала при начале новой игры
+            if (gameChannel) {
+                console.log('Отписка от предыдущего канала при старте новой игры');
+                supabaseClient.removeChannel(gameChannel);
+                gameChannel = null;
+            }
+            
             playerCount = parseInt(document.getElementById('players').value);
             document.getElementById('setup-panel').style.display = 'none';
             document.getElementById('game-layout').style.display = 'flex';
@@ -2527,8 +2536,23 @@
         // Инициализация Supabase клиента
         function initSupabase() {
             if (typeof supabase !== 'undefined') {
-                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('Supabase клиент инициализирован');
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    realtime: {
+                        params: {
+                            eventsPerSecond: 10
+                        }
+                    }
+                });
+                console.log('Supabase клиент инициализирован с Realtime');
+                
+                // Проверяем доступность Realtime
+                setTimeout(() => {
+                    if (supabaseClient.realtime) {
+                        console.log('✅ Realtime доступен');
+                    } else {
+                        console.warn('⚠️ Realtime недоступен');
+                    }
+                }, 1000);
             } else {
                 console.error('Supabase библиотека не загружена');
             }
@@ -2547,8 +2571,11 @@
         // Обновление состояния игры в Supabase
         async function updateGameState(gameId, gameState, updatedAt) {
             if (!supabaseClient || !gameId) {
+                console.log('🔴 UPDATE: Пропускаем обновление - нет клиента или ID');
                 return;
             }
+
+            console.log('🔵 UPDATE: Обновляем состояние игры:', gameId);
 
             try {
                 const { data, error } = await supabaseClient
@@ -2560,12 +2587,12 @@
                     .eq('CHPR_id', gameId);
 
                 if (error) {
-                    console.error('Ошибка обновления состояния игры:', error);
+                    console.error('❌ UPDATE: Ошибка обновления состояния игры:', error);
                 } else {
-                    console.log('Состояние игры успешно обновлено');
+                    console.log('✅ UPDATE: Состояние игры успешно обновлено, data:', data);
                 }
             } catch (error) {
-                console.error('Ошибка обновления состояния игры:', error);
+                console.error('❌ UPDATE: Исключение при обновлении:', error);
             }
         }
 
@@ -2625,11 +2652,150 @@
                     console.log('Игра успешно сохранена с ID:', currentGameId);
                     // Показать ID игры сразу после создания
                     showGameId();
+                    // Подписаться на изменения игры
+                    subscribeToGameChanges(currentGameId);
                 }
             } catch (error) {
                 console.error('Ошибка инициализации автосохранения:', error);
                 currentGameId = null;
             }
+        }
+
+        // Подписка на изменения игры в реальном времени
+        function subscribeToGameChanges(gameId) {
+            if (!supabaseClient || !gameId) {
+                console.error('Невозможно подписаться: нет клиента или ID игры', { supabaseClient, gameId });
+                return;
+            }
+
+            // Отписываемся от предыдущего канала, если он существует
+            if (gameChannel) {
+                console.log('Отписка от предыдущего канала');
+                supabaseClient.removeChannel(gameChannel);
+                gameChannel = null;
+            }
+
+            console.log('🔴 ПОДПИСКА: Начинаем подписку на изменения игры:', gameId);
+            
+            // Создаем новый канал для подписки с упрощенной конфигурацией
+            gameChannel = supabaseClient.channel(`game-${gameId}`)
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'saved_games',
+                    filter: `CHPR_id=eq.${gameId}`
+                }, (payload) => {
+                    console.log('🟢 ПОЛУЧЕНО ОБНОВЛЕНИЕ:', payload);
+                    console.log('🟢 Payload new:', payload.new);
+                    console.log('🟢 Game state:', payload.new?.game_state);
+                    
+                    if (payload.new && payload.new.game_state) {
+                        restoreGameState(payload.new.game_state);
+                    } else {
+                        console.warn('Получен пустой game_state');
+                    }
+                })
+                .subscribe((status, err) => {
+                    console.log('📡 СТАТУС ПОДПИСКИ:', status, err);
+                    if (status === 'SUBSCRIBED') {
+                        console.log('✅ Успешно подписались на канал для игры:', gameId);
+                    } else if (status === 'CHANNEL_ERROR') {
+                        console.error('❌ Ошибка канала:', err);
+                    } else if (status === 'TIMED_OUT') {
+                        console.error('⏱️ Таймаут подписки');
+                    } else if (status === 'CLOSED') {
+                        console.error('❌ Канал закрыт. Возможно, Realtime не включен для таблицы saved_games');
+                    }
+                });
+                
+            console.log('📝 Создан канал:', gameChannel);
+            
+            // Тестовая проверка подписки через 3 секунды
+            setTimeout(() => {
+                console.log('🧪 ТЕСТ: Проверяем активность канала через 3 сек');
+                if (gameChannel) {
+                    console.log('🧪 ТЕСТ: Канал существует, состояние:', gameChannel.state);
+                    
+                    // Добавляем глобальную функцию для тестирования
+                    window.testRealtimeUpdate = () => {
+                        console.log('🧪 РУЧНОЙ ТЕСТ: Принудительное обновление');
+                        const testState = serializeGameState();
+                        testState.testField = Date.now(); // Добавляем уникальное поле
+                        updateGameState(gameId, testState, new Date().toISOString());
+                    };
+                    console.log('🧪 ТЕСТ: Используйте window.testRealtimeUpdate() для тестирования');
+                } else {
+                    console.log('🧪 ТЕСТ: Канал отсутствует!');
+                }
+            }, 3000);
+        }
+
+        // Восстановление состояния игры с анимацией
+        function restoreGameState(newGameState) {
+            console.log('🟡 RESTORE: Начинаем восстановление состояния игры');
+            console.log('🟡 RESTORE: Новое состояние:', newGameState);
+            
+            // Проверяем, отличается ли новое состояние от текущего
+            const currentState = serializeGameState();
+            console.log('🟡 RESTORE: Текущее состояние:', currentState);
+            
+            if (JSON.stringify(currentState) === JSON.stringify(newGameState)) {
+                console.log('🟡 RESTORE: Состояние не изменилось, пропускаем обновление');
+                return;
+            }
+            
+            console.log('🟢 RESTORE: Состояние изменилось, выполняем восстановление');
+
+            // Временно отключаем автосохранение, чтобы избежать циклических обновлений
+            const originalGameId = currentGameId;
+            currentGameId = null;
+
+            // Получаем текущие позиции всех фишек для анимации
+            const currentPieces = {};
+            document.querySelectorAll('.piece').forEach(piece => {
+                const player = piece.dataset.player;
+                const pieceIndex = piece.dataset.pieceIndex;
+                const currentPos = getCurrentPosition(piece);
+                if (!currentPieces[player]) currentPieces[player] = {};
+                currentPieces[player][pieceIndex] = {
+                    element: piece,
+                    oldPosition: currentPos
+                };
+            });
+
+            // Восстанавливаем состояние игры
+            deserializeGameState(newGameState);
+            
+            // Анимируем перемещение фишек к новым позициям
+            animatePiecesToNewPositions(currentPieces, newGameState.pieces);
+
+            // Восстанавливаем автосохранение через 1 секунду
+            setTimeout(() => {
+                currentGameId = originalGameId;
+            }, 1000);
+        }
+
+        // Анимация перемещения фишек к новым позициям
+        function animatePiecesToNewPositions(oldPieces, newPiecesData) {
+            Object.keys(newPiecesData).forEach(player => {
+                newPiecesData[player].forEach((pieceData, index) => {
+                    const piece = oldPieces[player] && oldPieces[player][index];
+                    if (piece && piece.element && piece.oldPosition !== pieceData.position) {
+                        // Анимируем перемещение фишки
+                        const element = piece.element;
+                        const newPos = coordToPosition(pieceData.position);
+                        
+                        element.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                        element.style.left = newPos.x + 'px';
+                        element.style.top = newPos.y + 'px';
+                        
+                        // Убираем transition после завершения анимации
+                        setTimeout(() => {
+                            element.style.transition = '';
+                        }, 800);
+                    }
+                });
+            });
         }
 
         // Сериализация состояния игры
@@ -2861,6 +3027,9 @@
                         updateGameMessage('Определение очередности хода. Бросайте кубики!');
                     }
                     
+                    // Подписаться на изменения загруженной игры
+                    subscribeToGameChanges(currentGameId);
+                    
                     // Обновляем состояние кнопок - продолжаем игру с того же состояния
                     const rollDiceBtn = document.getElementById('roll-dice-btn');
                     const nextPlayerBtn = document.getElementById('next-player-btn');
@@ -3028,6 +3197,13 @@
             // Настроить тач-события для ID игры
             setupGameIdTouchEvents();
             
+        });
+
+        // Очистка при закрытии страницы
+        window.addEventListener('beforeunload', function() {
+            if (gameChannel) {
+                supabaseClient.removeChannel(gameChannel);
+            }
         });
 
         // Функции для всплывающих подсказок
