@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Запрет на индексацию динамических сессий/комнат (если появятся)
+Disallow: /game
+Disallow: /room
+
+Sitemap: https://chaupar.ru/sitemap.xml
