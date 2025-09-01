@@ -2776,7 +2776,9 @@
             deserializeGameState(newGameState);
             
             // Анимируем перемещение фишек к новым позициям
-            animatePiecesToNewPositions(currentPieces, newGameState.pieces);
+            if (newGameState.piecesData) {
+                animatePiecesToNewPositions(currentPieces, newGameState.piecesData);
+            }
 
             // Снимаем флаг восстановления через 1 секунду
             setTimeout(() => {
@@ -2787,6 +2789,12 @@
 
         // Анимация перемещения фишек к новым позициям
         function animatePiecesToNewPositions(oldPieces, newPiecesData) {
+            if (!newPiecesData || typeof newPiecesData !== 'object') {
+                console.log('🟡 ANIMATE: Нет данных о фишках для анимации');
+                return;
+            }
+            
+            console.log('🟡 ANIMATE: Начинаем анимацию фишек');
             Object.keys(newPiecesData).forEach(player => {
                 newPiecesData[player].forEach((pieceData, index) => {
                     const piece = oldPieces[player] && oldPieces[player][index];
