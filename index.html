@@ -1330,6 +1330,9 @@
             // Создать храмы и тюрьмы
             createTemplesAndJails();
             
+            // Создать иконки телепортов
+            createTeleportIcons();
+            
             console.log('createBoard() завершена. Всего элементов на доске:', board.children.length);
             console.log('Стили доски после создания:', {
                 display: window.getComputedStyle(board).display,
@@ -1540,6 +1543,78 @@
                     cell.appendChild(jailElement);
                     console.log(`Тюрьма создана для ${coord}`);
                 }
+            });
+        }
+
+        function createTeleportIcons() {
+            const board = document.getElementById('game-board');
+            if (!board) return;
+            
+            const teleportSVG = `<svg id="_Слой_2" data-name="Слой 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+                <path class="teleport-path" d="M866.57,852.97c-244.78,120.03-517.09,49.7-623.37-119.8-70.66-112.68-71.2-274.38,16.19-398.05,80.05-113.28,230.86-190.36,380.5-162.31,24.28,4.55,195.35,36.62,238.83,181.63,30.83,102.84-16.59,215.55-105.25,274.38-103.07,68.4-267.23,67.53-340.02-27.05-53.8-69.91-58.76-192.41,16.19-251.19,61.05-47.88,177.25-55.16,214.54,3.86,25.09,39.72,10.64,103.46-36.43,154.58"/>
+            </svg>`;
+
+            const teleportConfig = [
+                { coord: 'I7', color: '#ff4444' }, // Красный
+                { coord: 'I9', color: '#228B22' }, // Темно-зеленый  
+                { coord: 'G9', color: '#FFD700' }, // Ярко-желтый
+                { coord: 'G7', color: '#8A2BE2' }  // Ярко-фиолетовый
+            ];
+
+            teleportConfig.forEach(config => {
+                let cell = board.querySelector(`[data-coord="${config.coord}"]`);
+                if (!cell) {
+                    cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.coord = config.coord;
+                    
+                    const pos = coordToPosition(config.coord);
+                    cell.style.position = 'absolute';
+                    cell.style.left = pos.x + 'px';
+                    cell.style.top = pos.y + 'px';
+                    cell.style.width = '35px';
+                    cell.style.height = '35px';
+                    
+                    board.appendChild(cell);
+                }
+
+                const teleportElement = document.createElement('div');
+                teleportElement.innerHTML = teleportSVG;
+                teleportElement.style.cssText = `
+                    position: absolute;
+                    width: 28px;
+                    height: 28px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    pointer-events: none;
+                    z-index: 5;
+                `;
+                
+                // Применяем цвет к SVG
+                const pathElement = teleportElement.querySelector('.teleport-path');
+                if (pathElement) {
+                    pathElement.style.fill = 'none';
+                    pathElement.style.stroke = config.color;
+                    pathElement.style.strokeWidth = '50px';
+                    pathElement.style.strokeLinecap = 'round';
+                    pathElement.style.strokeLinejoin = 'round';
+                }
+
+                // Добавляем всплывающую подсказку
+                const tooltipText = 'Телепорт: Позволяет на следующем ходу переместиться в телепорт другого игрока: на 1 на кубике – следующий по часовой стрелке, на 3 - напротив, на 6 - следующий против часовой стрелки (ближний к дому). Доступно только из телепорта своего цвета.';
+                teleportElement.title = tooltipText;
+                
+                // Добавляем обработчики для всплывающих подсказок
+                teleportElement.addEventListener('mouseover', function(e) {
+                    showTooltip(e, tooltipText);
+                });
+                teleportElement.addEventListener('mouseout', function() {
+                    hideTooltip();
+                });
+
+                cell.appendChild(teleportElement);
+                console.log(`Телепорт создан для ${config.coord} цветом ${config.color}`);
             });
         }
 
