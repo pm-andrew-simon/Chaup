@@ -93,6 +93,16 @@ The application is built as a vanilla HTML/CSS/JavaScript single-file game with 
 - Game state serialization/deserialization with `serializeGameState()` and `deserializeGameState()`
 - Unique game ID generation with format `CHPR-XXXXXXXX`
 
+## Common Development Commands
+
+**Testing the application locally:**
+```bash
+# Open in browser - the game runs entirely client-side
+start index.html
+```
+
+**No build process required** - this is a static site that runs entirely in the browser.
+
 ## Git Workflow
 
 Since this is a GitHub Pages deployment:
@@ -109,3 +119,28 @@ Shared navigation component across all pages (`<nav class="navigation">`) with c
 - Responsive mobile-first layout
 - Current page highlighting with `.current` class
 - All pages share the same base CSS structure and color scheme
+
+## Important Implementation Details
+
+**Coordinate System:**
+- 15x15 grid using A1-O15 coordinate notation (A-O columns, 1-15 rows)
+- `coordToPosition()` converts coordinates to pixel positions
+- `positionToCoord()` converts pixel positions back to coordinates
+
+**Game State Variables (Global):**
+- `gamePhase`: 'setup' | 'order-determination' | 'playing'
+- `currentPlayer`: 1-4 (active player index)
+- `gameBoard`: Object mapping coordinates to piece arrays
+- `pieces`: Object storing piece elements by player
+- `selectedPiece`: Currently selected piece for click-to-move
+- `currentGameId`: Auto-generated game session ID for Supabase sync
+
+**File Organization:**
+- All game logic, CSS, and HTML in single `index.html` file (~3400 lines)
+- Additional pages are standalone HTML files sharing navigation CSS
+- No external JavaScript files or dependencies except Supabase CDN
+
+**SEO Configuration:**
+- `CNAME`: Points to chaupar.ru domain
+- `sitemap.xml`: Structured site map for search engines
+- `robots.txt`: Allows indexing with restrictions on dynamic paths

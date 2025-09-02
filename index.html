@@ -967,10 +967,11 @@
                 <a href="index.html" class="current">🎮 Играть</a>
                 <a href="rules.html">📋 Правила</a>
                 <a href="situations.html">🎯 Игровые ситуации</a>
+                <a href="news.html">📰 Новости</a>
                 <a href="contacts.html">📧 Контакты</a>
                 <div id="game-id-container" class="game-id-container">
                     <div class="game-id-field">
-                        <div class="game-id-tooltip">Скопируйте ID игры и поделитесь им с друзьями или продолжить игру позже с помощью "Загрузить игру"</div>
+                        <div class="game-id-tooltip">Скопируйте ID игры и поделитесь им с друзьями или продолжите игру позже с помощью "Загрузить игру"</div>
                         <input type="text" id="game-id-input" readonly placeholder="ID игры появится здесь" onclick="copyGameId()">
                         <button id="copy-game-id-btn" onclick="copyGameId()">📋 Копировать</button>
                     </div>
@@ -1020,7 +1021,7 @@
                 
                 <div id="dice-result" class="dice-result"></div>
                 <div id="dice-log" class="dice-log">
-                    <div class="dice-log-title">Запись бросков:</div>
+                    <div class="dice-log-title">Журнал бросков:</div>
                     <div id="dice-log-entries" class="dice-log-entries"></div>
                 </div>
                 <div id="game-message" class="game-message"></div>
@@ -1673,9 +1674,18 @@
         let touchPiece = null;
 
         function handleTouchStart(e) {
+            const piece = e.target;
+            const piecePlayer = parseInt(piece.dataset.player);
+            
+            // Проверяем, что это фишка текущего игрока
+            if (gamePhase === 'playing' && piecePlayer !== currentPlayer) {
+                updateGameMessage(`Сейчас ход игрока: ${playerColors[currentPlayer-1]}`);
+                return;
+            }
+            
             // Проверяем длительность касания для различения tap и drag
             const startTime = Date.now();
-            touchPiece = e.target;
+            touchPiece = piece;
             
             const touch = e.touches[0];
             const rect = document.getElementById('game-board').getBoundingClientRect();
@@ -1754,7 +1764,17 @@
         }
 
         function handleDragStart(e) {
-            draggedPiece = e.target;
+            const piece = e.target;
+            const piecePlayer = parseInt(piece.dataset.player);
+            
+            // Проверяем, что это фишка текущего игрока
+            if (gamePhase === 'playing' && piecePlayer !== currentPlayer) {
+                e.preventDefault();
+                updateGameMessage(`Сейчас ход игрока: ${playerColors[currentPlayer-1]}`);
+                return;
+            }
+            
+            draggedPiece = piece;
             draggedPiece.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
         }
@@ -1809,6 +1829,12 @@
             const currentPos = getCurrentPosition(piece);
 
             if (targetCoord === currentPos) return;
+            
+            // Проверяем, что игрок может двигать только свои фишки
+            if (gamePhase === 'playing' && piecePlayer !== currentPlayer) {
+                updateGameMessage(`Сейчас ход игрока: ${playerColors[currentPlayer-1]}`);
+                return;
+            }
 
             // Проверка разрешения на перемещение в специальные зоны
             const isStartZone = Object.values(START_ZONES).flat().includes(targetCoord);
@@ -1838,20 +1864,25 @@
             // Обработка коллизий на основном поле
             if (BOARD_CELLS.includes(targetCoord)) {
                 const targetPiece = gameBoard[targetCoord];
-                if (targetPiece && !Array.isArray(targetPiece)) {
-                    const targetPlayer = parseInt(targetPiece.dataset.player);
-                    if (targetPlayer === piecePlayer) {
-                        updateGameMessage('Нельзя ставить фишку на свою фишку!');
-                        return;
-                    }
+                if (targetPiece) {
+                    // Если это массив (не должно быть на основном поле), берем первый элемент
+                    const actualPiece = Array.isArray(targetPiece) ? targetPiece[0] : targetPiece;
+                    
+                    if (actualPiece) {
+                        const targetPlayer = parseInt(actualPiece.dataset.player);
+                        if (targetPlayer === piecePlayer) {
+                            updateGameMessage('Нельзя ставить фишку на свою фишку!');
+                            return;
+                        }
 
-                    const freeStartPos = findFreeStartPosition(targetPlayer);
-                    if (freeStartPos) {
-                        movePiece(targetPiece, freeStartPos);
-                        updateGameMessage('Фишка противника отправлена на стартовую позицию!');
-                    } else {
-                        updateGameMessage('Нет свободных стартовых позиций для противника!');
-                        return;
+                        const freeStartPos = findFreeStartPosition(targetPlayer);
+                        if (freeStartPos) {
+                            movePiece(actualPiece, freeStartPos);
+                            updateGameMessage('Фишка противника отправлена на стартовую позицию!');
+                        } else {
+                            updateGameMessage('Нет свободных стартовых позиций для противника!');
+                            return;
+                        }
                     }
                 }
             }
@@ -1873,6 +1904,13 @@
                 setTimeout(() => {
                     updateGameMessage('Ход выполнен!');
                 }, 500);
+            }
+            
+            // Отключить кнопку "Следующий игрок" до завершения сохранения
+            const nextPlayerBtn = document.getElementById('next-player-btn');
+            if (nextPlayerBtn) {
+                nextPlayerBtn.disabled = true;
+                nextPlayerBtn.textContent = '⏳ Сохранение...';
             }
             
             // Автосохранение после выполнения хода
@@ -2069,8 +2107,14 @@
             const dice2 = document.getElementById('dice2');
             const rollBtn = document.getElementById('roll-dice-btn');
             
-            // Отключить кнопку во время анимации
+            // Отключить кнопки во время анимации
             rollBtn.disabled = true;
+            const nextPlayerBtn = document.getElementById('next-player-btn');
+            if (nextPlayerBtn) {
+                nextPlayerBtn.disabled = true;
+                nextPlayerBtn.textContent = '🎲 Бросок кубиков...';
+            }
+            
             dice1.classList.add('rolling');
             dice2.classList.add('rolling');
             
@@ -2294,11 +2338,14 @@
             
             updateGameMessage(message);
             
-            // Включить кнопку для следующего броска и активировать кнопку "Следующий игрок"
+            // Включить кнопку для следующего броска
             document.getElementById('roll-dice-btn').disabled = false;
+            
+            // Кнопка "Следующий игрок" будет активирована только после сохранения хода
             const nextPlayerBtn = document.getElementById('next-player-btn');
             if (nextPlayerBtn) {
-                nextPlayerBtn.disabled = false;
+                nextPlayerBtn.disabled = true;
+                nextPlayerBtn.textContent = 'Сделайте ход';
             }
         }
 
@@ -2314,6 +2361,13 @@
 
         function nextPlayer() {
             if (gamePhase === 'playing') {
+                // Отключить кнопку до завершения сохранения
+                const nextPlayerBtn = document.getElementById('next-player-btn');
+                if (nextPlayerBtn) {
+                    nextPlayerBtn.disabled = true;
+                    nextPlayerBtn.textContent = '⏳ Передача хода...';
+                }
+                
                 const playerIndex = playersOrder.findIndex(p => p.player === currentPlayer);
                 const nextIndex = (playerIndex + 1) % playersOrder.length;
                 currentPlayer = playersOrder[nextIndex].player;
@@ -2321,10 +2375,8 @@
                 updatePlayerDisplay();
                 updateGameMessage(`Очередь игрока: ${playerColors[currentPlayer-1]}`);
                 
-                // Включаем кнопку "Бросить кубики" и активируем кнопку "Следующий игрок"
+                // Включаем кнопку "Бросить кубики"
                 document.getElementById('roll-dice-btn').disabled = false;
-                const nextPlayerBtn = document.getElementById('next-player-btn');
-                if (nextPlayerBtn) nextPlayerBtn.disabled = false;
                 
                 // Сброс счетчика бросков для нового игрока
                 rollCount = 0;
@@ -2457,6 +2509,14 @@
 
         function handlePieceClick(piece) {
             console.log('Piece clicked:', piece.dataset.player); // Для отладки
+            
+            // Проверяем, что это фишка текущего игрока
+            const piecePlayer = parseInt(piece.dataset.player);
+            if (gamePhase === 'playing' && piecePlayer !== currentPlayer) {
+                updateGameMessage(`Сейчас ход игрока: ${playerColors[currentPlayer-1]}`);
+                return;
+            }
+            
             if (selectedPiece === piece) {
                 // Отменить выделение при повторном клике
                 selectPiece(null);
@@ -2698,7 +2758,28 @@
             console.log('Выполняется автосохранение для игры:', currentGameId);
             const gameState = serializeGameState();
             const updatedAt = new Date().toISOString();
-            await updateGameState(currentGameId, gameState, updatedAt);
+            
+            try {
+                await updateGameState(currentGameId, gameState, updatedAt);
+                console.log('✅ AUTOSAVE: Автосохранение завершено успешно');
+                
+                // Включить кнопку "Следующий игрок" после успешного сохранения
+                const nextPlayerBtn = document.getElementById('next-player-btn');
+                if (nextPlayerBtn && gamePhase === 'playing') {
+                    nextPlayerBtn.disabled = false;
+                    nextPlayerBtn.textContent = 'Следующий игрок';
+                }
+            } catch (error) {
+                console.error('❌ AUTOSAVE: Ошибка автосохранения:', error);
+                // В случае ошибки все равно разблокировать кнопку через 3 секунды
+                setTimeout(() => {
+                    const nextPlayerBtn = document.getElementById('next-player-btn');
+                    if (nextPlayerBtn && gamePhase === 'playing') {
+                        nextPlayerBtn.disabled = false;
+                        nextPlayerBtn.textContent = 'Следующий игрок';
+                    }
+                }, 3000);
+            }
         }
 
         // Инициализация автосохранения при старте игры
