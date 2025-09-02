@@ -2787,6 +2787,14 @@
             updatePlayerDisplay();
             updateDiceLogDisplay();
             
+            // Обновляем сообщение игрока в зависимости от фазы игры
+            if (gamePhase === 'playing') {
+                updateGameMessage(`Очередь игрока: ${playerColors[currentPlayer-1]}`);
+            } else if (gamePhase === 'determining-order') {
+                updateGameMessage('Определение очередности хода. Бросайте кубики!');
+            }
+            console.log('🟢 RESTORE: Обновлено сообщение для фазы:', gamePhase);
+            
             // Анимируем перемещение фишек к новым позициям
             if (newGameState.piecesData) {
                 animatePiecesToNewPositions(currentPieces, newGameState.piecesData);
