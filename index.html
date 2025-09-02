@@ -2052,10 +2052,17 @@
         }
 
         function updateDiceLogDisplay() {
+            console.log('📜 DICE LOG: Обновляем отображение журнала бросков');
+            console.log('📜 DICE LOG: diceLog содержит:', diceLog);
+            
             const entriesDiv = document.getElementById('dice-log-entries');
-            if (!entriesDiv) return;
+            if (!entriesDiv) {
+                console.log('📜 DICE LOG: Элемент dice-log-entries не найден');
+                return;
+            }
             
             entriesDiv.innerHTML = '';
+            console.log('📜 DICE LOG: Очистили контейнер, добавляем', diceLog.length, 'записей');
             
             diceLog.forEach(entry => {
                 const entryDiv = document.createElement('div');
@@ -2775,6 +2782,11 @@
             // Восстанавливаем состояние игры
             deserializeGameState(newGameState);
             
+            // Обновляем интерфейс после восстановления
+            console.log('🟢 RESTORE: Обновляем интерфейс, diceLog:', diceLog);
+            updatePlayerDisplay();
+            updateDiceLogDisplay();
+            
             // Анимируем перемещение фишек к новым позициям
             if (newGameState.piecesData) {
                 animatePiecesToNewPositions(currentPieces, newGameState.piecesData);
@@ -2869,6 +2881,7 @@
             lastDiceRoll = gameState.lastDiceRoll || [0, 0];
             playersOrder = gameState.playersOrder || [];
             diceLog = gameState.diceLog || [];
+            console.log('🔄 DESERIALIZE: Восстановлен diceLog:', diceLog);
             orderResults = gameState.orderResults || [];
             playersToRoll = gameState.playersToRoll || [];
             firstMoveWinner = gameState.firstMoveWinner;
