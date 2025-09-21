@@ -3184,7 +3184,12 @@
 
                         // Рассчитываем комбинированные ходы (телепорт + продолжение) только если можно попасть в телепорт
                         if (canTeleportToTarget) {
-                            const remainingDice = availableDice.filter(d => d !== usedDiceValue);
+                            // Создаем копию массива и удаляем только одно вхождение использованного значения
+                            const remainingDice = [...availableDice];
+                            const indexToRemove = remainingDice.indexOf(usedDiceValue);
+                            if (indexToRemove !== -1) {
+                                remainingDice.splice(indexToRemove, 1);
+                            }
 
                             console.log(`🚀 TELEPORT: Оставшиеся кубики для комбинированных ходов:`, remainingDice);
 
