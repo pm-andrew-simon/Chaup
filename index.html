@@ -3096,7 +3096,7 @@
                 if (entryIndex !== -1) {
                     for (let additionalSteps = 1; additionalSteps <= Math.min(steps - 1, 11); additionalSteps++) {
                         const totalSteps = 1 + additionalSteps;
-                        const finalIndex = entryIndex + additionalSteps - 1;
+                        const finalIndex = entryIndex + additionalSteps;
 
                         if (finalIndex >= 0 && finalIndex < path.length) {
                             possibleMoves.push({
