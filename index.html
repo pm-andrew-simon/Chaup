@@ -3078,14 +3078,34 @@
                 waitingZones.forEach(coord => {
                     const currentPieces = gameBoard[coord] ? gameBoard[coord].length : 0;
                     const maxPiecesPerCell = Math.ceil(6 / waitingZones.length);
-                    
+
                     if (currentPieces < maxPiecesPerCell) {
+                        // Простой переход в зону ожидания на 1
                         possibleMoves.push({
                             coord: coord,
                             steps: 1
                         });
                     }
                 });
+
+                // Комбинированные ходы: выход на 1 + продолжение движения на другие значения
+                const entryCell = ENTRY_CELLS[playerNum];
+                const path = PLAYER_PATHS[playerNum];
+                const entryIndex = path.indexOf(entryCell);
+
+                if (entryIndex !== -1) {
+                    for (let additionalSteps = 1; additionalSteps <= Math.min(steps - 1, 11); additionalSteps++) {
+                        const totalSteps = 1 + additionalSteps;
+                        const finalIndex = entryIndex + additionalSteps - 1;
+
+                        if (finalIndex >= 0 && finalIndex < path.length) {
+                            possibleMoves.push({
+                                coord: path[finalIndex],
+                                steps: totalSteps
+                            });
+                        }
+                    }
+                }
             } else if (position.type === 'waiting') {
                 // Фишка в зоне ожидания - может выйти на стартовое поле
                 const entryCell = ENTRY_CELLS[playerNum];
