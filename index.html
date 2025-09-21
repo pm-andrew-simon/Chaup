@@ -2096,7 +2096,7 @@
         // handleDragStart, handleDragEnd, handleDragOver, handleDrop больше не нужны
 
         function performMove(piece, targetCoord) {
-            const isValidTarget = BOARD_CELLS.includes(targetCoord) || 
+            const isValidTarget = BOARD_CELLS.includes(targetCoord) ||
                                 Object.values(START_ZONES).flat().includes(targetCoord) ||
                                 Object.values(WAITING_ZONES).flat().includes(targetCoord);
 
@@ -2104,6 +2104,24 @@
 
             const piecePlayer = parseInt(piece.dataset.player);
             const currentPos = getCurrentPosition(piece);
+
+            // Специальная логика для выхода из тюрьмы
+            const isInJail = JAIL_COORDS.includes(currentPos);
+            if (isInJail) {
+                const dice1 = lastDiceRoll[0];
+                const dice2 = lastDiceRoll[1];
+
+                // Проверяем, есть ли 6 на кубиках
+                const hasSix = dice1 === 6 || dice2 === 6;
+
+                if (!hasSix) {
+                    updateGameMessage('Для выхода из тюрьмы нужна 6 на одном из кубиков!');
+                    return;
+                }
+
+                console.log(`🔒 JAIL: Выход из тюрьмы на 6, движение завершено на ${targetCoord}`);
+                updateGameMessage(`Фишка выходит из тюрьмы! 6 потрачена на выход.`);
+            }
 
             if (targetCoord === currentPos) return;
             
@@ -3316,6 +3334,39 @@
             // Получаем значения кубиков
             const dice1 = lastDiceRoll[0];
             const dice2 = lastDiceRoll[1];
+
+            // Проверяем, находится ли фишка в тюрьме
+            const piecePosition = getCurrentPosition(piece);
+            const isInJail = JAIL_COORDS.includes(piecePosition);
+
+            // Специальная логика для фишек в тюрьме
+            if (isInJail && dice1 !== 0 && dice2 !== 0) {
+                console.log('🔒 JAIL: Фишка находится в тюрьме:', piecePosition);
+
+                // Проверяем, есть ли 6 на кубиках
+                const hasSix = dice1 === 6 || dice2 === 6;
+
+                if (!hasSix) {
+                    console.log('🔒 JAIL: Нет 6 на кубиках - выход из тюрьмы невозможен');
+                    return; // Не показываем никаких ходов
+                }
+
+                // Если есть 6, показываем ходы только на второе значение кубика
+                const exitDiceValue = dice1 === 6 ? dice2 : dice1;
+                console.log(`🔒 JAIL: Выход из тюрьмы на 6, движение на ${exitDiceValue}`);
+
+                // Рассчитываем возможные ходы только на второе значение
+                const allPossibleMoves = calculatePossibleMoves(piece);
+                const jailExitMoves = allPossibleMoves.filter(move => move.steps === exitDiceValue);
+
+                // Применяем фильтрацию препятствий
+                const validMoves = filterMovesWithObstacles(jailExitMoves, piece, exitDiceValue, exitDiceValue);
+
+                validMoves.forEach(move => {
+                    showSingleMoveHint(move);
+                });
+                return;
+            }
 
             // Если кубики не брошены, показываем все возможные ходы (как раньше)
             if (dice1 === 0 && dice2 === 0) {
