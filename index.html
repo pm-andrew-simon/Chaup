@@ -1241,6 +1241,7 @@
         let rollCount = 0;
         let maxRolls = 3;
         let lastDiceRoll = [0, 0];
+        let diceUsed = [false, false]; // Отслеживание использованных кубиков [dice1, dice2]
         let playersOrder = [];
         let playerDiceValues = {1: [0, 0], 2: [0, 0], 3: [0, 0], 4: [0, 0]};
         let playerColors = ['Красный', 'Желтый', 'Зеленый', 'Фиолетовый'];
@@ -2198,6 +2199,48 @@
                 }
             }
 
+            // Определяем количество шагов для хода и отмечаем использованный кубик
+            const dice1 = lastDiceRoll[0];
+            const dice2 = lastDiceRoll[1];
+            let stepsUsed = 0;
+            let usedSingleDie = false;
+
+            // Вычисляем расстояние от текущей позиции до целевой
+            const allMoves = calculatePossibleMoves(piece);
+            const targetMove = allMoves.find(move => move.coord === targetCoord);
+
+            if (targetMove) {
+                stepsUsed = targetMove.steps;
+
+                // Определяем, какой кубик был использован
+                if (!isInJail) {
+                    // Обычная логика (не для тюрьмы)
+                    if (stepsUsed === dice1 && !diceUsed[0]) {
+                        diceUsed[0] = true;
+                        usedSingleDie = true;
+                        console.log(`🎲 DICE: Использован первый кубик (${dice1})`);
+                    } else if (stepsUsed === dice2 && !diceUsed[1]) {
+                        diceUsed[1] = true;
+                        usedSingleDie = true;
+                        console.log(`🎲 DICE: Использован второй кубик (${dice2})`);
+                    } else if (stepsUsed === dice1 + dice2 && !diceUsed[0] && !diceUsed[1]) {
+                        diceUsed[0] = true;
+                        diceUsed[1] = true;
+                        console.log(`🎲 DICE: Использованы оба кубика (${dice1} + ${dice2} = ${stepsUsed})`);
+                    }
+                } else {
+                    // Логика для тюрьмы: 6 потрачена на выход, движение на другой кубик
+                    if (dice1 === 6) {
+                        diceUsed[0] = true; // 6 потрачена на выход
+                        diceUsed[1] = true; // второй кубик использован для движения
+                    } else if (dice2 === 6) {
+                        diceUsed[1] = true; // 6 потрачена на выход
+                        diceUsed[0] = true; // первый кубик использован для движения
+                    }
+                    console.log(`🔒 JAIL: Оба кубика использованы (6 на выход + ${stepsUsed} на движение)`);
+                }
+            }
+
             movePiece(piece, targetCoord);
             
             // Проверяем специальные поля с автоматическим перемещением
@@ -2207,6 +2250,12 @@
                 setTimeout(() => {
                     movePiece(piece, finalCoord);
                     updateGameMessage(`Фишка автоматически перемещена с ${targetCoord} на ${finalCoord}!`);
+
+                    // Проверяем завершение хода и после автоматического перемещения
+                    setTimeout(() => {
+                        checkTurnCompletion();
+                    }, 500);
+
                     // Автосохранение после автоматического перемещения
                     autoSaveGame();
                 }, 800);
@@ -2214,6 +2263,9 @@
                 // После успешного хода
                 setTimeout(() => {
                     updateGameMessage('Ход выполнен!');
+
+                    // Проверяем, завершен ли ход
+                    checkTurnCompletion();
                 }, 500);
             }
             
@@ -2229,6 +2281,34 @@
             console.log('🔴 MOVE: currentGameId:', currentGameId);
             console.log('🔴 MOVE: isRestoringState:', isRestoringState);
             autoSaveGame();
+        }
+
+        function checkTurnCompletion() {
+            const allDiceUsed = diceUsed[0] && diceUsed[1];
+
+            if (allDiceUsed) {
+                console.log('🎲 DICE: Все кубики использованы, ход завершен');
+                updateGameMessage('Все кубики использованы. Ход завершен!');
+
+                // Автоматически переходим к следующему игроку
+                setTimeout(() => {
+                    nextPlayer();
+                }, 1000);
+            } else {
+                const remainingDice = [];
+                if (!diceUsed[0]) remainingDice.push(lastDiceRoll[0]);
+                if (!diceUsed[1]) remainingDice.push(lastDiceRoll[1]);
+
+                console.log('🎲 DICE: Остались неиспользованные кубики:', remainingDice);
+                updateGameMessage(`Можете сделать еще ход. Остались кубики: ${remainingDice.join(', ')}`);
+
+                // Снимаем выделение с текущей фишки, чтобы игрок мог выбрать другую
+                if (selectedPiece) {
+                    selectedPiece.classList.remove('selected');
+                    selectedPiece = null;
+                    clearMoveHints();
+                }
+            }
         }
 
         function getPlayerForWaitingZone(coord) {
@@ -2475,6 +2555,7 @@
                 // Сохраняем значения для этого игрока
                 playerDiceValues[currentPlayer] = [value1, value2];
                 lastDiceRoll = [value1, value2];
+                diceUsed = [false, false]; // Сброс использованных кубиков при новом броске
 
                 // Обработка результата
                 handleDiceResult(value1, value2);
@@ -3377,11 +3458,19 @@
                 return;
             }
 
-            // Определяем доступные количества ходов на основе кубиков
+            // Определяем доступные количества ходов на основе неиспользованных кубиков
             const availableMoves = new Set();
-            availableMoves.add(dice1);  // Первый кубик
-            availableMoves.add(dice2);  // Второй кубик
-            availableMoves.add(dice1 + dice2);  // Сумма (всегда доступна, включая дубли)
+
+            // Добавляем только неиспользованные кубики
+            if (!diceUsed[0]) availableMoves.add(dice1);  // Первый кубик
+            if (!diceUsed[1]) availableMoves.add(dice2);  // Второй кубик
+
+            // Сумма доступна только если оба кубика не использованы
+            if (!diceUsed[0] && !diceUsed[1]) {
+                availableMoves.add(dice1 + dice2);
+            }
+
+            console.log('🎲 DICE: Доступные ходы:', Array.from(availableMoves), 'Использованные кубики:', diceUsed);
 
             // Рассчитываем все возможные ходы для фишки
             const allPossibleMoves = calculatePossibleMoves(piece);
@@ -3841,6 +3930,7 @@
                 rollCount: rollCount,
                 maxRolls: maxRolls,
                 lastDiceRoll: lastDiceRoll,
+                diceUsed: diceUsed,
                 playersOrder: playersOrder,
                 diceLog: diceLog,
                 orderResults: orderResults,
@@ -3868,6 +3958,7 @@
             rollCount = gameState.rollCount || 0;
             maxRolls = gameState.maxRolls || 3;
             lastDiceRoll = gameState.lastDiceRoll || [0, 0];
+            diceUsed = gameState.diceUsed || [false, false];
             playersOrder = gameState.playersOrder || [];
             diceLog = gameState.diceLog || [];
             console.log('🔄 DESERIALIZE: Восстановлен diceLog:', diceLog);
