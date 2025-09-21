@@ -2207,7 +2207,7 @@
             let usedSingleDie = false;
 
             // Вычисляем расстояние от текущей позиции до целевой
-            const allMoves = calculatePossibleMoves(piece);
+            const allMoves = calculatePossibleMoves(piece, 12, dice1, dice2);
             let targetMove = allMoves.find(move => move.coord === targetCoord);
 
             // Если не найден в обычных ходах, проверяем телепортные ходы
@@ -2220,6 +2220,8 @@
             if (targetMove) {
                 stepsUsed = targetMove.steps;
                 const isTeleportMove = targetMove.isTeleport;
+
+                console.log(`🎲 DEBUG: stepsUsed=${stepsUsed}, dice1=${dice1}, dice2=${dice2}, diceUsed=[${diceUsed[0]}, ${diceUsed[1]}]`);
 
                 // Определяем, какой кубик был использован
                 if (!isInJail) {
@@ -2255,6 +2257,8 @@
                             diceUsed[0] = true;
                             diceUsed[1] = true;
                             console.log(`🎲 DICE: Использованы оба кубика (${dice1} + ${dice2} = ${stepsUsed})`);
+                        } else {
+                            console.log(`🎲 DICE: НЕ НАЙДЕНО СОВПАДЕНИЕ для stepsUsed=${stepsUsed}, dice1=${dice1}, dice2=${dice2}`);
                         }
                     }
                 } else {
@@ -2268,6 +2272,10 @@
                     }
                     console.log(`🔒 JAIL: Оба кубика использованы (6 на выход + ${stepsUsed} на движение)`);
                 }
+            } else {
+                console.log(`🚫 MOVE: НЕ НАЙДЕН targetMove для координаты ${targetCoord}`);
+                console.log(`🚫 MOVE: allMoves:`, allMoves);
+                return; // Прерываем выполнение, если ход не найден
             }
 
             movePiece(piece, targetCoord);
@@ -3066,48 +3074,57 @@
         }
 
         // Функция для вычисления возможных ходов фишки
-        function calculatePossibleMoves(piece, steps = 12) {
+        function calculatePossibleMoves(piece, steps = 12, dice1 = 0, dice2 = 0) {
             const playerNum = parseInt(piece.dataset.player);
             const position = getPiecePosition(piece);
             const path = PLAYER_PATHS[playerNum];
             const possibleMoves = [];
             
             if (position.type === 'start') {
-                // Фишка в стартовой зоне - может перейти в зону ожидания
+                // Фишка в стартовой зоне - нужна 1 для выхода
                 const waitingZones = WAITING_ZONES[playerNum];
-                waitingZones.forEach(coord => {
-                    const currentPieces = gameBoard[coord] ? gameBoard[coord].length : 0;
-                    const maxPiecesPerCell = Math.ceil(6 / waitingZones.length);
+                const hasOne = (dice1 === 1) || (dice2 === 1);
 
-                    if (currentPieces < maxPiecesPerCell) {
-                        // Простой переход в зону ожидания на 1
-                        possibleMoves.push({
-                            coord: coord,
-                            steps: 1
-                        });
-                    }
-                });
+                if (hasOne) {
+                    // Простые ходы на 1 во все доступные WAITING_ZONES
+                    waitingZones.forEach(coord => {
+                        const currentPieces = gameBoard[coord] ? gameBoard[coord].length : 0;
+                        const maxPiecesPerCell = Math.ceil(6 / waitingZones.length);
 
-                // Комбинированные ходы: выход на 1 + продолжение движения на другие значения
-                const entryCell = ENTRY_CELLS[playerNum];
-                const path = PLAYER_PATHS[playerNum];
-                const entryIndex = path.indexOf(entryCell);
-
-                if (entryIndex !== -1) {
-                    for (let additionalSteps = 1; additionalSteps <= Math.min(steps - 1, 11); additionalSteps++) {
-                        const totalSteps = 1 + additionalSteps;
-                        const finalIndex = entryIndex + additionalSteps;
-
-                        if (finalIndex >= 0 && finalIndex < path.length) {
+                        if (currentPieces < maxPiecesPerCell) {
                             possibleMoves.push({
-                                coord: path[finalIndex],
-                                steps: totalSteps
+                                coord: coord,
+                                steps: 1
                             });
                         }
-                    }
+                    });
+
+                    // Комбо-ходы: если один кубик 1, а другой > 1
+                    // 1 тратится на выход на игровое поле, остаток - движение по пути
+                    const otherDiceValues = [];
+                    if (dice1 === 1 && dice2 > 1) otherDiceValues.push(dice2);
+                    if (dice2 === 1 && dice1 > 1) otherDiceValues.push(dice1);
+
+                    otherDiceValues.forEach(diceValue => {
+                        const remainingSteps = diceValue - 1; // 1 тратится на выход
+                        const entryCell = ENTRY_CELLS[playerNum];
+                        const entryIndex = path.indexOf(entryCell);
+
+                        if (entryIndex >= 0 && remainingSteps > 0) {
+                            const targetIndex = entryIndex + remainingSteps;
+                            if (targetIndex < path.length) {
+                                const targetCoord = path[targetIndex];
+
+                                possibleMoves.push({
+                                    coord: targetCoord,
+                                    steps: diceValue
+                                });
+                            }
+                        }
+                    });
                 }
             } else if (position.type === 'waiting') {
-                // Фишка в зоне ожидания - может выйти на стартовое поле
+                // Фишка в зоне ожидания - может выйти на стартовое поле на любое значение кубиков
                 const entryCell = ENTRY_CELLS[playerNum];
                 for (let i = 1; i <= Math.min(steps, 12); i++) {
                     const targetIndex = path.indexOf(entryCell) + i - 1;
@@ -3534,9 +3551,9 @@
         function showMoveHints(piece) {
             clearMoveHints(); // Очищаем предыдущие подсказки
 
-            // Получаем значения кубиков
-            const dice1 = lastDiceRoll[0];
-            const dice2 = lastDiceRoll[1];
+            // Получаем значения кубиков с учетом использованных
+            const dice1 = diceUsed[0] ? 0 : lastDiceRoll[0];
+            const dice2 = diceUsed[1] ? 0 : lastDiceRoll[1];
 
             // Проверяем, находится ли фишка в тюрьме
             const piecePosition = getCurrentPosition(piece);
@@ -3583,19 +3600,30 @@
             // Определяем доступные количества ходов на основе неиспользованных кубиков
             const availableMoves = new Set();
 
-            // Добавляем только неиспользованные кубики
-            if (!diceUsed[0]) availableMoves.add(dice1);  // Первый кубик
-            if (!diceUsed[1]) availableMoves.add(dice2);  // Второй кубик
+            // Добавляем только неиспользованные кубики (исключаем 0)
+            if (!diceUsed[0] && dice1 > 0) availableMoves.add(dice1);  // Первый кубик
+            if (!diceUsed[1] && dice2 > 0) availableMoves.add(dice2);  // Второй кубик
 
             // Сумма доступна только если оба кубика не использованы
-            if (!diceUsed[0] && !diceUsed[1]) {
+            if (!diceUsed[0] && !diceUsed[1] && dice1 > 0 && dice2 > 0) {
                 availableMoves.add(dice1 + dice2);
             }
 
             console.log('🎲 DICE: Доступные ходы:', Array.from(availableMoves), 'Использованные кубики:', diceUsed);
 
+            // Специальная проверка для фишек в START_ZONES: нужна 1 для выхода
+            const currentPiecePosition = getPiecePosition(piece);
+            if (currentPiecePosition.type === 'start') {
+                const hasOne = availableMoves.has(1);
+                if (!hasOne) {
+                    console.log('🚫 START_ZONES: Нет единицы на кубиках для выхода из стартовой зоны');
+                    return; // Не показываем никаких ходов
+                }
+                console.log('✅ START_ZONES: Есть единица на кубиках, можно выходить');
+            }
+
             // Рассчитываем все возможные ходы для фишки
-            const allPossibleMoves = calculatePossibleMoves(piece);
+            const allPossibleMoves = calculatePossibleMoves(piece, 12, dice1, dice2);
 
             // Фильтруем только те ходы, которые соответствуют значениям кубиков
             const diceFilteredMoves = allPossibleMoves.filter(move => availableMoves.has(move.steps));
@@ -3618,7 +3646,7 @@
         function showSingleMoveHint(move) {
             const cell = document.querySelector(`[data-coord="${move.coord}"]`);
             if (cell) {
-                // Создаем элемент с номером хода
+                // Всегда создаем новый элемент с номером хода
                 const hint = document.createElement('div');
                 hint.className = move.isTeleport ? 'move-hint teleport-hint' : 'move-hint';
 
@@ -3632,9 +3660,13 @@
                 const textColor = isTeleportion ? '#fff' : '#007bff';
                 const boxShadow = isTeleportion ? '0 4px 8px rgba(138, 43, 226, 0.4)' : '0 2px 4px rgba(0,0,0,0.2)';
 
+                // Считаем количество существующих подсказок для смещения позиции
+                const existingHints = cell.querySelectorAll('.move-hint');
+                const offset = existingHints.length * 25; // Смещение в пикселях
+
                 hint.style.cssText = `
                     position: absolute;
-                    top: 50%;
+                    top: calc(50% + ${offset}px);
                     left: 50%;
                     transform: translate(-50%, -50%);
                     background: ${backgroundColor};
@@ -3934,6 +3966,7 @@
                 currentState.gamePhase !== newGameState.gamePhase ||
                 JSON.stringify(currentState.playerDiceValues) !== JSON.stringify(newGameState.playerDiceValues) ||
                 JSON.stringify(currentState.diceLog) !== JSON.stringify(newGameState.diceLog) ||
+                JSON.stringify(currentState.diceUsed) !== JSON.stringify(newGameState.diceUsed) ||
                 currentState.rollCount !== newGameState.rollCount;
 
             console.log('🟡 RESTORE: Анализ изменений:');
@@ -3941,6 +3974,8 @@
             console.log('  - gamePhase:', currentState.gamePhase, '->', newGameState.gamePhase);
             console.log('  - playerDiceValues изменились:', JSON.stringify(currentState.playerDiceValues) !== JSON.stringify(newGameState.playerDiceValues));
             console.log('  - diceLog изменился:', JSON.stringify(currentState.diceLog) !== JSON.stringify(newGameState.diceLog));
+            console.log('  - diceUsed изменился:', JSON.stringify(currentState.diceUsed) !== JSON.stringify(newGameState.diceUsed));
+            console.log('  - diceUsed:', JSON.stringify(currentState.diceUsed), '->', JSON.stringify(newGameState.diceUsed));
             console.log('  - rollCount:', currentState.rollCount, '->', newGameState.rollCount);
             console.log('  - isStateChanged:', isStateChanged);
 
