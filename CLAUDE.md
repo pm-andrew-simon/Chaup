@@ -13,6 +13,7 @@ This is a web application implementing Chaupar, a traditional Indian board game.
 - `rules.html`: Game rules and instructions
 - `situations.html`: Common game scenarios and explanations  
 - `contacts.html`: Contact information and support
+- `news.html`: Project news and updates
 
 ## Architecture
 
@@ -45,6 +46,7 @@ The application is built as a vanilla HTML/CSS/JavaScript single-file game with 
 - Responsive design with CSS Grid (15x15 game board)
 - Mobile-first approach with media queries
 - Glassmorphism styling with backdrop filters
+- Teleport icons with SVG graphics and tooltips indicating special movement cells
 
 ## Key Functions
 
@@ -72,6 +74,11 @@ The application is built as a vanilla HTML/CSS/JavaScript single-file game with 
 
 **No Build Process:** This is a static site - edit `index.html` directly and deploy.
 
+**Environment Configuration:**
+- Supabase credentials are stored in `.env` file (not committed to git)
+- Environment variables use VITE_ prefix for potential future build tool compatibility
+- Application reads configuration directly from .env via JavaScript fetch
+
 **Game Logic Implementation:**
 - Three-phase piece movement: Start Zones → Waiting Zones → Game Board → Finish
 - Each player follows a unique clockwise path around the board perimeter
@@ -88,10 +95,15 @@ The application is built as a vanilla HTML/CSS/JavaScript single-file game with 
 
 **Analytics:** Yandex.Metrika integrated with ID `103866554` for the chaupar.ru domain.
 
-**Game Persistence:** Supabase integration for save/load functionality:
+**Game Persistence & Multiplayer:** Supabase integration for save/load and real-time multiplayer:
 - Client initialized via CDN: `@supabase/supabase-js@2`
+- Configuration loaded from `.env` file with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
 - Game state serialization/deserialization with `serializeGameState()` and `deserializeGameState()`
 - Unique game ID generation with format `CHPR-XXXXXXXX`
+- Real-time multiplayer synchronization using Supabase Realtime channels
+- Automatic game state saving and bidirectional sync between clients
+- Player turn and dice log synchronization for live multiplayer sessions
+- API endpoint `PUT /api/game/state` generates detailed move reports comparing previous/current state
 
 ## Common Development Commands
 
@@ -102,6 +114,12 @@ start index.html
 ```
 
 **No build process required** - this is a static site that runs entirely in the browser.
+
+**Allowed Git Operations:** The `.claude/settings.local.json` permits these commands without user confirmation:
+- `git init`, `git remote add`, `git branch`
+- `git add`, `git commit`, `git config` 
+- `git push`, `git pull`
+- `start index.html` for local testing
 
 ## Git Workflow
 
@@ -138,9 +156,24 @@ Shared navigation component across all pages (`<nav class="navigation">`) with c
 **File Organization:**
 - All game logic, CSS, and HTML in single `index.html` file (~3400 lines)
 - Additional pages are standalone HTML files sharing navigation CSS
+- SVG assets for game UI: `teleport.svg`, `arrow.svg`, `jail.svg`, `temle.svg`
 - No external JavaScript files or dependencies except Supabase CDN
+- Environment variables stored in `.env` file for Supabase configuration
 
 **SEO Configuration:**
 - `CNAME`: Points to chaupar.ru domain
 - `sitemap.xml`: Structured site map for search engines
 - `robots.txt`: Allows indexing with restrictions on dynamic paths
+
+## Environment & Security
+
+**Environment Variables (.env):**
+- Configuration stored in `.env` file (not committed to git)
+- Contains `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for database connection
+- Loaded via JavaScript fetch() for client-side configuration
+- Required for multiplayer/save functionality
+
+**Development Security:**
+- Supabase anon key is safe for client-side exposure (Row Level Security enforced)
+- No server-side secrets or private keys in repository
+- All authentication handled through Supabase security policies

@@ -661,12 +661,52 @@
             padding: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             text-align: center;
-            width: 280px;
+            width: min(90vw, 600px);
             height: min(90vw, 600px);
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
-            margin: 20px 0;
+            margin: 20px auto;
+            gap: 20px;
+        }
+
+        /* Новые секции в dice-panel */
+        .next-player-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .next-player-section button {
+            font-size: 16px;
+            padding: 12px 24px;
+            min-width: 150px;
+        }
+
+        .game-message-section {
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .dice-log-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .dice-log-section .dice-log {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dice-log-section .dice-log-entries {
+            flex: 1;
+            overflow-y: auto;
         }
 
         .current-player {
@@ -676,12 +716,6 @@
             color: #4a5568;
         }
 
-        .dice-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 20px 0;
-        }
 
         .dice {
             width: 60px;
@@ -722,40 +756,40 @@
         }
 
         .dice-dot {
-            width: 8px;
-            height: 8px;
+            width: 5px;
+            height: 5px;
             background: #333;
             border-radius: 50%;
             position: absolute;
         }
 
-        /* Позиции точек на кубике */
+        /* Позиции точек на кубике - увеличенные отступы */
         .dice-face.one .dice-dot:nth-child(1) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-        .dice-face.two .dice-dot:nth-child(1) { top: 25%; left: 25%; }
-        .dice-face.two .dice-dot:nth-child(2) { bottom: 25%; right: 25%; }
+        .dice-face.two .dice-dot:nth-child(1) { top: 20%; left: 20%; }
+        .dice-face.two .dice-dot:nth-child(2) { bottom: 20%; right: 20%; }
 
-        .dice-face.three .dice-dot:nth-child(1) { top: 25%; left: 25%; }
+        .dice-face.three .dice-dot:nth-child(1) { top: 20%; left: 20%; }
         .dice-face.three .dice-dot:nth-child(2) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        .dice-face.three .dice-dot:nth-child(3) { bottom: 25%; right: 25%; }
+        .dice-face.three .dice-dot:nth-child(3) { bottom: 20%; right: 20%; }
 
-        .dice-face.four .dice-dot:nth-child(1) { top: 25%; left: 25%; }
-        .dice-face.four .dice-dot:nth-child(2) { top: 25%; right: 25%; }
-        .dice-face.four .dice-dot:nth-child(3) { bottom: 25%; left: 25%; }
-        .dice-face.four .dice-dot:nth-child(4) { bottom: 25%; right: 25%; }
+        .dice-face.four .dice-dot:nth-child(1) { top: 20%; left: 20%; }
+        .dice-face.four .dice-dot:nth-child(2) { top: 20%; right: 20%; }
+        .dice-face.four .dice-dot:nth-child(3) { bottom: 20%; left: 20%; }
+        .dice-face.four .dice-dot:nth-child(4) { bottom: 20%; right: 20%; }
 
-        .dice-face.five .dice-dot:nth-child(1) { top: 25%; left: 25%; }
-        .dice-face.five .dice-dot:nth-child(2) { top: 25%; right: 25%; }
+        .dice-face.five .dice-dot:nth-child(1) { top: 20%; left: 20%; }
+        .dice-face.five .dice-dot:nth-child(2) { top: 20%; right: 20%; }
         .dice-face.five .dice-dot:nth-child(3) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        .dice-face.five .dice-dot:nth-child(4) { bottom: 25%; left: 25%; }
-        .dice-face.five .dice-dot:nth-child(5) { bottom: 25%; right: 25%; }
+        .dice-face.five .dice-dot:nth-child(4) { bottom: 20%; left: 20%; }
+        .dice-face.five .dice-dot:nth-child(5) { bottom: 20%; right: 20%; }
 
-        .dice-face.six .dice-dot:nth-child(1) { top: 20%; left: 25%; }
-        .dice-face.six .dice-dot:nth-child(2) { top: 20%; right: 25%; }
-        .dice-face.six .dice-dot:nth-child(3) { top: 50%; left: 25%; transform: translateY(-50%); } 
-        .dice-face.six .dice-dot:nth-child(4) { top: 50%; right: 25%; transform: translateY(-50%); } 
-        .dice-face.six .dice-dot:nth-child(5) { bottom: 20%; left: 25%; }
-        .dice-face.six .dice-dot:nth-child(6) { bottom: 20%; right: 25%; }
+        .dice-face.six .dice-dot:nth-child(1) { top: 15%; left: 20%; }
+        .dice-face.six .dice-dot:nth-child(2) { top: 15%; right: 20%; }
+        .dice-face.six .dice-dot:nth-child(3) { top: 50%; left: 20%; transform: translateY(-50%); }
+        .dice-face.six .dice-dot:nth-child(4) { top: 50%; right: 20%; transform: translateY(-50%); }
+        .dice-face.six .dice-dot:nth-child(5) { bottom: 15%; left: 20%; }
+        .dice-face.six .dice-dot:nth-child(6) { bottom: 15%; right: 20%; }
 
         .dice-result {
             margin: 15px 0;
@@ -764,9 +798,50 @@
             color: #4a5568;
         }
 
+        /* Стили для кубиков игроков на поле */
+        .player-dice {
+            position: absolute;
+            width: calc(min(90vw, 600px) * 37.5 / 600);
+            height: calc(min(90vw, 600px) * 37.5 / 600);
+            border: 2px solid #333;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: calc(min(90vw, 600px) * 18 / 600);
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .player-dice.active {
+            background: white;
+            color: #333;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transform: scale(1.05);
+        }
+
+        .player-dice.inactive {
+            background: #888;
+            color: #fff;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .player-dice.rolling {
+            animation: diceRoll 0.3s infinite;
+        }
+
+        .player-dice:hover.active {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+        }
+
         .dice-log {
-            margin: 15px 0;
-            padding: 15px;
+            margin: 0;
+            padding: 10px;
             background: rgba(102, 126, 234, 0.1);
             border-radius: 12px;
             font-size: 14px;
@@ -775,6 +850,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            height: 100%;
         }
         
         .dice-log-title {
@@ -782,6 +858,7 @@
             margin-bottom: 10px;
             color: #2d3748;
             font-size: 15px;
+			text-align: left;
         }
         
         .dice-log-entries {
@@ -828,6 +905,52 @@
             color: #e53e3e;
             font-weight: 600;
             min-height: 20px;
+        }
+
+        /* Новая структура панели кубиков */
+        .dice-panel-top {
+            height: 33%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .dice-panel-bottom {
+            height: 67%;
+            display: flex;
+            gap: 15px;
+            padding-top: 15px;
+        }
+
+        .dice-panel-left,
+        .dice-panel-right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dice-and-buttons-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .dice-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 100px;
+        }
+
+        .dice-buttons button {
+            margin: 0;
+            padding: 6px 10px;
+            font-size: 12px;
+            min-width: auto;
+            white-space: nowrap;
         }
 
         #roll-dice-btn {
@@ -919,9 +1042,6 @@
                 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             }
 
-            .dice-container {
-                gap: 10px;
-            }
 
             .dice {
                 width: 45px;
@@ -956,6 +1076,37 @@
                 font-size: 14px;
                 min-width: 80px;
                 margin: 3px;
+            }
+
+            /* Мобильные стили для новой структуры */
+            .dice-panel-bottom {
+                flex-direction: column;
+                gap: 10px;
+                height: auto;
+            }
+
+            .dice-panel-left,
+            .dice-panel-right {
+                width: 100%;
+            }
+
+            .dice-and-buttons-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .dice-buttons {
+                flex-direction: row;
+                gap: 8px;
+                min-width: auto;
+                width: 100%;
+            }
+
+            .dice-buttons button {
+                flex: 1;
+                margin: 0;
+                padding: 6px 8px;
+                font-size: 11px;
             }
         }
     </style>
@@ -1003,33 +1154,39 @@
             </div>
             
             <div class="dice-panel">
-                <div id="current-player" class="current-player">
-                    Ходит: <span id="player-name">Красный</span>
+                <!-- Новая структура: вертикальная компоновка -->
+
+                <!-- 1. Кнопка "Следующий игрок" -->
+                <div class="next-player-section">
+                    <button id="next-player-btn" onclick="nextPlayer()" disabled>Далее</button>
                 </div>
-                
-                <div class="dice-container">
-                    <div class="dice" id="dice1">
-                        <div class="dice-face">?</div>
+
+                <!-- 2. Подсказки игры -->
+                <div class="game-message-section">
+                    <div id="game-message" class="game-message"></div>
+                </div>
+
+                <!-- 3. Журнал бросков -->
+                <div class="dice-log-section">
+                    <div id="dice-log" class="dice-log">
+                        <div class="dice-log-title">Журнал бросков:</div>
+                        <div id="dice-log-entries" class="dice-log-entries"></div>
                     </div>
-                    <div class="dice" id="dice2">
-                        <div class="dice-face">?</div>
+                </div>
+
+                <!-- Скрытые элементы -->
+                <div style="display: none;">
+                    <div id="current-player" class="current-player">
+                        Ходит: <span id="player-name">Красный</span>
                     </div>
+                    <button id="roll-dice-btn" onclick="rollPlayerDice()">Бросить кубики</button>
+                    <div id="dice-result" class="dice-result"></div>
                 </div>
-                
-                <button id="roll-dice-btn" onclick="rollDice()">Бросить кубики</button>
-                <button id="next-player-btn" onclick="nextPlayer()" disabled>Следующий игрок</button>
-                
-                <div id="dice-result" class="dice-result"></div>
-                <div id="dice-log" class="dice-log">
-                    <div class="dice-log-title">Журнал бросков:</div>
-                    <div id="dice-log-entries" class="dice-log-entries"></div>
-                </div>
-                <div id="game-message" class="game-message"></div>
             </div>
         </div>
         
         <div id="info-panel" class="info-panel" style="display: none;">
-            <div>Перетаскивайте фишки мышкой по игровому полю</div>
+            <div>Игра находится на стадии тестирования, ждем ваших отзывов.</div>
         </div>
     </div>
 
@@ -1086,6 +1243,7 @@
         let maxRolls = 3;
         let lastDiceRoll = [0, 0];
         let playersOrder = [];
+        let playerDiceValues = {1: [0, 0], 2: [0, 0], 3: [0, 0], 4: [0, 0]};
         let playerColors = ['Красный', 'Желтый', 'Зеленый', 'Фиолетовый'];
         let diceLog = []; // Журнал всех бросков (максимум 10)
         let orderResults = []; // Результаты определения очередности
@@ -1101,9 +1259,53 @@
         // Стартовые поля для выхода
         const ENTRY_CELLS = {
             1: 'I1',  // красный
-            2: 'G15', // желтый  
+            2: 'G15', // желтый
             3: 'O9',  // зеленый
             4: 'A7'   // фиолетовый
+        };
+
+        // Координаты храмов и тюрем
+        const TEMPLE_COORDS = ['K6', 'J11', 'E10', 'F5'];
+        const JAIL_COORDS = ['N6', 'J14', 'B10', 'F2'];
+
+        // Телепорты игроков и логика телепортации
+        const TELEPORT_COORDS = {
+            1: 'I7',  // Красный
+            2: 'G9',  // Желтый
+            3: 'I9',  // Зеленый
+            4: 'G7'   // Фиолетовый
+        };
+
+        // Маппинг телепортации: откуда → куда при разных значениях кубиков
+        const TELEPORT_MAPPINGS = {
+            'I7': { // Красный телепорт
+                1: 'I9', // На 1 → следующий по часовой (Зеленый)
+                3: 'G9', // На 3 → напротив (Желтый)
+                6: 'G7'  // На 6 → против часовой (Фиолетовый)
+            },
+            'G9': { // Желтый телепорт
+                1: 'G7', // На 1 → следующий по часовой (Фиолетовый)
+                3: 'I7', // На 3 → напротив (Зеленый)
+                6: 'I9'  // На 6 → против часовой (Красный)
+            },
+            'I9': { // Зеленый телепорт
+                1: 'G9', // На 1 → следующий по часовой (Фиолетовый)
+                3: 'G7', // На 3 → напротив (Красный)
+                6: 'I7'  // На 6 → против часовой (Желтый)
+            },
+            'G7': { // Фиолетовый телепорт
+                1: 'I7', // На 1 → следующий по часовой (Красный)
+                3: 'I9', // На 3 → напротив (Желтый)
+                6: 'G9'  // На 6 → против часовой (Зеленый)
+            }
+        };
+
+        // Области для размещения кубиков игроков
+        const DICE_AREAS = {
+            1: { from: 'M4', to: 'O5' },  // Красный - расширена область до 3 клеток
+            2: { from: 'A12', to: 'C13' }, // Желтый
+            3: { from: 'K14', to: 'M15' }, // Зеленый
+            4: { from: 'C2', to: 'E3' }   // Фиолетовый - сдвинуты вниз на 1 клетку
         };
 
         // Пути движения для каждого игрока по часовой стрелке
@@ -1242,6 +1444,119 @@
             const row = Math.floor((y - offset) / cellSize);
             if (col < 0 || col > 14 || row < 0 || row > 14) return null;
             return String.fromCharCode(65 + col) + (row + 1);
+        }
+
+        // Функция для расчета позиции кубиков в области
+        function calculateDiceAreaPosition(area) {
+            const fromPos = coordToPosition(area.from);
+            const toPos = coordToPosition(area.to);
+
+            if (!fromPos || !toPos) return null;
+
+            // Центр области
+            const centerX = (fromPos.x + toPos.x) / 2;
+            const centerY = (fromPos.y + toPos.y) / 2;
+
+            return { centerX, centerY };
+        }
+
+        // Функция для создания кубиков игрока
+        function createPlayerDice() {
+            const board = document.getElementById('game-board');
+            if (!board) return;
+
+            // Удаляем существующие кубики игроков
+            document.querySelectorAll('.player-dice').forEach(dice => dice.remove());
+
+            for (let player = 1; player <= 4; player++) {
+                const area = DICE_AREAS[player];
+                const areaPos = calculateDiceAreaPosition(area);
+
+                if (!areaPos) continue;
+
+                // Создаем два кубика для игрока
+                for (let diceIndex = 0; diceIndex < 2; diceIndex++) {
+                    const dice = document.createElement('div');
+                    dice.className = 'player-dice inactive';
+                    dice.id = `player-dice-${player}-${diceIndex + 1}`;
+                    dice.dataset.player = player;
+                    dice.dataset.diceIndex = diceIndex;
+
+                    // Создаем dice-face внутри
+                    const face = document.createElement('div');
+                    face.className = 'dice-face';
+                    face.textContent = '?';
+                    dice.appendChild(face);
+
+                    // Позиционируем кубики рядом друг с другом
+                    const diceSize = Math.min(90 * window.innerWidth / 100, 600) * 37.5 / 600; // Размер из CSS
+                    const spacing = 8; // Увеличенное расстояние между кубиками
+                    const offsetX = diceIndex === 0 ? -diceSize/2 - spacing/2 : diceSize/2 + spacing/2;
+
+                    dice.style.left = (areaPos.centerX + offsetX) + 'px';
+                    dice.style.top = (areaPos.centerY - diceSize/2) + 'px';
+
+                    // Добавляем обработчик клика
+                    dice.addEventListener('click', () => handlePlayerDiceClick(player));
+
+                    board.appendChild(dice);
+                }
+            }
+        }
+
+        // Обработчик клика по кубикам игрока
+        function handlePlayerDiceClick(player) {
+            console.log('🎲 CLICK: Клик по кубикам игрока', player);
+            console.log('🎲 CLICK: currentPlayer:', currentPlayer, 'gamePhase:', gamePhase);
+
+            // Разрешаем броски во время определения очередности и игры
+            if (player !== currentPlayer) {
+                updateGameMessage('Не ваш ход!');
+                return;
+            }
+
+            if (gamePhase !== 'determining-order' && gamePhase !== 'playing') {
+                updateGameMessage('Бросок кубиков сейчас недоступен');
+                return;
+            }
+
+            console.log('🎲 CLICK: Запускаем rollPlayerDice()');
+            // Запускаем бросок кубиков для этого игрока
+            rollPlayerDice();
+        }
+
+        // Функция для обновления состояния кубиков игроков
+        function updatePlayerDiceStates() {
+            for (let player = 1; player <= 4; player++) {
+                const dice1 = document.getElementById(`player-dice-${player}-1`);
+                const dice2 = document.getElementById(`player-dice-${player}-2`);
+
+                if (dice1 && dice2) {
+                    const isActive = player === currentPlayer;
+                    const className = isActive ? 'player-dice active' : 'player-dice inactive';
+
+                    dice1.className = className;
+                    dice2.className = className;
+
+                    // Отображаем значения кубиков
+                    const values = playerDiceValues[player];
+                    updatePlayerDiceFace(dice1, values[0]);
+                    updatePlayerDiceFace(dice2, values[1]);
+                }
+            }
+        }
+
+        // Функция для обновления грани кубика игрока
+        function updatePlayerDiceFace(diceElement, value) {
+            const faceElement = diceElement.querySelector('.dice-face');
+            if (value === 0) {
+                faceElement.textContent = '?';
+                faceElement.className = 'dice-face';
+            } else {
+                const faceData = createDiceFace(value);
+                faceElement.className = 'dice-face ' + faceData.className;
+                faceElement.innerHTML = faceData.html;
+            }
         }
 
         function createBoard() {
@@ -1654,6 +1969,9 @@
                         handlePieceClick(piece);
                     });
 
+                    // Добавляем всплывающую подсказку
+                    addPieceTooltip(piece);
+
                     board.appendChild(piece);
                     pieces[player].push({element: piece, position: coord});
                     
@@ -1861,13 +2179,29 @@
                 }
             }
 
+            // Проверка защиты храмов и тюрем
+            if (BOARD_CELLS.includes(targetCoord) && isInSpecialZone(targetCoord)) {
+                const targetPiece = gameBoard[targetCoord];
+                if (targetPiece) {
+                    // Если это массив, берем первый элемент
+                    const actualPiece = Array.isArray(targetPiece) ? targetPiece[0] : targetPiece;
+
+                    if (actualPiece) {
+                        // В храмах и тюрьмах фишки защищены - возвращаем ходящую фишку обратно
+                        updateGameMessage('Фишки в храмах и тюрьмах защищены от сбивания! Фишка возвращается на исходную позицию.');
+                        // Фишка остается на своей текущей позиции (не перемещается)
+                        return;
+                    }
+                }
+            }
+
             // Обработка коллизий на основном поле
             if (BOARD_CELLS.includes(targetCoord)) {
                 const targetPiece = gameBoard[targetCoord];
                 if (targetPiece) {
                     // Если это массив (не должно быть на основном поле), берем первый элемент
                     const actualPiece = Array.isArray(targetPiece) ? targetPiece[0] : targetPiece;
-                    
+
                     if (actualPiece) {
                         const targetPlayer = parseInt(actualPiece.dataset.player);
                         if (targetPlayer === piecePlayer) {
@@ -2043,7 +2377,8 @@
             
             createBoard();
             createPieces();
-            
+            createPlayerDice();
+
             // Начинаем с определения очередности
             gamePhase = 'determining-order';
             diceLog = [];
@@ -2063,7 +2398,10 @@
             
             // Деактивировать кнопку "Следующий игрок" во время определения очередности
             document.getElementById('next-player-btn').disabled = true;
-            
+
+            // Обновляем состояние кубиков игроков (активируем кубики первого игрока)
+            updatePlayerDiceStates();
+
             // Инициализировать обработчики событий
             initializeEventHandlers();
             
@@ -2092,61 +2430,76 @@
             };
         }
 
-        function updateDiceFace(diceElement, value) {
-            const faceElement = diceElement.querySelector('.dice-face');
-            const faceData = createDiceFace(value);
-            
-            faceElement.className = 'dice-face ' + faceData.className;
-            faceElement.innerHTML = faceData.html;
-        }
 
-        function rollDice() {
+        // Функция для броска кубиков игрока на поле
+        async function rollPlayerDice() {
             if (gamePhase === 'setup') return;
-            
-            const dice1 = document.getElementById('dice1');
-            const dice2 = document.getElementById('dice2');
+
+            const dice1 = document.getElementById(`player-dice-${currentPlayer}-1`);
+            const dice2 = document.getElementById(`player-dice-${currentPlayer}-2`);
+
+            if (!dice1 || !dice2) return;
+
+            // Отключить кнопки во время процесса
             const rollBtn = document.getElementById('roll-dice-btn');
-            
-            // Отключить кнопки во время анимации
-            rollBtn.disabled = true;
+            if (rollBtn) rollBtn.disabled = true;
+
             const nextPlayerBtn = document.getElementById('next-player-btn');
             if (nextPlayerBtn) {
                 nextPlayerBtn.disabled = true;
                 nextPlayerBtn.textContent = '🎲 Бросок кубиков...';
             }
-            
+
+            // Обновляем сообщение
+            updateGameMessage('Кубики крутятся...');
+
+            // СРАЗУ запускаем анимацию кубиков
             dice1.classList.add('rolling');
             dice2.classList.add('rolling');
-            
-            // Анимация броска (1.5-2 секунды)
-            const animationDuration = 1500 + Math.random() * 500;
-            
+
+            // Анимация броска (базовая длительность 1.5-2 секунды)
+            const baseAnimationDuration = 1500 + Math.random() * 500;
+            let animationCompleted = false;
+
             // Случайные значения во время анимации
             const animationInterval = setInterval(() => {
                 const randomValue1 = Math.floor(Math.random() * 6) + 1;
                 const randomValue2 = Math.floor(Math.random() * 6) + 1;
-                updateDiceFace(dice1, randomValue1);
-                updateDiceFace(dice2, randomValue2);
+                updatePlayerDiceFace(dice1, randomValue1);
+                updatePlayerDiceFace(dice2, randomValue2);
             }, 100);
-            
-            setTimeout(() => {
+
+
+            // Генерируем финальные значения
+            const value1 = Math.floor(Math.random() * 6) + 1;
+            const value2 = Math.floor(Math.random() * 6) + 1;
+
+            // Ждем завершения анимации или таймаута
+            const finishAnimation = () => {
+                if (animationCompleted) return;
+                animationCompleted = true;
+
                 clearInterval(animationInterval);
-                
-                // Финальные значения кубиков
-                const value1 = Math.floor(Math.random() * 6) + 1;
-                const value2 = Math.floor(Math.random() * 6) + 1;
-                lastDiceRoll = [value1, value2];
-                
-                updateDiceFace(dice1, value1);
-                updateDiceFace(dice2, value2);
+
+                // Устанавливаем финальные значения
+                updatePlayerDiceFace(dice1, value1);
+                updatePlayerDiceFace(dice2, value2);
+
                 dice1.classList.remove('rolling');
                 dice2.classList.remove('rolling');
-                
-                // Обработать результат броска
+
+                // Сохраняем значения для этого игрока
+                playerDiceValues[currentPlayer] = [value1, value2];
+                lastDiceRoll = [value1, value2];
+
+                // Обработка результата
                 handleDiceResult(value1, value2);
-                
-            }, animationDuration);
+            };
+
+            // Завершить анимацию через базовое время
+            setTimeout(finishAnimation, baseAnimationDuration);
         }
+
 
         function addDiceLogEntry(dice1, dice2, playerIndex) {
             const sum = dice1 + dice2;
@@ -2235,6 +2588,7 @@
                 // Есть еще игроки, которые должны бросить
                 currentPlayer = playersToRoll[0];
                 updatePlayerDisplay();
+                updatePlayerDiceStates(); // Обновляем состояние кубиков для нового игрока
                 document.getElementById('roll-dice-btn').disabled = false;
                 updateGameMessage(`Очередь игрока: ${playerColors[currentPlayer-1]}`);
             } else {
@@ -2302,10 +2656,13 @@
                 
                 currentPlayer = playersOrder[0].player;
                 gamePhase = 'playing';
-                
+
                 updatePlayerDisplay();
-                updateGameMessage(`Очередность определена! Первым ходит: ${playerColors[currentPlayer-1]}`);
-                
+                updateGameMessage(`Очередность определена! Первым ходит: ${playerColors[currentPlayer-1]}. Кликните на ваши кубики для броска.`);
+
+                // Обновляем состояние кубиков игроков
+                updatePlayerDiceStates();
+
                 // Показать ID игры
                 showGameId();
                 
@@ -2341,11 +2698,11 @@
             // Включить кнопку для следующего броска
             document.getElementById('roll-dice-btn').disabled = false;
             
-            // Кнопка "Следующий игрок" будет активирована только после сохранения хода
+            // Кнопка "Следующий игрок" активна сразу (сохранение ответа сервера временно отключено)
             const nextPlayerBtn = document.getElementById('next-player-btn');
             if (nextPlayerBtn) {
-                nextPlayerBtn.disabled = true;
-                nextPlayerBtn.textContent = 'Сделайте ход';
+                nextPlayerBtn.disabled = false;
+                nextPlayerBtn.textContent = 'Следующий игрок';
             }
         }
 
@@ -2359,22 +2716,20 @@
             });
         }
 
+
         function nextPlayer() {
             if (gamePhase === 'playing') {
-                // Отключить кнопку до завершения сохранения
-                const nextPlayerBtn = document.getElementById('next-player-btn');
-                if (nextPlayerBtn) {
-                    nextPlayerBtn.disabled = true;
-                    nextPlayerBtn.textContent = '⏳ Передача хода...';
-                }
                 
                 const playerIndex = playersOrder.findIndex(p => p.player === currentPlayer);
                 const nextIndex = (playerIndex + 1) % playersOrder.length;
                 currentPlayer = playersOrder[nextIndex].player;
                 
                 updatePlayerDisplay();
-                updateGameMessage(`Очередь игрока: ${playerColors[currentPlayer-1]}`);
-                
+                updateGameMessage(`Очередь игрока: ${playerColors[currentPlayer-1]}. Кликните на ваши кубики для броска.`);
+
+                // Обновляем состояние кубиков игроков
+                updatePlayerDiceStates();
+
                 // Включаем кнопку "Бросить кубики"
                 document.getElementById('roll-dice-btn').disabled = false;
                 
@@ -2383,6 +2738,7 @@
                 
                 // Автосохранение после смены игрока
                 autoSaveGame();
+
             }
         }
 
@@ -2400,6 +2756,7 @@
         function updateGameMessage(message) {
             document.getElementById('game-message').textContent = message;
         }
+
 
 
         function enablePieceMovement(enable) {
@@ -2617,44 +2974,463 @@
             return possibleMoves;
         }
 
+        // Функция для расчета телепортных ходов
+        function calculateTeleportMoves(piece, dice1, dice2) {
+            const playerNum = parseInt(piece.dataset.player);
+            const position = getPiecePosition(piece);
+            const teleportMoves = [];
+
+            // Проверяем, находится ли фишка в своем телепорте
+            const playerTeleport = TELEPORT_COORDS[playerNum];
+            if (position.type === 'board' && position.coord === playerTeleport) {
+                console.log('🚀 TELEPORT: Фишка находится в своем телепорте:', playerTeleport);
+
+                // Проверяем доступные телепортные ходы на основе кубиков
+                const teleportMapping = TELEPORT_MAPPINGS[playerTeleport];
+                const availableDice = [dice1, dice2].filter(d => d > 0);
+
+                availableDice.forEach(usedDiceValue => {
+                    if (teleportMapping[usedDiceValue]) {
+                        const targetTeleport = teleportMapping[usedDiceValue];
+                        console.log(`🚀 TELEPORT: На ${usedDiceValue} можно телепортироваться в ${targetTeleport}`);
+
+                        // Проверяем, можно ли телепортироваться в целевой телепорт
+                        const piecesAtTargetTeleport = gameBoard[targetTeleport] || [];
+                        let canTeleportToTarget = true;
+
+                        if (piecesAtTargetTeleport.length > 0) {
+                            const existingPiece = piecesAtTargetTeleport[0];
+                            const existingPlayerNum = parseInt(existingPiece.dataset.player);
+
+                            if (existingPlayerNum === playerNum) {
+                                console.log(`🚀 TELEPORT: Целевой телепорт ${targetTeleport} занят своей фишкой - простой телепорт невозможен`);
+                                canTeleportToTarget = false;
+                            } else {
+                                console.log(`🚀 TELEPORT: Целевой телепорт ${targetTeleport} занят чужой фишкой - можно съесть`);
+                            }
+                        }
+
+                        // Добавляем простое телепортное перемещение только если возможно
+                        if (canTeleportToTarget) {
+                            teleportMoves.push({
+                                coord: targetTeleport,
+                                steps: usedDiceValue,
+                                isTeleport: true
+                            });
+                        }
+
+                        // Рассчитываем комбинированные ходы (телепорт + продолжение) только если можно попасть в телепорт
+                        if (canTeleportToTarget) {
+                            const remainingDice = availableDice.filter(d => d !== usedDiceValue);
+
+                            console.log(`🚀 TELEPORT: Оставшиеся кубики для комбинированных ходов:`, remainingDice);
+
+                            remainingDice.forEach(remainingValue => {
+                                console.log(`🚀 TELEPORT: Расчет комбинированного хода: телепорт на ${usedDiceValue} + движение на ${remainingValue}`);
+
+                                // Создаем временную фишку в целевом телепорте для расчета дальнейших ходов
+                                const tempPiece = {
+                                    dataset: { player: playerNum },
+                                    // Имитируем фишку в целевом телепорте
+                                    __tempPosition: { type: 'board', coord: targetTeleport }
+                                };
+
+                                console.log(`🚀 TELEPORT: Временная фишка создана в ${targetTeleport} для игрока ${playerNum}`);
+
+                                // Рассчитываем только конечную точку от целевого телепорта
+                                const finalMove = calculateSingleMoveFromPosition(tempPiece, targetTeleport, remainingValue);
+                                console.log(`🚀 TELEPORT: calculateSingleMoveFromPosition(${targetTeleport}, ${remainingValue}) вернул:`, finalMove);
+
+                                if (finalMove) {
+                                    console.log(`🚀 TELEPORT: Финальная позиция найдена: ${finalMove.coord} (шаги: ${finalMove.steps})`);
+
+                                    // Проверяем препятствия на пути от телепорта до конечной точки
+                                    const individualDiceValues = [dice1, dice2].filter(d => d > 0);
+                                    console.log(`🚀 TELEPORT: Проверяем препятствия от ${targetTeleport} до ${finalMove.coord} на ${remainingValue} шагов`);
+                                    const pathClear = checkTeleportPathObstacles(
+                                        targetTeleport,
+                                        finalMove.coord,
+                                        playerNum,
+                                        remainingValue,
+                                        individualDiceValues
+                                    );
+                                    console.log(`🚀 TELEPORT: Результат проверки препятствий: ${pathClear ? 'путь свободен' : 'есть препятствия'}`);
+
+                                    if (pathClear) {
+                                        const totalSteps = usedDiceValue + remainingValue;
+                                        console.log(`🚀 TELEPORT: ✅ Комбинированный ход разрешен: ${playerTeleport} → ${targetTeleport} (${usedDiceValue}) → ${finalMove.coord} (+${remainingValue}) = ${totalSteps} шагов`);
+
+                                        teleportMoves.push({
+                                            coord: finalMove.coord,
+                                            steps: totalSteps,
+                                            isTeleport: true,
+                                            isComboMove: true,
+                                            teleportPath: `${playerTeleport}→${targetTeleport}→${finalMove.coord}`
+                                        });
+                                    } else {
+                                        console.log(`🚀 TELEPORT: ❌ Комбинированный ход заблокирован препятствием: ${playerTeleport} → ${targetTeleport} → ${finalMove.coord}`);
+                                    }
+                                } else {
+                                    console.log(`🚀 TELEPORT: ❌ ПРОБЛЕМА! calculateSingleMoveFromPosition не вернул финальную позицию для ${targetTeleport} + ${remainingValue} шагов`);
+                                }
+                            });
+                        } // Закрываем блок if (canTeleportToTarget)
+                    }
+                });
+            }
+
+            return teleportMoves;
+        }
+
+        // Функция для расчета одного конкретного хода от позиции
+        function calculateSingleMoveFromPosition(piece, fromCoord, steps) {
+            const playerNum = parseInt(piece.dataset.player);
+            const path = PLAYER_PATHS[playerNum];
+
+            console.log(`🎯 calculateSingleMoveFromPosition: игрок=${playerNum}, позиция=${fromCoord}, шаги=${steps}`);
+            console.log(`🎯 calculateSingleMoveFromPosition: путь игрока ${playerNum} имеет ${path.length} клеток`);
+
+            // Находим индекс стартовой позиции на пути игрока
+            const currentIndex = path.indexOf(fromCoord);
+            console.log(`🎯 calculateSingleMoveFromPosition: индекс позиции ${fromCoord} в пути: ${currentIndex}`);
+
+            if (currentIndex >= 0) {
+                const targetIndex = currentIndex + steps;
+                console.log(`🎯 calculateSingleMoveFromPosition: целевой индекс: ${targetIndex} (макс ${path.length - 1})`);
+
+                if (targetIndex < path.length) {
+                    let targetCoord = path[targetIndex];
+                    console.log(`🎯 calculateSingleMoveFromPosition: целевая координата: ${targetCoord}`);
+
+                    // Проверяем специальные поля с автоперемещением
+                    if (SPECIAL_MOVES[targetCoord]) {
+                        const originalCoord = targetCoord;
+                        targetCoord = SPECIAL_MOVES[targetCoord];
+                        console.log(`🎯 calculateSingleMoveFromPosition: специальное поле: ${originalCoord} → ${targetCoord}`);
+                    }
+
+                    const result = {
+                        coord: targetCoord,
+                        steps: steps
+                    };
+                    console.log(`🎯 calculateSingleMoveFromPosition: возвращаю результат:`, result);
+                    return result;
+                } else {
+                    console.log(`🎯 calculateSingleMoveFromPosition: целевой индекс ${targetIndex} выходит за границы пути (${path.length})`);
+                }
+            } else {
+                console.log(`🎯 calculateSingleMoveFromPosition: позиция ${fromCoord} не найдена в пути игрока ${playerNum}`);
+            }
+
+            console.log(`🎯 calculateSingleMoveFromPosition: возвращаю null`);
+            return null;
+        }
+
+        // Функция для расчета ходов от конкретной позиции (оставляем для совместимости)
+        function calculatePossibleMovesFromPosition(piece, fromCoord, maxSteps) {
+            const playerNum = parseInt(piece.dataset.player);
+            const path = PLAYER_PATHS[playerNum];
+            const possibleMoves = [];
+
+            // Находим индекс стартовой позиции на пути игрока
+            const currentIndex = path.indexOf(fromCoord);
+            if (currentIndex >= 0) {
+                for (let i = 1; i <= maxSteps; i++) {
+                    const targetIndex = currentIndex + i;
+                    if (targetIndex < path.length) {
+                        let targetCoord = path[targetIndex];
+
+                        // Проверяем специальные поля с автоперемещением
+                        if (SPECIAL_MOVES[targetCoord]) {
+                            targetCoord = SPECIAL_MOVES[targetCoord];
+                        }
+
+                        possibleMoves.push({
+                            coord: targetCoord,
+                            steps: i
+                        });
+                    }
+                }
+            }
+
+            return possibleMoves;
+        }
+
+        // Функция для проверки, находится ли координата в храме или тюрьме
+        function isInSpecialZone(coord) {
+            return TEMPLE_COORDS.includes(coord) || JAIL_COORDS.includes(coord);
+        }
+
+        // Функция для фильтрации ходов с учетом препятствий
+        function filterMovesWithObstacles(possibleMoves, movingPiece, dice1, dice2) {
+            const movingPlayerNum = parseInt(movingPiece.dataset.player);
+            const position = getPiecePosition(movingPiece);
+            const path = PLAYER_PATHS[movingPlayerNum];
+
+            // Получаем текущий индекс фишки на пути
+            let currentIndex = -1;
+            if (position.type === 'board') {
+                let coordForCalculation = position.coord;
+                if (MOVE_CALCULATION_OVERRIDES[position.coord]) {
+                    coordForCalculation = MOVE_CALCULATION_OVERRIDES[position.coord];
+                }
+                currentIndex = path.indexOf(coordForCalculation);
+            } else if (position.type === 'waiting') {
+                const entryCell = ENTRY_CELLS[movingPlayerNum];
+                currentIndex = path.indexOf(entryCell) - 1; // -1 потому что выходим из зоны ожидания
+            }
+
+            if (currentIndex === -1) {
+                return possibleMoves; // Для стартовых зон возвращаем как есть
+            }
+
+            const validMoves = [];
+            const individualDiceValues = [...new Set([dice1, dice2])].filter(d => d > 0);
+
+            for (const move of possibleMoves) {
+                const targetIndex = currentIndex + move.steps;
+                let canMakeMove = true;
+                let obstacleFound = false;
+
+                // Проверяем путь от текущей позиции до целевой
+                for (let i = currentIndex + 1; i <= targetIndex && i < path.length; i++) {
+                    const checkCoord = path[i];
+                    const piecesAtCoord = gameBoard[checkCoord] || [];
+
+                    if (piecesAtCoord.length > 0) {
+                        // Проверяем, находится ли фишка в храме или тюрьме
+                        if (isInSpecialZone(checkCoord)) {
+                            // Фишки в храмах и тюрьмах не блокируют движение - пропускаем их
+                            continue;
+                        }
+
+                        // Найдена фишка на пути
+                        const obstacleSteps = i - currentIndex;
+                        const obstaclePiece = piecesAtCoord[0]; // Берем первую фишку
+                        const obstaclePlayerNum = parseInt(obstaclePiece.dataset.player);
+
+                        if (obstaclePlayerNum === movingPlayerNum) {
+                            // Свою фишку нельзя перепрыгивать - останавливаемся перед ней
+                            if (obstacleSteps <= move.steps) {
+                                canMakeMove = false;
+                                obstacleFound = true;
+                                break;
+                            }
+                        } else {
+                            // Чужая фишка
+                            if (obstacleSteps === move.steps) {
+                                // Если чужая фишка стоит точно на конечной позиции - можно "съесть"
+                                // Но только если это точное значение одного из кубиков
+                                if (!individualDiceValues.includes(move.steps)) {
+                                    canMakeMove = false;
+                                    obstacleFound = true;
+                                }
+                                break;
+                            } else if (obstacleSteps < move.steps) {
+                                // Чужая фишка стоит на пути - можно перепрыгнуть только если можем "съесть"
+                                if (individualDiceValues.includes(obstacleSteps)) {
+                                    // Можем съесть и продолжить движение
+                                    continue;
+                                } else {
+                                    // Не можем съесть - блокирует движение
+                                    canMakeMove = false;
+                                    obstacleFound = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (canMakeMove) {
+                    validMoves.push(move);
+                }
+            }
+
+            return validMoves;
+        }
+
+        // Функция для проверки препятствий на пути телепортного хода
+        function checkTeleportPathObstacles(fromCoord, toCoord, playerNum, steps, availableDice) {
+            const path = PLAYER_PATHS[playerNum];
+
+            console.log(`🔍 checkTeleportPathObstacles: от ${fromCoord} до ${toCoord}, игрок ${playerNum}, шаги ${steps}`);
+            console.log(`🔍 checkTeleportPathObstacles: доступные кубики:`, availableDice);
+
+            // Находим индексы начальной и конечной точек
+            const fromIndex = path.indexOf(fromCoord);
+            let toIndex = path.indexOf(toCoord);
+
+            // Если конечная точка не найдена, возможно это результат специального перемещения
+            let originalToCoord = toCoord;
+            if (toIndex === -1) {
+                // Ищем исходное поле для специального перемещения
+                for (const [specialFrom, specialTo] of Object.entries(SPECIAL_MOVES)) {
+                    if (specialTo === toCoord) {
+                        originalToCoord = specialFrom;
+                        toIndex = path.indexOf(specialFrom);
+                        console.log(`🔍 checkTeleportPathObstacles: ${toCoord} является результатом специального перемещения с ${specialFrom}`);
+                        break;
+                    }
+                }
+            }
+
+            console.log(`🔍 checkTeleportPathObstacles: fromIndex=${fromIndex}, toIndex=${toIndex} (оригинальная позиция: ${originalToCoord})`);
+
+            if (fromIndex === -1 || toIndex === -1) {
+                console.log(`🚀 TELEPORT: Не найден путь от ${fromCoord} до ${originalToCoord}`);
+                return false; // Если не можем найти путь, блокируем ход
+            }
+
+            // Проверяем, что движение идет в правильном направлении
+            if (toIndex <= fromIndex) {
+                console.log(`🚀 TELEPORT: Некорректное направление движения от ${fromCoord} до ${toCoord}`);
+                return false;
+            }
+
+            console.log(`🔍 checkTeleportPathObstacles: проверяем путь от индекса ${fromIndex + 1} до ${toIndex}`);
+
+            // Проверяем каждую клетку на пути
+            for (let i = fromIndex + 1; i <= toIndex; i++) {
+                const checkCoord = path[i];
+                const piecesAtCoord = gameBoard[checkCoord] || [];
+
+                if (piecesAtCoord.length > 0) {
+                    // Проверяем, находится ли фишка в храме или тюрьме
+                    if (isInSpecialZone(checkCoord)) {
+                        // Фишки в храмах и тюрьмах не блокируют движение - пропускаем их
+                        continue;
+                    }
+
+                    // Найдена фишка на пути
+                    const obstacleSteps = i - fromIndex;
+                    const obstaclePiece = piecesAtCoord[0]; // Берем первую фишку
+                    const obstaclePlayerNum = parseInt(obstaclePiece.dataset.player);
+
+                    console.log(`🚀 TELEPORT: Найдено препятствие на ${checkCoord} (${obstacleSteps} шагов от ${fromCoord})`);
+
+                    if (obstaclePlayerNum === playerNum) {
+                        // Свою фишку нельзя перепрыгивать - блокируем ход
+                        console.log(`🚀 TELEPORT: Своя фишка на ${checkCoord} блокирует движение`);
+                        return false;
+                    } else {
+                        // Чужая фишка - можно съесть только на точном значении кубика
+                        if (i === toIndex) {
+                            // Препятствие в конечной точке - можно съесть, если есть точный кубик
+                            if (availableDice.includes(steps)) {
+                                console.log(`🚀 TELEPORT: Можно съесть чужую фишку в конечной точке ${checkCoord}`);
+                                continue;
+                            } else {
+                                console.log(`🚀 TELEPORT: Нельзя съесть чужую фишку в конечной точке ${checkCoord} - нет точного кубика`);
+                                return false;
+                            }
+                        } else {
+                            // Препятствие по пути - можно перепрыгнуть только если можем съесть
+                            if (availableDice.includes(obstacleSteps)) {
+                                console.log(`🚀 TELEPORT: Можно съесть чужую фишку по пути на ${checkCoord}`);
+                                continue;
+                            } else {
+                                console.log(`🚀 TELEPORT: Чужая фишка на ${checkCoord} блокирует движение - нет точного кубика для съедения`);
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            console.log(`🚀 TELEPORT: Путь от ${fromCoord} до ${toCoord} свободен`);
+            return true; // Путь свободен
+        }
+
         // Функция для отображения подсказок ходов
         function showMoveHints(piece) {
             clearMoveHints(); // Очищаем предыдущие подсказки
-            
-            const possibleMoves = calculatePossibleMoves(piece);
-            
-            possibleMoves.forEach(move => {
-                const cell = document.querySelector(`[data-coord="${move.coord}"]`);
-                if (cell) {
-                    // Создаем элемент с номером хода
-                    const hint = document.createElement('div');
-                    hint.className = 'move-hint';
-                    hint.textContent = move.steps;
-                    hint.style.cssText = `
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        background: rgba(255, 255, 255, 0.9);
-                        border: 1.5px solid #007bff;
-                        border-radius: 50%;
-                        width: 20px;
-                        height: 20px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 12px;
-                        font-weight: bold;
-                        color: #007bff;
-                        z-index: 1000;
-                        pointer-events: none;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                    `;
-                    
-                    cell.appendChild(hint);
-                    cell.classList.add('possible-move');
-                }
+
+            // Получаем значения кубиков
+            const dice1 = lastDiceRoll[0];
+            const dice2 = lastDiceRoll[1];
+
+            // Если кубики не брошены, показываем все возможные ходы (как раньше)
+            if (dice1 === 0 && dice2 === 0) {
+                const possibleMoves = calculatePossibleMoves(piece);
+                possibleMoves.forEach(move => {
+                    showSingleMoveHint(move);
+                });
+                return;
+            }
+
+            // Определяем доступные количества ходов на основе кубиков
+            const availableMoves = new Set();
+            availableMoves.add(dice1);  // Первый кубик
+            availableMoves.add(dice2);  // Второй кубик
+            availableMoves.add(dice1 + dice2);  // Сумма (всегда доступна, включая дубли)
+
+            // Рассчитываем все возможные ходы для фишки
+            const allPossibleMoves = calculatePossibleMoves(piece);
+
+            // Фильтруем только те ходы, которые соответствуют значениям кубиков
+            const diceFilteredMoves = allPossibleMoves.filter(move => availableMoves.has(move.steps));
+
+            // Применяем фильтрацию препятствий
+            const validMoves = filterMovesWithObstacles(diceFilteredMoves, piece, dice1, dice2);
+
+            // Добавляем телепортные ходы если фишка находится в своем телепорте
+            const teleportMoves = calculateTeleportMoves(piece, dice1, dice2);
+            console.log('🚀 TELEPORT: Найдено телепортных ходов:', teleportMoves.length);
+
+            // Объединяем обычные и телепортные ходы
+            const allMoves = [...validMoves, ...teleportMoves];
+
+            allMoves.forEach(move => {
+                showSingleMoveHint(move);
             });
+        }
+
+        function showSingleMoveHint(move) {
+            const cell = document.querySelector(`[data-coord="${move.coord}"]`);
+            if (cell) {
+                // Создаем элемент с номером хода
+                const hint = document.createElement('div');
+                hint.className = move.isTeleport ? 'move-hint teleport-hint' : 'move-hint';
+
+                // Для телепортных ходов показываем "Т" + номер хода, для обычных - количество шагов
+                hint.textContent = move.isTeleport ? `Т${move.steps}` : move.steps;
+
+                // Определяем стили в зависимости от типа хода
+                const isTeleportion = move.isTeleport;
+                const backgroundColor = isTeleportion ? 'rgba(138, 43, 226, 0.9)' : 'rgba(255, 255, 255, 0.9)';
+                const borderColor = isTeleportion ? '#8A2BE2' : '#007bff';
+                const textColor = isTeleportion ? '#fff' : '#007bff';
+                const boxShadow = isTeleportion ? '0 4px 8px rgba(138, 43, 226, 0.4)' : '0 2px 4px rgba(0,0,0,0.2)';
+
+                hint.style.cssText = `
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: ${backgroundColor};
+                    border: 1.5px solid ${borderColor};
+                    border-radius: 50%;
+                    width: 20px;
+                    height: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 12px;
+                    font-weight: bold;
+                    color: ${textColor};
+                    z-index: 1000;
+                    pointer-events: none;
+                    box-shadow: ${boxShadow};
+                `;
+
+                cell.appendChild(hint);
+                cell.classList.add('possible-move');
+
+                if (isTeleportion) {
+                    console.log(`🚀 TELEPORT: Показана телепортная подсказка на ${move.coord} для хода на ${move.steps}`);
+                }
+            }
         }
 
         // Функция для очистки подсказок ходов
@@ -2763,7 +3539,7 @@
                 await updateGameState(currentGameId, gameState, updatedAt);
                 console.log('✅ AUTOSAVE: Автосохранение завершено успешно');
                 
-                // Включить кнопку "Следующий игрок" после успешного сохранения
+                // Включить кнопку "Следующий игрок" после успешного автосохранения
                 const nextPlayerBtn = document.getElementById('next-player-btn');
                 if (nextPlayerBtn && gamePhase === 'playing') {
                     nextPlayerBtn.disabled = false;
@@ -2859,10 +3635,14 @@
                     filter: `CHPR_id=eq.${gameId}`
                 }, (payload) => {
                     console.log('🟢 ПОЛУЧЕНО ОБНОВЛЕНИЕ:', payload);
+                    console.log('🟢 Payload old:', payload.old);
                     console.log('🟢 Payload new:', payload.new);
                     console.log('🟢 Game state:', payload.new?.game_state);
-                    
+                    console.log('🟢 Updated at:', payload.new?.updated_at);
+                    console.log('🟢 Current player from payload:', payload.new?.game_state?.currentPlayer);
+
                     if (payload.new && payload.new.game_state) {
+                        console.log('🟢 Вызываем restoreGameState...');
                         restoreGameState(payload.new.game_state);
                     } else {
                         console.warn('Получен пустой game_state');
@@ -2907,16 +3687,39 @@
         function restoreGameState(newGameState) {
             console.log('🟡 RESTORE: Начинаем восстановление состояния игры');
             console.log('🟡 RESTORE: Новое состояние:', newGameState);
-            
+            console.log('🟡 RESTORE: isRestoringState:', isRestoringState);
+
+            // Если уже идет восстановление, пропускаем
+            if (isRestoringState) {
+                console.log('🟡 RESTORE: Уже идет восстановление, пропускаем');
+                return;
+            }
+
             // Проверяем, отличается ли новое состояние от текущего
             const currentState = serializeGameState();
             console.log('🟡 RESTORE: Текущее состояние:', currentState);
-            
-            if (JSON.stringify(currentState) === JSON.stringify(newGameState)) {
-                console.log('🟡 RESTORE: Состояние не изменилось, пропускаем обновление');
+
+            // Сравниваем ключевые поля, а не всё состояние целиком
+            const isStateChanged =
+                currentState.currentPlayer !== newGameState.currentPlayer ||
+                currentState.gamePhase !== newGameState.gamePhase ||
+                JSON.stringify(currentState.playerDiceValues) !== JSON.stringify(newGameState.playerDiceValues) ||
+                JSON.stringify(currentState.diceLog) !== JSON.stringify(newGameState.diceLog) ||
+                currentState.rollCount !== newGameState.rollCount;
+
+            console.log('🟡 RESTORE: Анализ изменений:');
+            console.log('  - currentPlayer:', currentState.currentPlayer, '->', newGameState.currentPlayer);
+            console.log('  - gamePhase:', currentState.gamePhase, '->', newGameState.gamePhase);
+            console.log('  - playerDiceValues изменились:', JSON.stringify(currentState.playerDiceValues) !== JSON.stringify(newGameState.playerDiceValues));
+            console.log('  - diceLog изменился:', JSON.stringify(currentState.diceLog) !== JSON.stringify(newGameState.diceLog));
+            console.log('  - rollCount:', currentState.rollCount, '->', newGameState.rollCount);
+            console.log('  - isStateChanged:', isStateChanged);
+
+            if (!isStateChanged) {
+                console.log('🟡 RESTORE: Ключевые поля не изменились, пропускаем обновление');
                 return;
             }
-            
+
             console.log('🟢 RESTORE: Состояние изменилось, выполняем восстановление');
 
             // Устанавливаем флаг восстановления, чтобы избежать циклических обновлений
@@ -2955,6 +3758,9 @@
             if (newGameState.piecesData) {
                 animatePiecesToNewPositions(currentPieces, newGameState.piecesData);
             }
+
+            // Обновляем состояние кубиков игроков после восстановления
+            updatePlayerDiceStates();
 
             // Снимаем флаг восстановления через 1 секунду
             setTimeout(() => {
@@ -3028,6 +3834,7 @@
                 } : null,
                 playerCount: playerCount,
                 piecesData: piecesData,
+                playerDiceValues: playerDiceValues,
                 timestamp: new Date().toISOString()
             };
             return gameState;
@@ -3051,7 +3858,8 @@
             firstMoveWinner = gameState.firstMoveWinner;
             selectedPiece = null; // Будем восстанавливать позже
             playerCount = gameState.playerCount || 2;
-            
+            playerDiceValues = gameState.playerDiceValues || {1: [0, 0], 2: [0, 0], 3: [0, 0], 4: [0, 0]};
+
             // Очищаем текущие фишки с доски
             document.querySelectorAll('.piece').forEach(piece => piece.remove());
             
@@ -3089,6 +3897,9 @@
                                 handlePieceClick(piece);
                             });
 
+                            // Добавляем всплывающую подсказку
+                            addPieceTooltip(piece);
+
                             // Устанавливаем позицию
                             const pos = coordToPosition(pieceData.position);
                             if (pos && piece && piece.style) {
@@ -3111,7 +3922,10 @@
                     }
                 }
             }
-            
+
+            // Воссоздаем кубики игроков
+            createPlayerDice();
+
             console.log('🔄 DESERIALIZE: Десериализация завершена');
             console.log('🔄 DESERIALIZE: currentGameId после десериализации:', currentGameId);
             console.log('🔄 DESERIALIZE: Текущий игрок:', currentPlayer);
@@ -3467,6 +4281,37 @@
                 currentTooltip.remove();
                 currentTooltip = null;
             }
+        }
+
+        // Функция для генерации текста подсказки фишки
+        function getPieceTooltipText(piece) {
+            const player = parseInt(piece.dataset.player);
+            const pieceId = piece.dataset.id;
+
+            // Извлекаем номер фишки из ID (например, p1_3 -> 3)
+            const pieceNumber = parseInt(pieceId.split('_')[1]) + 1; // +1 потому что индексация с 0
+
+            // Названия цветов для каждого игрока
+            const colorNames = {
+                1: 'Красная',
+                2: 'Желтая',
+                3: 'Зеленая',
+                4: 'Фиолетовая'
+            };
+
+            return `${colorNames[player]} ${pieceNumber}`;
+        }
+
+        // Функция для добавления подсказок к фишке
+        function addPieceTooltip(piece) {
+            piece.addEventListener('mouseenter', function(e) {
+                const tooltipText = getPieceTooltipText(piece);
+                showTooltip(e, tooltipText);
+            });
+
+            piece.addEventListener('mouseleave', function() {
+                hideTooltip();
+            });
         }
     </script>
 </body>
