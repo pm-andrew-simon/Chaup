@@ -1242,6 +1242,7 @@
         let maxRolls = 3;
         let lastDiceRoll = [0, 0];
         let diceUsed = [false, false]; // Отслеживание использованных кубиков [dice1, dice2]
+        let consecutiveDoubles = 0; // Счетчик последовательных дублей для текущего игрока
         let playersOrder = [];
         let playerDiceValues = {1: [0, 0], 2: [0, 0], 3: [0, 0], 4: [0, 0]};
         let playerColors = ['Красный', 'Желтый', 'Зеленый', 'Фиолетовый'];
@@ -2283,17 +2284,76 @@
             autoSaveGame();
         }
 
+        function isDouble(dice1, dice2) {
+            return (dice1 === 1 && dice2 === 1) || (dice1 === 6 && dice2 === 6);
+        }
+
+        function enableDiceRollForCurrentPlayer() {
+            // Снимаем выделение с текущей фишки
+            if (selectedPiece) {
+                selectedPiece.classList.remove('selected');
+                selectedPiece = null;
+                clearMoveHints();
+            }
+
+            // Активируем кнопку броска кубиков
+            const rollBtn = document.getElementById('roll-dice-btn');
+            const nextPlayerBtn = document.getElementById('next-player-btn');
+
+            if (rollBtn) {
+                rollBtn.disabled = false;
+                rollBtn.style.display = 'block';
+            }
+
+            if (nextPlayerBtn) {
+                nextPlayerBtn.disabled = false;
+                nextPlayerBtn.textContent = 'Далее';
+            }
+
+            // Показываем кубики игрока для повторного броска
+            showPlayerDice(currentPlayer);
+
+            console.log(`🎲 DOUBLES: Активирован повторный бросок для игрока ${currentPlayer}`);
+        }
+
         function checkTurnCompletion() {
             const allDiceUsed = diceUsed[0] && diceUsed[1];
 
             if (allDiceUsed) {
-                console.log('🎲 DICE: Все кубики использованы, ход завершен');
-                updateGameMessage('Все кубики использованы. Ход завершен!');
+                const dice1 = lastDiceRoll[0];
+                const dice2 = lastDiceRoll[1];
+                const isDoubleRoll = isDouble(dice1, dice2);
 
-                // Автоматически переходим к следующему игроку
-                setTimeout(() => {
-                    nextPlayer();
-                }, 1000);
+                console.log('🎲 DICE: Все кубики использованы, ход завершен');
+                console.log('🎲 DOUBLES: Дубль?', isDoubleRoll, 'Последовательных дублей:', consecutiveDoubles);
+
+                if (isDoubleRoll && consecutiveDoubles < 3) {
+                    // Увеличиваем счетчик дублей
+                    consecutiveDoubles++;
+                    console.log(`🎲 DOUBLES: Дубль ${dice1}:${dice2}! Бросок №${consecutiveDoubles} из 3 возможных`);
+
+                    updateGameMessage(`Дубль ${dice1}:${dice2}! Бросайте кубики еще раз (${consecutiveDoubles}/3)`);
+
+                    // Активируем кнопку броска кубиков для повторного броска
+                    setTimeout(() => {
+                        enableDiceRollForCurrentPlayer();
+                    }, 1000);
+                } else {
+                    if (isDoubleRoll && consecutiveDoubles >= 3) {
+                        console.log('🎲 DOUBLES: Достигнут лимит дублей (3), передаем ход');
+                        updateGameMessage('Достигнут лимит дублей (3 подряд). Ход передается!');
+                    } else {
+                        updateGameMessage('Все кубики использованы. Ход завершен!');
+                    }
+
+                    // Сбрасываем счетчик дублей при передаче хода
+                    consecutiveDoubles = 0;
+
+                    // Автоматически переходим к следующему игроку
+                    setTimeout(() => {
+                        nextPlayer();
+                    }, 1000);
+                }
             } else {
                 const remainingDice = [];
                 if (!diceUsed[0]) remainingDice.push(lastDiceRoll[0]);
@@ -2800,6 +2860,9 @@
                 
                 // Сброс счетчика бросков для нового игрока
                 rollCount = 0;
+
+                // Сброс счетчика дублей при смене игрока
+                consecutiveDoubles = 0;
                 
                 // Автосохранение после смены игрока
                 autoSaveGame();
@@ -3931,6 +3994,7 @@
                 maxRolls: maxRolls,
                 lastDiceRoll: lastDiceRoll,
                 diceUsed: diceUsed,
+                consecutiveDoubles: consecutiveDoubles,
                 playersOrder: playersOrder,
                 diceLog: diceLog,
                 orderResults: orderResults,
@@ -3959,6 +4023,7 @@
             maxRolls = gameState.maxRolls || 3;
             lastDiceRoll = gameState.lastDiceRoll || [0, 0];
             diceUsed = gameState.diceUsed || [false, false];
+            consecutiveDoubles = gameState.consecutiveDoubles || 0;
             playersOrder = gameState.playersOrder || [];
             diceLog = gameState.diceLog || [];
             console.log('🔄 DESERIALIZE: Восстановлен diceLog:', diceLog);
