@@ -54,11 +54,17 @@ The application is built as a vanilla HTML/CSS/JavaScript single-file game with 
 - `startGame()`: Initializes board and player setup
 - `handleOrderDetermination()`: Manages turn order via dice rolls
 - `performMove()`: Executes piece movements with validation and special field handling
+- `handleGamePlay()`: Central dice processing logic with double handling and auto-skip
+- `rollPlayerDice()`: Dice rolling animation and result processing
+- `nextPlayer()`: Player turn transitions with state management
 
 **Move Calculation System:**
 - `calculatePossibleMoves()`: Computes valid moves based on piece location (start→waiting→board→finish)
 - `getPiecePosition()`: Returns piece location type ('start', 'waiting', 'board') and coordinates
 - `showMoveHints()` / `clearMoveHints()`: Display/hide numbered move indicators (1-12 steps)
+- `filterMovesWithObstacles()`: Critical function that validates moves by checking for blocking pieces
+- `analyzePossibleMoves()`: Provides detailed move analysis for UI display (must use obstacle filtering)
+- `checkNoValidMoves()`: Determines if auto-skip should occur (must use obstacle filtering)
 - Multi-piece cell support: Arrays for start/waiting zones, single pieces on main board
 
 **Input Handling:**
@@ -87,6 +93,14 @@ The application is built as a vanilla HTML/CSS/JavaScript single-file game with 
 - Special fields automatically move pieces to adjacent cells but count as normal moves
 - Move hints calculate up to 12 steps along the player's designated path
 
+**Dice System & Special Rules:**
+- Double detection: Only 1:1 and 6:6 grant additional rolls (up to 3 times)
+- Dice consumption tracking: `diceUsed[]` array prevents reusing dice values
+- Auto-skip mechanism: `checkNoValidMoves()` triggers automatic turn progression
+- START_ZONES exit: Requires dice value of 1 (combo moves go to board path, not waiting zones)
+- Jail mechanics: Requires dice value of 6 to exit, second die determines movement
+- Temple/Portal protection: Pieces in special zones cannot be captured
+
 **Mobile Compatibility:** The game supports:
 - Touch events with passive/non-passive handling
 - Viewport scaling and pinch-to-zoom  
@@ -103,7 +117,8 @@ The application is built as a vanilla HTML/CSS/JavaScript single-file game with 
 - Real-time multiplayer synchronization using Supabase Realtime channels
 - Automatic game state saving and bidirectional sync between clients
 - Player turn and dice log synchronization for live multiplayer sessions
-- API endpoint `PUT /api/game/state` generates detailed move reports comparing previous/current state
+- **Critical**: `loadGame()` must call `updatePlayerDiceStates()` to activate dice after loading
+- **Critical**: `restoreGameState()` creates sync conflicts - prevent with `isRestoringState` flag
 
 ## Common Development Commands
 
@@ -177,3 +192,24 @@ Shared navigation component across all pages (`<nav class="navigation">`) with c
 - Supabase anon key is safe for client-side exposure (Row Level Security enforced)
 - No server-side secrets or private keys in repository
 - All authentication handled through Supabase security policies
+
+## Critical Implementation Notes
+
+**Move Logic Consistency:**
+- `showMoveHints()`, `analyzePossibleMoves()`, and `checkNoValidMoves()` MUST all use `filterMovesWithObstacles()`
+- Any function calculating possible moves without obstacle checking will cause UI inconsistencies
+- Always verify that theoretical moves (dice-based) match practical moves (obstacle-filtered)
+
+**Double (Dice Pairs) Logic:**
+- Only 1:1 and 6:6 trigger additional rolls - other doubles (2:2, 3:3, 4:4, 5:5) are normal turns
+- Double logic has priority over auto-skip - provide additional rolls even with no valid moves
+- After 3 consecutive doubles, normal auto-skip rules apply
+
+**Auto-Skip Debugging:**
+- If auto-skip fails, check: `gamePhase === 'playing'`, `setTimeout()` execution, `nextPlayer()` state
+- Use diagnostic logging to trace: dice detection → move validation → timer setup → execution
+
+**State Management:**
+- Game state changes trigger Supabase sync, which can cause `restoreGameState()` loops
+- Use `isRestoringState` flag to prevent cycles during multiplayer sync
+- Always call `updatePlayerDiceStates()` after state restoration to activate correct player's dice
