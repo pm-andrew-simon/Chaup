@@ -709,7 +709,7 @@
         }
 
         .game-message-container {
-            flex: 1;
+            flex: 0.65;
             display: flex;
             flex-direction: column;
             background: rgba(255, 255, 255, 0.05);
@@ -723,11 +723,11 @@
             margin-bottom: 10px;
             color: #2d3748;
             font-size: 15px;
-            text-align: left;
+            text-align: center;
         }
 
         .dice-log-container {
-            flex: 1;
+            flex: 0.35;
             display: flex;
             flex-direction: column;
             background: rgba(255, 255, 255, 0.05);
@@ -902,7 +902,7 @@
             margin-bottom: 10px;
             color: #2d3748;
             font-size: 15px;
-            text-align: left;
+            text-align: center;
         }
         
         .dice-log-entries {
@@ -911,9 +911,7 @@
         }
 
         .dice-log-entry {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: block;
             margin: 3px 0;
             padding: 8px 10px;
             background: white;
@@ -1131,13 +1129,18 @@
             }
 
             .info-section {
-                flex-direction: column;
+                flex-direction: row;
                 height: auto;
                 gap: 10px;
             }
 
-            .game-message-container,
+            .game-message-container {
+                flex: 0.65;
+                height: 150px;
+            }
+
             .dice-log-container {
+                flex: 0.35;
                 height: 150px;
             }
 
@@ -2863,9 +2866,9 @@
                 }
                 
                 entryDiv.innerHTML = `
-                    <span class="player-name">${entry.color}:</span>
+                    <span class="player-name">${entry.color}:<br></span>
                     <span class="dice-values">${entry.dice1} + ${entry.dice2} = ${entry.sum}</span>
-                    ${entry.isFirstMoveWinner ? '<span class="first-indicator">Ходит первым</span>' : ''}
+                    ${entry.isFirstMoveWinner ? '<br><span class="first-indicator">[Ходит первым]</span>' : ''}
                 `;
                 
                 entriesDiv.appendChild(entryDiv);
