@@ -2524,10 +2524,28 @@
                 // Обновляем анализ ходов с учетом использованных кубиков
                 const dice1 = lastDiceRoll[0];
                 const dice2 = lastDiceRoll[1];
-                const updatedAnalysis = analyzePossibleMoves(dice1, dice2);
-                const message = `Можете сделать еще ход. Остались кубики: ${remainingDice.join(', ')}\n\n${updatedAnalysis}`;
 
-                updateGameMessage(message);
+                // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Проверяем наличие валидных ходов ПОСЛЕ использования кубиков
+                const noValidMovesAfterMove = checkNoValidMoves(dice1, dice2);
+
+                if (noValidMovesAfterMove) {
+                    // Нет возможных ходов с оставшимися кубиками - автоматический пропуск
+                    const playerColor = playerColors[currentPlayer - 1];
+                    const skipMessage = `Остались кубики: ${remainingDice.join(', ')}, но нет возможных ходов. Ход передан следующему игроку.`;
+
+                    updateGameMessage(`Ход выполнен!\n\n${skipMessage}`);
+
+                    // Автоматически переходим к следующему игроку через 1 секунду
+                    setTimeout(() => {
+                        nextPlayer();
+                    }, 1000);
+                } else {
+                    // Есть возможные ходы - показываем обычное сообщение
+                    const updatedAnalysis = analyzePossibleMoves(dice1, dice2);
+                    const message = `Можете сделать еще ход. Остались кубики: ${remainingDice.join(', ')}\n\n${updatedAnalysis}`;
+
+                    updateGameMessage(message);
+                }
 
                 // Снимаем выделение с текущей фишки, чтобы игрок мог выбрать другую
                 updateSelectedPiece(null);
