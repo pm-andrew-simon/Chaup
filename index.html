@@ -609,6 +609,11 @@
                 height: calc(100vw / 15 * 37.5 / 35);
             }
 
+            .dice-dot {
+                width: calc(100vw / 15 * 5 / 35);
+                height: calc(100vw / 15 * 5 / 35);
+            }
+
             button {
                 padding: 12px 20px;
                 font-size: 14px;
@@ -795,8 +800,8 @@
         }
 
         .dice-dot {
-            width: 5px;
-            height: 5px;
+            width: calc(min(90vw, 600px) * 5 / 600);
+            height: calc(min(90vw, 600px) * 5 / 600);
             background: #333;
             border-radius: 50%;
             position: absolute;
