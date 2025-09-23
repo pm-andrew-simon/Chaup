@@ -592,6 +592,23 @@
                 border-radius: 15px;
             }
 
+            .cell {
+                width: calc(100vw / 15);
+                height: calc(100vw / 15);
+            }
+
+            .piece {
+                width: calc(100vw / 15 * 30 / 35);
+                height: calc(100vw / 15 * 30 / 35);
+                top: calc(100vw / 15 * 2 / 35);
+                left: calc(100vw / 15 * 2 / 35);
+            }
+
+            .player-dice {
+                width: calc(100vw / 15 * 37.5 / 35);
+                height: calc(100vw / 15 * 37.5 / 35);
+            }
+
             button {
                 padding: 12px 20px;
                 font-size: 14px;
@@ -1018,6 +1035,9 @@
         @media (max-width: 768px) {
             body {
                 padding: 0;
+                overflow-y: auto;
+                height: auto;
+                min-height: 100vh;
             }
 
             .game-container {
@@ -1477,9 +1497,16 @@
                 // На десктопе ограничиваем размер
                 boardSize = Math.min(window.innerWidth * 0.9, 600);
             }
-            
-            const cellSize = boardSize * 35 / 600;
-            
+
+            let cellSize;
+            if (window.innerWidth <= 768) {
+                // На мобильных устройствах делаем клетки ровно 1/15 от размера поля
+                cellSize = (boardSize-4) / 15;
+            } else {
+                // На десктопе используем оригинальную пропорцию
+                cellSize = boardSize * 35 / 600;
+            }
+
             // Рассчитываем отступ так, чтобы сетка 15x15 была точно по центру
             // Общая ширина/высота игрового поля: 15 * cellSize
             const gameFieldSize = 15 * cellSize;
@@ -1498,9 +1525,16 @@
             } else {
                 boardSize = Math.min(window.innerWidth * 0.9, 600);
             }
-            
-            const cellSize = boardSize * 35 / 600;
-            
+
+            let cellSize;
+            if (window.innerWidth <= 768) {
+                // На мобильных устройствах делаем клетки ровно 1/15 от размера поля
+                cellSize = boardSize / 15;
+            } else {
+                // На десктопе используем оригинальную пропорцию
+                cellSize = boardSize * 35 / 600;
+            }
+
             // Используем тот же расчет отступа, что и в coordToPosition
             const gameFieldSize = 15 * cellSize;
             const offset = (boardSize - gameFieldSize) / 2;
@@ -1962,10 +1996,15 @@
 
                 const teleportElement = document.createElement('div');
                 teleportElement.innerHTML = teleportSVG;
+                // Адаптивный размер: 80% от размера клетки (как храмы и тюрьмы)
+                const cellSize = window.innerWidth <= 768
+                    ? `calc(100vw / 15 * 0.8)`
+                    : `calc(min(90vw, 600px) * 35 / 600 * 0.8)`;
+
                 teleportElement.style.cssText = `
                     position: absolute;
-                    width: 28px;
-                    height: 28px;
+                    width: ${cellSize};
+                    height: ${cellSize};
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
