@@ -1115,7 +1115,7 @@
                 padding: 10px;
                 border-radius: 10px;
                 min-width: auto;
-                width: calc(100vw - 20px);
+                width: calc(100vw - 10px);
                 max-width: 100%;
                 height: calc(100vw - 20px);
                 max-height: 100%;
@@ -1124,6 +1124,7 @@
                 backdrop-filter: blur(15px);
                 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
                 box-sizing: border-box;
+                overflow: hidden;
             }
 
 
@@ -1168,12 +1169,14 @@
             .game-message-container {
                 flex: 2;
                 height: 100%;
+                max-height: 300px;
                 overflow-y: auto;
             }
 
             .dice-log-container {
                 flex: 1;
                 height: 100%;
+                max-height: 300px;
                 overflow: hidden;
             }
 
@@ -1938,7 +1941,9 @@
                     
                     // Добавляем обработчики для всплывающих подсказок
                     templeElement.addEventListener('mouseenter', function(e) {
-                        showTooltip(e, 'Здесь фишка защищена от сбивания. Только одна фишка одновременно. Фишка может покинуть Храм в любой свой ход. Мимо фишек, зашедших в Храм, можно пройти.');
+                        if (selectedPiece === null) {
+                            showTooltip(e, 'Здесь фишка защищена от сбивания. Только одна фишка одновременно. Фишка может покинуть Храм в любой свой ход. Мимо фишек, зашедших в Храм, можно пройти.');
+                        }
                     });
                     
                     templeElement.addEventListener('mouseleave', function() {
@@ -1981,7 +1986,9 @@
                     
                     // Добавляем обработчики для всплывающих подсказок
                     jailElement.addEventListener('mouseenter', function(e) {
-                        showTooltip(e, 'Тюрьма: Попав сюда, вы «застряли». Чтобы выйти, нужно выбросить хотя бы одну 6 - это плата за выход, а вторая кость укажет, на сколько шагов вы двигаетесь. На этом поле может находиться только одна фишка одновременно. Фишка защищена от сбивания, мимо фишки в тюрьме можно пройти.');
+                        if (selectedPiece === null) {
+                            showTooltip(e, 'Тюрьма: Попав сюда, вы «застряли». Чтобы выйти, нужно выбросить хотя бы одну 6 - это плата за выход, а вторая кость укажет, на сколько шагов вы двигаетесь. На этом поле может находиться только одна фишка одновременно. Фишка защищена от сбивания, мимо фишки в тюрьме можно пройти.');
+                        }
                     });
                     
                     jailElement.addEventListener('mouseleave', function() {
@@ -2060,7 +2067,9 @@
                 
                 // Добавляем обработчики для всплывающих подсказок
                 teleportElement.addEventListener('mouseover', function(e) {
-                    showTooltip(e, tooltipText);
+                    if (selectedPiece === null) {
+                        showTooltip(e, tooltipText);
+                    }
                 });
                 teleportElement.addEventListener('mouseout', function() {
                     hideTooltip();
@@ -3158,7 +3167,7 @@
                     console.log(`⏭️ AUTO_SKIP: gamePhase перед nextPlayer():`, gamePhase);
                     console.log(`⏭️ AUTO_SKIP: currentPlayer перед nextPlayer():`, currentPlayer);
                     nextPlayer();
-                }, 1000);
+                }, 3000);
 
                 return; // Прерываем выполнение функции
             }
@@ -3199,6 +3208,7 @@
         function nextPlayer() {
 
             if (gamePhase === 'playing') {
+				console.log(`мой первый лог`);
 
                 const playerIndex = playersOrder.findIndex(p => p.player === currentPlayer);
                 const nextIndex = (playerIndex + 1) % playersOrder.length;
@@ -3620,20 +3630,32 @@
 
         function handlePieceClick(piece) {
             console.log('Piece clicked:', piece.dataset.player); // Для отладки
-            
-            // Проверяем, что это фишка текущего игрока
+
             const piecePlayer = parseInt(piece.dataset.player);
+            const pieceCoord = getCurrentPosition(piece);
+
+            // Умная обработка кликов по чужим фишкам
             if (gamePhase === 'playing' && piecePlayer !== currentPlayer) {
-                updateGameMessage(`Сейчас ход игрока: ${playerColors[currentPlayer-1]}`);
+                // Если есть выделенная своя фишка - рассматриваем как попытку хода (захвата)
+                if (selectedPiece) {
+                    console.log('Попытка захвата чужой фишки:', pieceCoord);
+                    performMove(selectedPiece, pieceCoord);
+                    clearMoveHints();
+                    updateSelectedPiece(null);
+                } else {
+                    // Если нет выделенной фишки - показываем сообщение
+                    updateGameMessage(`Нельзя выделить чужую фишку. Сейчас ход игрока: ${playerColors[currentPlayer-1]}`);
+                }
                 return;
             }
-            
+
+            // Обработка кликов по своим фишкам
             if (selectedPiece === piece) {
-                // Отменить выделение при повторном клике
+                // Отменить выделение при повторном клике на ту же фишку
                 updateSelectedPiece(null);
                 updateGameMessage('Выделение фишки отменено');
             } else {
-                // Выделить фишку
+                // Выделить свою фишку
                 updateSelectedPiece(piece);
                 updateGameMessage('Фишка выделена. Теперь коснитесь поля для перемещения');
             }
@@ -3726,9 +3748,19 @@
                                         });
 
                                         if (piecesAtPosition.length > 0) {
-                                            // Найдена фишка на пути - блокирует ход
-                                            canMakeMove = false;
-                                            break;
+                                            const obstaclePiece = piecesAtPosition[0];
+                                            const obstaclePlayerNum = parseInt(obstaclePiece.dataset.player);
+
+                                            if (obstaclePlayerNum === playerNum) {
+                                                // Своя фишка - блокирует ход
+                                                canMakeMove = false;
+                                                break;
+                                            } else if (step < remainingSteps) {
+                                                // Чужая фишка на пути (не на конечной позиции) - блокирует ход
+                                                canMakeMove = false;
+                                                break;
+                                            }
+                                            // Чужая фишка на конечной позиции - разрешаем ход (будет захват)
                                         }
                                     }
 
@@ -3778,9 +3810,20 @@
                             });
 
                             if (piecesAtPosition.length > 0) {
-                                // Найдена фишка на пути - блокирует ход
-                                canMakeMove = false;
-                                break;
+                                const obstaclePiece = piecesAtPosition[0];
+                                const obstaclePlayerNum = parseInt(obstaclePiece.dataset.player);
+                                const movingPlayerNum = parseInt(piece.dataset.player);
+
+                                if (obstaclePlayerNum === movingPlayerNum) {
+                                    // Своя фишка - блокирует ход
+                                    canMakeMove = false;
+                                    break;
+                                } else if (step < i) {
+                                    // Чужая фишка на пути (не на конечной позиции) - блокирует ход
+                                    canMakeMove = false;
+                                    break;
+                                }
+                                // Чужая фишка на конечной позиции - разрешаем ход (будет захват)
                             }
                         }
 
