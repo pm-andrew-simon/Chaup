@@ -1,0 +1,581 @@
+🎲 RANDOM_MOVE: Начинаем случайный ход
+index.html:3307 🎲 RANDOM_MOVE: Текущие кубики: 1, 1
+index.html:3308 🎲 RANDOM_MOVE: diceUsed: [false, false]
+index.html:3314 🎲 RANDOM_MOVE: Проверяем журнал бросков (10 записей)
+index.html:3319 🎲 RANDOM_MOVE: Последняя запись в журнале: {color: 'Красный', dice1: 1, dice2: 1, isFirstMoveWinner: false, player: 1, …}
+index.html:3329 🎲 RANDOM_MOVE: Последняя запись принадлежит игроку 1, текущий игрок 2 еще не бросал
+index.html:3336 🎲 RANDOM_MOVE: Кубики не брошены для текущего игрока, выполняем бросок
+index.html:2897 🧹 CACHE: Очистен кеш при новом броске кубиков
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G11, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 4
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G11, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 4
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция waiting-E14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-J14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 53
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G9, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 6
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:4122 🎯 calculateSingleMoveFromPosition: игрок=2, позиция=G7, шаги=6
+index.html:4123 🎯 calculateSingleMoveFromPosition: путь игрока 2 имеет 61 клеток
+index.html:4127 🎯 calculateSingleMoveFromPosition: индекс позиции G7 в пути: 20
+index.html:4131 🎯 calculateSingleMoveFromPosition: целевой индекс: 26 (макс 60)
+index.html:4135 🎯 calculateSingleMoveFromPosition: целевая координата: G1
+index.html:4148 🎯 calculateSingleMoveFromPosition: возвращаю результат: {coord: 'G1', steps: 6}
+index.html:4377 🔍 checkTeleportPathObstacles: от G7 до G1, игрок 2, шаги 6
+index.html:4378 🔍 checkTeleportPathObstacles: доступные кубики: (2) [1, 6]
+index.html:4398 🔍 checkTeleportPathObstacles: fromIndex=20, toIndex=26 (оригинальная позиция: G1)
+index.html:4411 🔍 checkTeleportPathObstacles: проверяем путь от индекса 21 до 26
+index.html:4470 🚀 TELEPORT: Путь от G7 до G1 свободен
+index.html:4122 🎯 calculateSingleMoveFromPosition: игрок=2, позиция=I9, шаги=1
+index.html:4123 🎯 calculateSingleMoveFromPosition: путь игрока 2 имеет 61 клеток
+index.html:4127 🎯 calculateSingleMoveFromPosition: индекс позиции I9 в пути: 48
+index.html:4131 🎯 calculateSingleMoveFromPosition: целевой индекс: 49 (макс 60)
+index.html:4135 🎯 calculateSingleMoveFromPosition: целевая координата: I10
+index.html:4148 🎯 calculateSingleMoveFromPosition: возвращаю результат: {coord: 'I10', steps: 1}
+index.html:4377 🔍 checkTeleportPathObstacles: от I9 до I10, игрок 2, шаги 1
+index.html:4378 🔍 checkTeleportPathObstacles: доступные кубики: (2) [1, 6]
+index.html:4398 🔍 checkTeleportPathObstacles: fromIndex=48, toIndex=49 (оригинальная позиция: I10)
+index.html:4411 🔍 checkTeleportPathObstacles: проверяем путь от индекса 49 до 49
+index.html:4470 🚀 TELEPORT: Путь от I9 до I10 свободен
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция start-A14, входящих ходов: 4
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-B10, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 11
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:2971 🎲 DICE: Вызов autoSaveGame после броска кубиков
+index.html:2972 🎲 DICE: currentGameId: CHPR-S7ROEOEB
+index.html:2973 🎲 DICE: isRestoringState: false
+index.html:4885 🔵 UPDATE: Обновляем состояние игры: CHPR-S7ROEOEB
+index.html:3343 🎲 RANDOM_MOVE: После броска кубики: 1, 6
+index.html:3348 🎲 RANDOM_MOVE: Используем кубики 1 и 6
+index.html:3352 🎲 RANDOM_MOVE: Фишек игрока 2: 6
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G11, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 4
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция waiting-E14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-J14, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 53
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G9, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 6
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:4122 🎯 calculateSingleMoveFromPosition: игрок=2, позиция=G7, шаги=6
+index.html:4123 🎯 calculateSingleMoveFromPosition: путь игрока 2 имеет 61 клеток
+index.html:4127 🎯 calculateSingleMoveFromPosition: индекс позиции G7 в пути: 20
+index.html:4131 🎯 calculateSingleMoveFromPosition: целевой индекс: 26 (макс 60)
+index.html:4135 🎯 calculateSingleMoveFromPosition: целевая координата: G1
+index.html:4148 🎯 calculateSingleMoveFromPosition: возвращаю результат: {coord: 'G1', steps: 6}
+index.html:4377 🔍 checkTeleportPathObstacles: от G7 до G1, игрок 2, шаги 6
+index.html:4378 🔍 checkTeleportPathObstacles: доступные кубики: (2) [1, 6]
+index.html:4398 🔍 checkTeleportPathObstacles: fromIndex=20, toIndex=26 (оригинальная позиция: G1)
+index.html:4411 🔍 checkTeleportPathObstacles: проверяем путь от индекса 21 до 26
+index.html:4470 🚀 TELEPORT: Путь от G7 до G1 свободен
+index.html:4122 🎯 calculateSingleMoveFromPosition: игрок=2, позиция=I9, шаги=1
+index.html:4123 🎯 calculateSingleMoveFromPosition: путь игрока 2 имеет 61 клеток
+index.html:4127 🎯 calculateSingleMoveFromPosition: индекс позиции I9 в пути: 48
+index.html:4131 🎯 calculateSingleMoveFromPosition: целевой индекс: 49 (макс 60)
+index.html:4135 🎯 calculateSingleMoveFromPosition: целевая координата: I10
+index.html:4148 🎯 calculateSingleMoveFromPosition: возвращаю результат: {coord: 'I10', steps: 1}
+index.html:4377 🔍 checkTeleportPathObstacles: от I9 до I10, игрок 2, шаги 1
+index.html:4378 🔍 checkTeleportPathObstacles: доступные кубики: (2) [1, 6]
+index.html:4398 🔍 checkTeleportPathObstacles: fromIndex=48, toIndex=49 (оригинальная позиция: I10)
+index.html:4411 🔍 checkTeleportPathObstacles: проверяем путь от индекса 49 до 49
+index.html:4470 🚀 TELEPORT: Путь от I9 до I10 свободен
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция start-A14, входящих ходов: 4
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-B10, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 11
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:3397 🎲 RANDOM_MOVE: Фишек с возможными ходами: 6
+index.html:3407 🎲 RANDOM_MOVE: Начинаем выполнение ходов
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G11, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 4
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция waiting-E14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-J14, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 53
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G9, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 6
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:4122 🎯 calculateSingleMoveFromPosition: игрок=2, позиция=G7, шаги=6
+index.html:4123 🎯 calculateSingleMoveFromPosition: путь игрока 2 имеет 61 клеток
+index.html:4127 🎯 calculateSingleMoveFromPosition: индекс позиции G7 в пути: 20
+index.html:4131 🎯 calculateSingleMoveFromPosition: целевой индекс: 26 (макс 60)
+index.html:4135 🎯 calculateSingleMoveFromPosition: целевая координата: G1
+index.html:4148 🎯 calculateSingleMoveFromPosition: возвращаю результат: {coord: 'G1', steps: 6}
+index.html:4377 🔍 checkTeleportPathObstacles: от G7 до G1, игрок 2, шаги 6
+index.html:4378 🔍 checkTeleportPathObstacles: доступные кубики: (2) [1, 6]
+index.html:4398 🔍 checkTeleportPathObstacles: fromIndex=20, toIndex=26 (оригинальная позиция: G1)
+index.html:4411 🔍 checkTeleportPathObstacles: проверяем путь от индекса 21 до 26
+index.html:4470 🚀 TELEPORT: Путь от G7 до G1 свободен
+index.html:4122 🎯 calculateSingleMoveFromPosition: игрок=2, позиция=I9, шаги=1
+index.html:4123 🎯 calculateSingleMoveFromPosition: путь игрока 2 имеет 61 клеток
+index.html:4127 🎯 calculateSingleMoveFromPosition: индекс позиции I9 в пути: 48
+index.html:4131 🎯 calculateSingleMoveFromPosition: целевой индекс: 49 (макс 60)
+index.html:4135 🎯 calculateSingleMoveFromPosition: целевая координата: I10
+index.html:4148 🎯 calculateSingleMoveFromPosition: возвращаю результат: {coord: 'I10', steps: 1}
+index.html:4377 🔍 checkTeleportPathObstacles: от I9 до I10, игрок 2, шаги 1
+index.html:4378 🔍 checkTeleportPathObstacles: доступные кубики: (2) [1, 6]
+index.html:4398 🔍 checkTeleportPathObstacles: fromIndex=48, toIndex=49 (оригинальная позиция: I10)
+index.html:4411 🔍 checkTeleportPathObstacles: проверяем путь от индекса 49 до 49
+index.html:4470 🚀 TELEPORT: Путь от I9 до I10 свободен
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция start-A14, входящих ходов: 4
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-B10, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 11
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:3478 🎲 RANDOM_MOVE: Ход 1: фишка перемещается на G7 (1 шагов)
+index.html:4732 🎲 DICE: Доступные ходы: (3) [1, 6, 7] Использованные кубики: (2) [false, false]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G9, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 6
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:4122 🎯 calculateSingleMoveFromPosition: игрок=2, позиция=G7, шаги=6
+index.html:4123 🎯 calculateSingleMoveFromPosition: путь игрока 2 имеет 61 клеток
+index.html:4127 🎯 calculateSingleMoveFromPosition: индекс позиции G7 в пути: 20
+index.html:4131 🎯 calculateSingleMoveFromPosition: целевой индекс: 26 (макс 60)
+index.html:4135 🎯 calculateSingleMoveFromPosition: целевая координата: G1
+index.html:4148 🎯 calculateSingleMoveFromPosition: возвращаю результат: {coord: 'G1', steps: 6}
+index.html:4377 🔍 checkTeleportPathObstacles: от G7 до G1, игрок 2, шаги 6
+index.html:4378 🔍 checkTeleportPathObstacles: доступные кубики: (2) [1, 6]
+index.html:4398 🔍 checkTeleportPathObstacles: fromIndex=20, toIndex=26 (оригинальная позиция: G1)
+index.html:4411 🔍 checkTeleportPathObstacles: проверяем путь от индекса 21 до 26
+index.html:4470 🚀 TELEPORT: Путь от G7 до G1 свободен
+index.html:4122 🎯 calculateSingleMoveFromPosition: игрок=2, позиция=I9, шаги=1
+index.html:4123 🎯 calculateSingleMoveFromPosition: путь игрока 2 имеет 61 клеток
+index.html:4127 🎯 calculateSingleMoveFromPosition: индекс позиции I9 в пути: 48
+index.html:4131 🎯 calculateSingleMoveFromPosition: целевой индекс: 49 (макс 60)
+index.html:4135 🎯 calculateSingleMoveFromPosition: целевая координата: I10
+index.html:4148 🎯 calculateSingleMoveFromPosition: возвращаю результат: {coord: 'I10', steps: 1}
+index.html:4377 🔍 checkTeleportPathObstacles: от I9 до I10, игрок 2, шаги 1
+index.html:4378 🔍 checkTeleportPathObstacles: доступные кубики: (2) [1, 6]
+index.html:4398 🔍 checkTeleportPathObstacles: fromIndex=48, toIndex=49 (оригинальная позиция: I10)
+index.html:4411 🔍 checkTeleportPathObstacles: проверяем путь от индекса 49 до 49
+index.html:4470 🚀 TELEPORT: Путь от I9 до I10 свободен
+index.html:4756 🚀 TELEPORT: Найдено телепортных ходов: 4
+index.html:4812 🚀 TELEPORT: Показана телепортная подсказка на G7 для хода на 1
+index.html:4812 🚀 TELEPORT: Показана телепортная подсказка на G1 для хода на 7
+index.html:4812 🚀 TELEPORT: Показана телепортная подсказка на I9 для хода на 6
+index.html:4812 🚀 TELEPORT: Показана телепортная подсказка на I10 для хода на 7
+index.html:4899 ✅ UPDATE: Состояние игры успешно обновлено, data: null
+index.html:4916 ✅ AUTOSAVE: Автосохранение завершено успешно
+index.html:5013 🟢 ПОЛУЧЕНО ОБНОВЛЕНИЕ: {schema: 'public', table: 'saved_games', commit_timestamp: '2025-09-25T21:38:15.444Z', eventType: 'UPDATE', new: {…}, …}
+index.html:5014 🟢 Payload old: {CHPR_id: 'CHPR-S7ROEOEB', id: 609}
+index.html:5015 🟢 Payload new: {CHPR_id: 'CHPR-S7ROEOEB', created_at: '2025-09-25T21:23:23.275+00:00', game_state: {…}, id: 609, new_game_state: null, …}
+index.html:5016 🟢 Game state: {cachedValidMoves: Array(0), consecutiveDoubles: 0, currentPlayer: 2, currentTurnNumber: 38, diceLog: Array(10), …}
+index.html:5017 🟢 Updated at: 2025-09-25T21:38:13.897+00:00
+index.html:5018 🟢 Current player from payload: 2
+index.html:5021 🟢 Вызываем restoreGameState...
+index.html:5073 🟡 RESTORE: Текущее состояние: {currentPlayer: 2, gamePhase: 'playing', rollCount: 0, maxRolls: 3, lastDiceRoll: Array(2), …}
+index.html:5085 🟡 RESTORE: Анализ изменений:
+index.html:5086   - currentPlayer: 2 -> 2
+index.html:5087   - gamePhase: playing -> playing
+index.html:5088   - playerDiceValues изменились: false
+index.html:5089   - diceLog изменился: true
+index.html:5090   - diceUsed изменился: false
+index.html:5091   - diceUsed: [false,false] -> [false,false]
+index.html:5092   - rollCount: 0 -> 0
+index.html:5093   - isStateChanged: true
+index.html:5100 🟢 RESTORE: Состояние изменилось, выполняем восстановление
+index.html:5217 🔄 DESERIALIZE: Восстановлен diceLog: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+index.html:5218 🔄 DESERIALIZE: Восстановлена история телепортов: {p2_3: 28}
+index.html:5219 🔄 DESERIALIZE: Восстановлен номер хода: 38
+index.html:5223 🔄 DESERIALIZE: Восстановлен кеш ходов, размер: 0
+index.html:5328 🔄 DESERIALIZE: Обновлены gameMessages: 7 сообщений
+index.html:5331 🔄 DESERIALIZE: Десериализация завершена
+index.html:5332 🔄 DESERIALIZE: currentGameId после десериализации: CHPR-S7ROEOEB
+index.html:5333 🔄 DESERIALIZE: Текущий игрок: 2
+index.html:5334 🔄 DESERIALIZE: Фаза игры: playing
+index.html:5122 🟢 RESTORE: Обновляем интерфейс, diceLog: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+index.html:5132 🟢 RESTORE: Обновлено сообщение для фазы: playing
+index.html:5142 🟢 RESTORE: Восстановление завершено, автосохранение снова активно
+index.html:3646 🔄 CACHE: Вычисляем и кешируем ходы для фишки: p2_3
+index.html:3704 🎲 CACHE: Доступные ходы: (3) [1, 6, 7] Использованные кубики: (2) [false, false]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция unknown-null, входящих ходов: 0
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:3728 🚀 CACHE: Найдено телепортных ходов: 0
+index.html:3733 🔄 CACHE: Закешировано ходов: 0
+index.html:3493 🔄 RANDOM_MOVE: Заполнен кеш ходов перед performMove, размер: 0
+index.html:2357 🎲 PERFORM_MOVE: Доступные ходы: (3) [1, 6, 7] Использованные кубики: (2) [false, false]
+index.html:2370 🔄 PERFORM_MOVE: Проверяем кешированные ходы, доступно: 0
+index.html:2376 🚫 PERFORM_MOVE: Целевая координата G7 не найдена в кешированных ходах
+index.html:2377 💡 PERFORM_MOVE: Доступные кешированные ходы: []
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция unknown-null, входящих ходов: 0
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция unknown-null, входящих ходов: 0
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция unknown-null, входящих ходов: 0
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция unknown-null, входящих ходов: 0
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция unknown-null, входящих ходов: 0
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция unknown-null, входящих ходов: 0
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:3465 🎲 RANDOM_MOVE: Нет доступных ходов, завершаем (сделано 1 ходов)
+index.html:3501 🎲 RANDOM_MOVE: Случайные ходы выполнены (всего ходов: 1)
+*здесь я нажимаю еще раз "Сделать случайный ход"
+
+index.html:3287 🎲 RANDOM_MOVE: Начинаем случайный ход
+index.html:3307 🎲 RANDOM_MOVE: Текущие кубики: 1, 6
+index.html:3308 🎲 RANDOM_MOVE: diceUsed: [false, false]
+index.html:3314 🎲 RANDOM_MOVE: Проверяем журнал бросков (10 записей)
+index.html:3319 🎲 RANDOM_MOVE: Последняя запись в журнале: {color: 'Желтый', dice1: 1, dice2: 6, isFirstMoveWinner: false, player: 2, …}
+index.html:3327 🎲 RANDOM_MOVE: Текущий игрок 2 уже бросал кубики в игровом ходу
+index.html:3345 🎲 RANDOM_MOVE: Кубики уже брошены для текущего игрока, используем существующие значения
+index.html:3348 🎲 RANDOM_MOVE: Используем кубики 1 и 6
+index.html:3352 🎲 RANDOM_MOVE: Фишек игрока 2: 6
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G11, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 4
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция waiting-E14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-J14, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 53
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G9, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 6
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:4122 🎯 calculateSingleMoveFromPosition: игрок=2, позиция=G7, шаги=6
+index.html:4123 🎯 calculateSingleMoveFromPosition: путь игрока 2 имеет 61 клеток
+index.html:4127 🎯 calculateSingleMoveFromPosition: индекс позиции G7 в пути: 20
+index.html:4131 🎯 calculateSingleMoveFromPosition: целевой индекс: 26 (макс 60)
+index.html:4135 🎯 calculateSingleMoveFromPosition: целевая координата: G1
+index.html:4148 🎯 calculateSingleMoveFromPosition: возвращаю результат: {coord: 'G1', steps: 6}
+index.html:4377 🔍 checkTeleportPathObstacles: от G7 до G1, игрок 2, шаги 6
+index.html:4378 🔍 checkTeleportPathObstacles: доступные кубики: (2) [1, 6]
+index.html:4398 🔍 checkTeleportPathObstacles: fromIndex=20, toIndex=26 (оригинальная позиция: G1)
+index.html:4411 🔍 checkTeleportPathObstacles: проверяем путь от индекса 21 до 26
+index.html:4470 🚀 TELEPORT: Путь от G7 до G1 свободен
+index.html:4122 🎯 calculateSingleMoveFromPosition: игрок=2, позиция=I9, шаги=1
+index.html:4123 🎯 calculateSingleMoveFromPosition: путь игрока 2 имеет 61 клеток
+index.html:4127 🎯 calculateSingleMoveFromPosition: индекс позиции I9 в пути: 48
+index.html:4131 🎯 calculateSingleMoveFromPosition: целевой индекс: 49 (макс 60)
+index.html:4135 🎯 calculateSingleMoveFromPosition: целевая координата: I10
+index.html:4148 🎯 calculateSingleMoveFromPosition: возвращаю результат: {coord: 'I10', steps: 1}
+index.html:4377 🔍 checkTeleportPathObstacles: от I9 до I10, игрок 2, шаги 1
+index.html:4378 🔍 checkTeleportPathObstacles: доступные кубики: (2) [1, 6]
+index.html:4398 🔍 checkTeleportPathObstacles: fromIndex=48, toIndex=49 (оригинальная позиция: I10)
+index.html:4411 🔍 checkTeleportPathObstacles: проверяем путь от индекса 49 до 49
+index.html:4470 🚀 TELEPORT: Путь от I9 до I10 свободен
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция start-A14, входящих ходов: 4
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-B10, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 11
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:3397 🎲 RANDOM_MOVE: Фишек с возможными ходами: 6
+index.html:3407 🎲 RANDOM_MOVE: Начинаем выполнение ходов
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G11, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 4
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция waiting-E14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-J14, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 53
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G9, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 6
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:4122 🎯 calculateSingleMoveFromPosition: игрок=2, позиция=G7, шаги=6
+index.html:4123 🎯 calculateSingleMoveFromPosition: путь игрока 2 имеет 61 клеток
+index.html:4127 🎯 calculateSingleMoveFromPosition: индекс позиции G7 в пути: 20
+index.html:4131 🎯 calculateSingleMoveFromPosition: целевой индекс: 26 (макс 60)
+index.html:4135 🎯 calculateSingleMoveFromPosition: целевая координата: G1
+index.html:4148 🎯 calculateSingleMoveFromPosition: возвращаю результат: {coord: 'G1', steps: 6}
+index.html:4377 🔍 checkTeleportPathObstacles: от G7 до G1, игрок 2, шаги 6
+index.html:4378 🔍 checkTeleportPathObstacles: доступные кубики: (2) [1, 6]
+index.html:4398 🔍 checkTeleportPathObstacles: fromIndex=20, toIndex=26 (оригинальная позиция: G1)
+index.html:4411 🔍 checkTeleportPathObstacles: проверяем путь от индекса 21 до 26
+index.html:4470 🚀 TELEPORT: Путь от G7 до G1 свободен
+index.html:4122 🎯 calculateSingleMoveFromPosition: игрок=2, позиция=I9, шаги=1
+index.html:4123 🎯 calculateSingleMoveFromPosition: путь игрока 2 имеет 61 клеток
+index.html:4127 🎯 calculateSingleMoveFromPosition: индекс позиции I9 в пути: 48
+index.html:4131 🎯 calculateSingleMoveFromPosition: целевой индекс: 49 (макс 60)
+index.html:4135 🎯 calculateSingleMoveFromPosition: целевая координата: I10
+index.html:4148 🎯 calculateSingleMoveFromPosition: возвращаю результат: {coord: 'I10', steps: 1}
+index.html:4377 🔍 checkTeleportPathObstacles: от I9 до I10, игрок 2, шаги 1
+index.html:4378 🔍 checkTeleportPathObstacles: доступные кубики: (2) [1, 6]
+index.html:4398 🔍 checkTeleportPathObstacles: fromIndex=48, toIndex=49 (оригинальная позиция: I10)
+index.html:4411 🔍 checkTeleportPathObstacles: проверяем путь от индекса 49 до 49
+index.html:4470 🚀 TELEPORT: Путь от I9 до I10 свободен
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция start-A14, входящих ходов: 4
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-B10, входящих ходов: 3
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 11
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 3 из 3
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: (3) [{…}, {…}, {…}]
+index.html:3478 🎲 RANDOM_MOVE: Ход 1: фишка перемещается на G15 (1 шагов)
+index.html:4732 🎲 DICE: Доступные ходы: (3) [1, 6, 7] Использованные кубики: (2) [false, false]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция waiting-E14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:4756 🚀 TELEPORT: Найдено телепортных ходов: 0
+index.html:3646 🔄 CACHE: Вычисляем и кешируем ходы для фишки: p2_1
+index.html:3704 🎲 CACHE: Доступные ходы: (3) [1, 6, 7] Использованные кубики: (2) [false, false]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция waiting-E14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = -1
+index.html:4220 🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)
+index.html:3728 🚀 CACHE: Найдено телепортных ходов: 0
+index.html:3733 🔄 CACHE: Закешировано ходов: 1
+index.html:3493 🔄 RANDOM_MOVE: Заполнен кеш ходов перед performMove, размер: 1
+index.html:2357 🎲 PERFORM_MOVE: Доступные ходы: (3) [1, 6, 7] Использованные кубики: (2) [false, false]
+index.html:2370 🔄 PERFORM_MOVE: Проверяем кешированные ходы, доступно: 1
+index.html:2386 🎲 DEBUG: stepsUsed=1, dice1=1, dice2=6, diceUsed=[false, false]
+index.html:2421 🎲 DICE: Использован первый кубик (1)
+index.html:4885 🔵 UPDATE: Обновляем состояние игры: CHPR-S7ROEOEB
+index.html:2493 🔴 MOVE: Вызов autoSaveGame после выполнения хода
+index.html:2494 🔴 MOVE: currentGameId: CHPR-S7ROEOEB
+index.html:2495 🔴 MOVE: isRestoringState: false
+index.html:4885 🔵 UPDATE: Обновляем состояние игры: CHPR-S7ROEOEB
+index.html:4899 ✅ UPDATE: Состояние игры успешно обновлено, data: null
+index.html:4916 ✅ AUTOSAVE: Автосохранение завершено успешно
+index.html:4899 ✅ UPDATE: Состояние игры успешно обновлено, data: null
+index.html:4916 ✅ AUTOSAVE: Автосохранение завершено успешно
+index.html:5013 🟢 ПОЛУЧЕНО ОБНОВЛЕНИЕ: {schema: 'public', table: 'saved_games', commit_timestamp: '2025-09-25T21:39:29.284Z', eventType: 'UPDATE', new: {…}, …}
+index.html:5014 🟢 Payload old: {CHPR_id: 'CHPR-S7ROEOEB', id: 609}
+index.html:5015 🟢 Payload new: {CHPR_id: 'CHPR-S7ROEOEB', created_at: '2025-09-25T21:23:23.275+00:00', game_state: {…}, id: 609, new_game_state: null, …}
+index.html:5016 🟢 Game state: {cachedValidMoves: Array(0), consecutiveDoubles: 0, currentPlayer: 2, currentTurnNumber: 38, diceLog: Array(10), …}
+index.html:5017 🟢 Updated at: 2025-09-25T21:39:27.746+00:00
+index.html:5018 🟢 Current player from payload: 2
+index.html:5021 🟢 Вызываем restoreGameState...
+index.html:5073 🟡 RESTORE: Текущее состояние: {currentPlayer: 2, gamePhase: 'playing', rollCount: 0, maxRolls: 3, lastDiceRoll: Array(2), …}
+index.html:5085 🟡 RESTORE: Анализ изменений:
+index.html:5086   - currentPlayer: 2 -> 2
+index.html:5087   - gamePhase: playing -> playing
+index.html:5088   - playerDiceValues изменились: false
+index.html:5089   - diceLog изменился: false
+index.html:5090   - diceUsed изменился: false
+index.html:5091   - diceUsed: [true,false] -> [true,false]
+index.html:5092   - rollCount: 0 -> 0
+index.html:5093   - isStateChanged: false
+index.html:5096 🟡 RESTORE: Ключевые поля не изменились, пропускаем обновление
+index.html:5013 🟢 ПОЛУЧЕНО ОБНОВЛЕНИЕ: {schema: 'public', table: 'saved_games', commit_timestamp: '2025-09-25T21:39:29.286Z', eventType: 'UPDATE', new: {…}, …}
+index.html:5014 🟢 Payload old: {CHPR_id: 'CHPR-S7ROEOEB', id: 609}
+index.html:5015 🟢 Payload new: {CHPR_id: 'CHPR-S7ROEOEB', created_at: '2025-09-25T21:23:23.275+00:00', game_state: {…}, id: 609, new_game_state: null, …}
+index.html:5016 🟢 Game state: {cachedValidMoves: Array(0), consecutiveDoubles: 0, currentPlayer: 2, currentTurnNumber: 38, diceLog: Array(10), …}
+index.html:5017 🟢 Updated at: 2025-09-25T21:39:27.747+00:00
+index.html:5018 🟢 Current player from payload: 2
+index.html:5021 🟢 Вызываем restoreGameState...
+index.html:5073 🟡 RESTORE: Текущее состояние: {currentPlayer: 2, gamePhase: 'playing', rollCount: 0, maxRolls: 3, lastDiceRoll: Array(2), …}
+index.html:5085 🟡 RESTORE: Анализ изменений:
+index.html:5086   - currentPlayer: 2 -> 2
+index.html:5087   - gamePhase: playing -> playing
+index.html:5088   - playerDiceValues изменились: false
+index.html:5089   - diceLog изменился: false
+index.html:5090   - diceUsed изменился: false
+index.html:5091   - diceUsed: [true,false] -> [true,false]
+index.html:5092   - rollCount: 0 -> 0
+index.html:5093   - isStateChanged: false
+index.html:5096 🟡 RESTORE: Ключевые поля не изменились, пропускаем обновление
+index.html:2578 🎲 DICE: Остались неиспользованные кубики: [6]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G11, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 4
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 0 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: []
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G15, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 0
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 0 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: []
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-J14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 53
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G11, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 4
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 0 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: []
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G15, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 0
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 0 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: []
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-J14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 53
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G9, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 6
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-B10, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 11
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4885 🔵 UPDATE: Обновляем состояние игры: CHPR-S7ROEOEB
+index.html:4899 ✅ UPDATE: Состояние игры успешно обновлено, data: null
+index.html:4916 ✅ AUTOSAVE: Автосохранение завершено успешно
+index.html:5013 🟢 ПОЛУЧЕНО ОБНОВЛЕНИЕ: {schema: 'public', table: 'saved_games', commit_timestamp: '2025-09-25T21:39:29.786Z', eventType: 'UPDATE', new: {…}, …}
+index.html:5014 🟢 Payload old: {CHPR_id: 'CHPR-S7ROEOEB', id: 609}
+index.html:5015 🟢 Payload new: {CHPR_id: 'CHPR-S7ROEOEB', created_at: '2025-09-25T21:23:23.275+00:00', game_state: {…}, id: 609, new_game_state: null, …}
+index.html:5016 🟢 Game state: {cachedValidMoves: Array(0), consecutiveDoubles: 0, currentPlayer: 2, currentTurnNumber: 38, diceLog: Array(10), …}
+index.html:5017 🟢 Updated at: 2025-09-25T21:39:28.281+00:00
+index.html:5018 🟢 Current player from payload: 2
+index.html:5021 🟢 Вызываем restoreGameState...
+index.html:5073 🟡 RESTORE: Текущее состояние: {currentPlayer: 2, gamePhase: 'playing', rollCount: 0, maxRolls: 3, lastDiceRoll: Array(2), …}
+index.html:5085 🟡 RESTORE: Анализ изменений:
+index.html:5086   - currentPlayer: 2 -> 2
+index.html:5087   - gamePhase: playing -> playing
+index.html:5088   - playerDiceValues изменились: false
+index.html:5089   - diceLog изменился: false
+index.html:5090   - diceUsed изменился: false
+index.html:5091   - diceUsed: [true,false] -> [true,false]
+index.html:5092   - rollCount: 0 -> 0
+index.html:5093   - isStateChanged: false
+index.html:5096 🟡 RESTORE: Ключевые поля не изменились, пропускаем обновление
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G11, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 4
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 0 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: []
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G15, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 0
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 0 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: []
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-J14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 53
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-G9, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 6
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-B10, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 11
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:3478 🎲 RANDOM_MOVE: Ход 2: фишка перемещается на H11 (6 шагов)
+index.html:4732 🎲 DICE: Доступные ходы: [6] Использованные кубики: (2) [true, false]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-J14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 53
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:4756 🚀 TELEPORT: Найдено телепортных ходов: 0
+index.html:3646 🔄 CACHE: Вычисляем и кешируем ходы для фишки: p2_2
+index.html:3704 🎲 CACHE: Доступные ходы: [6] Использованные кубики: (2) [true, false]
+index.html:4202 🔍 FILTER_DEBUG: Игрок 2, позиция board-J14, входящих ходов: 1
+index.html:4217 🔍 FILTER_DEBUG: currentIndex = 53
+index.html:4367 🔍 FILTER_DEBUG: Отфильтровано ходов: 1 из 1
+index.html:4368 🔍 FILTER_DEBUG: Валидные ходы: [{…}]
+index.html:3728 🚀 CACHE: Найдено телепортных ходов: 0
+index.html:3733 🔄 CACHE: Закешировано ходов: 1
+index.html:3493 🔄 RANDOM_MOVE: Заполнен кеш ходов перед performMove, размер: 1
+index.html:2266 🔒 JAIL: Выход из тюрьмы на 6, движение завершено на H11
+index.html:2357 🎲 PERFORM_MOVE: Доступные ходы: [6] Использованные кубики: (2) [true, false]
+index.html:2370 🔄 PERFORM_MOVE: Проверяем кешированные ходы, доступно: 1
+index.html:2386 🎲 DEBUG: stepsUsed=6, dice1=1, dice2=6, diceUsed=[true, false]
+index.html:2443 🔒 JAIL: Оба кубика использованы (6 на выход + 6 на движение)
+index.html:4885 🔵 UPDATE: Обновляем состояние игры: CHPR-S7ROEOEB
+index.html:2493 🔴 MOVE: Вызов autoSaveGame после выполнения хода
+index.html:2494 🔴 MOVE: currentGameId: CHPR-S7ROEOEB
+index.html:2495 🔴 MOVE: isRestoringState: false
+index.html:4885 🔵 UPDATE: Обновляем состояние игры: CHPR-S7ROEOEB
+index.html:4899 ✅ UPDATE: Состояние игры успешно обновлено, data: null
+index.html:4916 ✅ AUTOSAVE: Автосохранение завершено успешно
+index.html:4899 ✅ UPDATE: Состояние игры успешно обновлено, data: null
+index.html:4916 ✅ AUTOSAVE: Автосохранение завершено успешно
+index.html:5013 🟢 ПОЛУЧЕНО ОБНОВЛЕНИЕ: {schema: 'public', table: 'saved_games', commit_timestamp: '2025-09-25T21:39:31.807Z', eventType: 'UPDATE', new: {…}, …}
+index.html:5014 🟢 Payload old: {CHPR_id: 'CHPR-S7ROEOEB', id: 609}
+index.html:5015 🟢 Payload new: {CHPR_id: 'CHPR-S7ROEOEB', created_at: '2025-09-25T21:23:23.275+00:00', game_state: {…}, id: 609, new_game_state: null, …}
+index.html:5016 🟢 Game state: {cachedValidMoves: Array(0), consecutiveDoubles: 0, currentPlayer: 2, currentTurnNumber: 38, diceLog: Array(10), …}
+index.html:5017 🟢 Updated at: 2025-09-25T21:39:30.309+00:00
+index.html:5018 🟢 Current player from payload: 2
+index.html:5021 🟢 Вызываем restoreGameState...
+index.html:5073 🟡 RESTORE: Текущее состояние: {currentPlayer: 2, gamePhase: 'playing', rollCount: 0, maxRolls: 3, lastDiceRoll: Array(2), …}
+index.html:5085 🟡 RESTORE: Анализ изменений:
+index.html:5086   - currentPlayer: 2 -> 2
+index.html:5087   - gamePhase: playing -> playing
+index.html:5088   - playerDiceValues изменились: false
+index.html:5089   - diceLog изменился: false
+index.html:5090   - diceUsed изменился: false
+index.html:5091   - diceUsed: [true,true] -> [true,true]
+index.html:5092   - rollCount: 0 -> 0
+index.html:5093   - isStateChanged: false
+index.html:5096 🟡 RESTORE: Ключевые поля не изменились, пропускаем обновление
+index.html:5013 🟢 ПОЛУЧЕНО ОБНОВЛЕНИЕ: {schema: 'public', table: 'saved_games', commit_timestamp: '2025-09-25T21:39:31.815Z', eventType: 'UPDATE', new: {…}, …}
+index.html:5014 🟢 Payload old: {CHPR_id: 'CHPR-S7ROEOEB', id: 609}
+index.html:5015 🟢 Payload new: {CHPR_id: 'CHPR-S7ROEOEB', created_at: '2025-09-25T21:23:23.275+00:00', game_state: {…}, id: 609, new_game_state: null, …}
+index.html:5016 🟢 Game state: {cachedValidMoves: Array(0), consecutiveDoubles: 0, currentPlayer: 2, currentTurnNumber: 38, diceLog: Array(10), …}
+index.html:5017 🟢 Updated at: 2025-09-25T21:39:30.311+00:00
+index.html:5018 🟢 Current player from payload: 2
+index.html:5021 🟢 Вызываем restoreGameState...
+index.html:5073 🟡 RESTORE: Текущее состояние: {currentPlayer: 2, gamePhase: 'playing', rollCount: 0, maxRolls: 3, lastDiceRoll: Array(2), …}
+index.html:5085 🟡 RESTORE: Анализ изменений:
+index.html:5086   - currentPlayer: 2 -> 2
+index.html:5087   - gamePhase: playing -> playing
+index.html:5088   - playerDiceValues изменились: false
+index.html:5089   - diceLog изменился: false
+index.html:5090   - diceUsed изменился: false
+index.html:5091   - diceUsed: [true,true] -> [true,true]
+index.html:5092   - rollCount: 0 -> 0
+index.html:5093   - isStateChanged: false
+index.html:5096 🟡 RESTORE: Ключевые поля не изменились, пропускаем обновление
+index.html:2542 🎲 DICE: Все кубики использованы, ход завершен
+index.html:2544 🎲 DOUBLES: Дубль? false Последовательных дублей: 0
+index.html:3417 🎲 RANDOM_MOVE: Все кубики использованы, завершаем ходы (сделано 2 ходов)
+index.html:3501 🎲 RANDOM_MOVE: Случайные ходы выполнены (всего ходов: 2)
+index.html:3210 мой первый лог
+index.html:3219 🧹 CACHE: Очистен кеш при смене игрока
+index.html:4885 🔵 UPDATE: Обновляем состояние игры: CHPR-S7ROEOEB
+index.html:4899 ✅ UPDATE: Состояние игры успешно обновлено, data: null
+index.html:4916 ✅ AUTOSAVE: Автосохранение завершено успешно
+index.html:5013 🟢 ПОЛУЧЕНО ОБНОВЛЕНИЕ: {schema: 'public', table: 'saved_games', commit_timestamp: '2025-09-25T21:39:33.342Z', eventType: 'UPDATE', new: {…}, …}
+index.html:5014 🟢 Payload old: {CHPR_id: 'CHPR-S7ROEOEB', id: 609}
+index.html:5015 🟢 Payload new: {CHPR_id: 'CHPR-S7ROEOEB', created_at: '2025-09-25T21:23:23.275+00:00', game_state: {…}, id: 609, new_game_state: null, …}
+index.html:5016 🟢 Game state: {cachedValidMoves: Array(0), consecutiveDoubles: 0, currentPlayer: 1, currentTurnNumber: 39, diceLog: Array(10), …}
+index.html:5017 🟢 Updated at: 2025-09-25T21:39:31.835+00:00
+index.html:5018 🟢 Current player from payload: 1
+index.html:5021 🟢 Вызываем restoreGameState...
+index.html:5073 🟡 RESTORE: Текущее состояние: {currentPlayer: 1, gamePhase: 'playing', rollCount: 0, maxRolls: 3, lastDiceRoll: Array(2), …}
+index.html:5085 🟡 RESTORE: Анализ изменений:
+index.html:5086   - currentPlayer: 1 -> 1
+index.html:5087   - gamePhase: playing -> playing
+index.html:5088   - playerDiceValues изменились: false
+index.html:5089   - diceLog изменился: false
+index.html:5090   - diceUsed изменился: false
+index.html:5091   - diceUsed: [true,true] -> [true,true]
+index.html:5092   - rollCount: 0 -> 0
+index.html:5093   - isStateChanged: false
+index.html:5096 🟡 RESTORE: Ключевые поля не изменились, пропускаем обновление

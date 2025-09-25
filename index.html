@@ -1388,6 +1388,7 @@
         let boardTranslateX = 0;
         let boardTranslateY = 0;
         let selectedPiece = null;
+        let cachedValidMoves = []; // Кеш возможных ходов для выделенной фишки
         
         // Стартовые поля для выхода
         const ENTRY_CELLS = {
@@ -2365,23 +2366,17 @@
                 }
             }
 
-            // Рассчитываем все возможные ходы для фишки
-            const allPossibleMoves = calculatePossibleMoves(piece, 12, dice1, dice2);
+            // ОПТИМИЗАЦИЯ: Используем кешированные ходы вместо повторных вычислений
+            console.log('🔄 PERFORM_MOVE: Проверяем кешированные ходы, доступно:', cachedValidMoves.length);
 
-            // Фильтруем только те ходы, которые соответствуют значениям кубиков
-            const diceFilteredMoves = allPossibleMoves.filter(move => availableMoves.has(move.steps));
+            // Ищем целевой ход среди кешированных валидных ходов
+            let targetMove = cachedValidMoves.find(move => move.coord === targetCoord);
 
-            // Применяем фильтрацию препятствий
-            const validMoves = filterMovesWithObstacles(diceFilteredMoves, piece, dice1, dice2);
-
-
-            // Ищем целевой ход среди валидных ходов
-            let targetMove = validMoves.find(move => move.coord === targetCoord);
-
-            // Если не найден в обычных ходах, проверяем телепортные ходы
             if (!targetMove) {
-                const teleportMoves = calculateTeleportMoves(piece, dice1, dice2);
-                targetMove = teleportMoves.find(move => move.coord === targetCoord);
+                console.log('🚫 PERFORM_MOVE: Целевая координата', targetCoord, 'не найдена в кешированных ходах');
+                console.log('💡 PERFORM_MOVE: Доступные кешированные ходы:', cachedValidMoves.map(m => `${m.coord}(${m.steps})`));
+                updateGameMessage('Недопустимый ход! Выберите одну из подсвеченных клеток.');
+                return;
             }
 
             if (targetMove) {
@@ -2897,6 +2892,10 @@
                 diceUsed = [false, false]; // Сброс использованных кубиков при новом броске
                 isStartZoneComboMove = false; // Сброс флага комбо-хода из стартовой зоны
 
+                // Очищаем кеш ходов при новом броске кубиков
+                cachedValidMoves = [];
+                console.log('🧹 CACHE: Очистен кеш при новом броске кубиков');
+
 
                 // Обработка результата
                 handleDiceResult(value1, value2);
@@ -3215,6 +3214,10 @@
                 const previousPlayer = currentPlayer;
                 currentPlayer = playersOrder[nextIndex].player;
 
+                // Очищаем кеш ходов при смене игрока
+                cachedValidMoves = [];
+                console.log('🧹 CACHE: Очистен кеш при смене игрока');
+
 
                 // Увеличиваем счетчик ходов
                 currentTurnNumber++;
@@ -3227,6 +3230,13 @@
 
                 // Включаем кнопку "Бросить кубики"
                 document.getElementById('roll-dice-btn').disabled = false;
+
+                // Включаем кнопку "Сделать случайный ход"
+                const randomMoveBtn = document.getElementById('random-move-btn');
+                if (randomMoveBtn) {
+                    randomMoveBtn.disabled = false;
+                    randomMoveBtn.textContent = 'Сделать случайный ход';
+                }
 
                 // Сброс счетчика бросков для нового игрока
                 rollCount = 0;
@@ -3288,6 +3298,10 @@
                 console.log('🎲 RANDOM_MOVE: Не в фазе игры, отменяем случайный ход');
                 return;
             }
+
+            // Блокируем restore во время выполнения случайного хода
+            isPerformingRandomMove = true;
+            console.log('🔄 RANDOM_MOVE: Блокируем restore до завершения операции');
 
             // Деактивируем кнопку во время выполнения
             const randomMoveBtn = document.getElementById('random-move-btn');
@@ -3484,6 +3498,11 @@
                     // Очищаем подсветку и выделение, затем выполняем ход
                     clearMoveHints();
                     selectPiece(null);
+
+                    // Заполняем кеш для выполнения хода
+                    cachedValidMoves = calculateAndCacheValidMoves(selectedPieceData.piece);
+                    console.log('🔄 RANDOM_MOVE: Заполнен кеш ходов перед performMove, размер:', cachedValidMoves.length);
+
                     performMove(selectedPieceData.piece, selectedMove.coord);
 
                     // Пауза между ходами (только если это не последний возможный ход)
@@ -3496,9 +3515,13 @@
                 console.error('🎲 RANDOM_MOVE: Ошибка при выполнении случайного хода:', error);
                 document.getElementById('game-message').textContent = 'Ошибка при выполнении случайного хода';
             } finally {
-                // Очищаем подсветку и выделение на случай ошибки
+                // Очищаем подсветка и выделение на случай ошибки
                 clearMoveHints();
                 selectPiece(null);
+
+                // Разблокируем restore
+                isPerformingRandomMove = false;
+                console.log('🔄 RANDOM_MOVE: Разблокируем restore');
 
                 // Восстанавливаем состояние кнопки
                 if (randomMoveBtn) {
@@ -3607,18 +3630,25 @@
 
         // Флаг для предотвращения циклических обновлений при realtime синхронизации
         let isUpdatingSelection = false;
+        // Флаг для блокировки restore во время выполнения случайного хода
+        let isPerformingRandomMove = false;
 
         function updateSelectedPiece(piece, syncToServer = true) {
             if (isUpdatingSelection) {
                 return;
             }
 
-
             selectPiece(piece);
 
             if (piece) {
-                showMoveHints(piece);
+                // Вычисляем и кешируем возможные ходы ОДИН раз
+                cachedValidMoves = calculateAndCacheValidMoves(piece);
+
+                // Показываем подсказки на основе кеша
+                showCachedMoveHints();
             } else {
+                // Очищаем кеш при снятии выделения
+                cachedValidMoves = [];
                 clearMoveHints();
             }
 
@@ -3626,6 +3656,110 @@
             if (syncToServer && currentGameId) {
                 autoSaveGame();
             }
+        }
+
+        // Вычисляет и кеширует возможные ходы для фишки
+        function calculateAndCacheValidMoves(piece) {
+            console.log('🔄 CACHE: Вычисляем и кешируем ходы для фишки:', piece.dataset.id);
+
+            // Проверяем, не является ли последний бросок розыгрышем очередности
+            if (diceLog.length > 0 && diceLog[0].isFirstMoveWinner) {
+                console.log('🎯 CACHE: Последний бросок - розыгрыш очередности, подсказки ходов недоступны');
+                return []; // Возвращаем пустой массив
+            }
+
+            // Получаем значения кубиков с учетом использованных
+            const dice1 = diceUsed[0] ? 0 : lastDiceRoll[0];
+            const dice2 = diceUsed[1] ? 0 : lastDiceRoll[1];
+
+            // Проверяем, находится ли фишка в тюрьме
+            const piecePosition = getCurrentPosition(piece);
+            const isInJail = JAIL_COORDS.includes(piecePosition);
+
+            // Специальная логика для фишек в тюрьме
+            if (isInJail && dice1 !== 0 && dice2 !== 0) {
+                console.log('🔒 CACHE: Фишка находится в тюрьме:', piecePosition);
+
+                // Проверяем, есть ли 6 на кубиках
+                const hasSix = dice1 === 6 || dice2 === 6;
+
+                if (!hasSix) {
+                    console.log('🔒 CACHE: Нет 6 на кубиках - выход из тюрьмы невозможен');
+                    return []; // Возвращаем пустой массив
+                }
+
+                // Если есть 6, рассчитываем ходы только на второе значение кубика
+                const exitDiceValue = dice1 === 6 ? dice2 : dice1;
+                console.log(`🔒 CACHE: Выход из тюрьмы на 6, движение на ${exitDiceValue}`);
+
+                // Рассчитываем возможные ходы только на второе значение
+                const allPossibleMoves = calculatePossibleMoves(piece);
+                const jailExitMoves = allPossibleMoves.filter(move => move.steps === exitDiceValue);
+
+                // Применяем фильтрацию препятствий
+                return filterMovesWithObstacles(jailExitMoves, piece, exitDiceValue, exitDiceValue);
+            }
+
+            // Если кубики не брошены, показываем все возможные ходы
+            if (dice1 === 0 && dice2 === 0) {
+                const possibleMoves = calculatePossibleMoves(piece);
+                return possibleMoves;
+            }
+
+            // Определяем доступные количества ходов на основе неиспользованных кубиков
+            const availableMoves = new Set();
+
+            // Добавляем только неиспользованные кубики (исключаем 0)
+            if (!diceUsed[0] && dice1 > 0) availableMoves.add(dice1);  // Первый кубик
+            if (!diceUsed[1] && dice2 > 0) availableMoves.add(dice2);  // Второй кубик
+
+            // Сумма доступна только если оба кубика не использованы
+            if (!diceUsed[0] && !diceUsed[1] && dice1 > 0 && dice2 > 0) {
+                availableMoves.add(dice1 + dice2);
+            }
+
+            console.log('🎲 CACHE: Доступные ходы:', Array.from(availableMoves), 'Использованные кубики:', diceUsed);
+
+            // Специальная проверка для фишек в START_ZONES: нужна 1 для выхода
+            const currentPiecePosition = getPiecePosition(piece);
+            if (currentPiecePosition.type === 'start') {
+                const hasOne = availableMoves.has(1);
+                if (!hasOne) {
+                    console.log('🚫 CACHE: Нет единицы на кубиках для выхода из стартовой зоны');
+                    return []; // Возвращаем пустой массив
+                }
+                console.log('✅ CACHE: Есть единица на кубиках, можно выходить');
+            }
+
+            // Рассчитываем все возможные ходы для фишки
+            const allPossibleMoves = calculatePossibleMoves(piece, 12, dice1, dice2);
+
+            // Фильтруем только те ходы, которые соответствуют значениям кубиков
+            const diceFilteredMoves = allPossibleMoves.filter(move => availableMoves.has(move.steps));
+
+            // Применяем фильтрацию препятствий
+            const validMoves = filterMovesWithObstacles(diceFilteredMoves, piece, dice1, dice2);
+
+            // Добавляем телепортные ходы если фишка находится в своем телепорте
+            const teleportMoves = calculateTeleportMoves(piece, dice1, dice2);
+            console.log('🚀 CACHE: Найдено телепортных ходов:', teleportMoves.length);
+
+            // Объединяем обычные и телепортные ходы
+            const allMoves = [...validMoves, ...teleportMoves];
+
+            console.log('🔄 CACHE: Закешировано ходов:', allMoves.length);
+            return allMoves;
+        }
+
+        // Показывает подсказки на основе кешированных ходов
+        function showCachedMoveHints() {
+            clearMoveHints(); // Очищаем предыдущие подсказки
+
+            cachedValidMoves.forEach(move => {
+                showSingleMoveHint(move);
+            });
+
+            console.log('💡 HINTS: Показано подсказок из кеша:', cachedValidMoves.length);
         }
 
         function handlePieceClick(piece) {
@@ -4704,6 +4838,9 @@
             document.querySelectorAll('.possible-move').forEach(cell => {
                 cell.classList.remove('possible-move');
             });
+
+            // НЕ очищаем кеш здесь автоматически, так как кеш может использоваться
+            // для валидации в performMove(). Кеш очищается только при смене состояния игры.
         }
 
         function handleCellClick(coord) {
@@ -4898,6 +5035,12 @@
                     console.log('🟢 Current player from payload:', payload.new?.game_state?.currentPlayer);
 
                     if (payload.new && payload.new.game_state) {
+                        // Проверяем, не выполняется ли случайный ход
+                        if (isPerformingRandomMove) {
+                            console.log('🟡 RESTORE: Отложено - выполняется случайный ход');
+                            return;
+                        }
+
                         console.log('🟢 Вызываем restoreGameState...');
                         restoreGameState(payload.new.game_state);
                     } else {
@@ -5060,6 +5203,7 @@
                     player: selectedPiece.dataset.player,
                     id: selectedPiece.dataset.id
                 } : null,
+                cachedValidMoves: selectedPiece ? cachedValidMoves : [],
                 playerCount: playerCount,
                 piecesData: piecesData,
                 playerDiceValues: playerDiceValues,
@@ -5078,7 +5222,7 @@
 
         // Десериализация состояния игры
         function deserializeGameState(gameState) {
-            
+
             currentPlayer = gameState.currentPlayer;
             gamePhase = gameState.gamePhase;
             rollCount = gameState.rollCount || 0;
@@ -5096,6 +5240,10 @@
             console.log('🔄 DESERIALIZE: Восстановлен diceLog:', diceLog);
             console.log('🔄 DESERIALIZE: Восстановлена история телепортов:', piecesTeleportHistory);
             console.log('🔄 DESERIALIZE: Восстановлен номер хода:', currentTurnNumber);
+
+            // Восстанавливаем кеш ходов из состояния игры
+            cachedValidMoves = gameState.cachedValidMoves || [];
+            console.log('🔄 DESERIALIZE: Восстановлен кеш ходов, размер:', cachedValidMoves.length);
             orderResults = gameState.orderResults || [];
             playersToRoll = gameState.playersToRoll || [];
             firstMoveWinner = gameState.firstMoveWinner;
@@ -5112,7 +5260,15 @@
                         console.log('🔄 DESERIALIZE: Найдена фишка для восстановления выделения:', piece.element);
                         isUpdatingSelection = true;
                         selectPiece(piece.element);
-                        showMoveHints(piece.element);
+
+                        // Показываем подсказки из восстановленного кеша
+                        if (cachedValidMoves.length > 0) {
+                            showCachedMoveHints();
+                            console.log('🔄 DESERIALIZE: Показаны подсказки из кеша, количество:', cachedValidMoves.length);
+                        } else {
+                            console.log('🔄 DESERIALIZE: Кеш пуст, подсказки не показаны');
+                        }
+
                         isUpdatingSelection = false;
                     } else {
                         console.log('🔄 DESERIALIZE: Фишка для восстановления выделения не найдена');
