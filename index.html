@@ -1230,6 +1230,162 @@
                 font-size: 11px;
             }
         }
+
+        /* DEBUG PANEL STYLES */
+        .debug-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            color: #FFD700;
+            font-family: 'Arial', sans-serif;
+            z-index: 10000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .debug-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-bottom: 1px solid #FFD700;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .debug-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .debug-close {
+            background: none;
+            border: none;
+            color: #FFD700;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+        .debug-close:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .debug-content {
+            padding: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .debug-section {
+            margin-bottom: 20px;
+        }
+
+        .debug-section h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #FFF;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+
+        .debug-dice-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .debug-dice-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .debug-dice-input label {
+            min-width: 60px;
+            font-size: 12px;
+        }
+
+        .debug-dice-input select {
+            flex: 1;
+            padding: 4px 8px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid #FFD700;
+            border-radius: 4px;
+            color: #FFD700;
+            font-size: 12px;
+        }
+
+        .debug-btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 6px;
+            color: #000;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+
+        .debug-btn:hover {
+            background: linear-gradient(135deg, #FFA500, #FF8C00);
+            transform: translateY(-1px);
+        }
+
+        .debug-presets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .debug-preset-btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid #FFD700;
+            border-radius: 4px;
+            color: #FFD700;
+            padding: 6px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .debug-preset-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .debug-utils {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .debug-utils .debug-btn {
+            margin-top: 0;
+            font-size: 11px;
+            padding: 6px 10px;
+        }
+
+        /* Адаптивность для мобильных */
+        @media (max-width: 768px) {
+            .debug-panel {
+                top: 10px;
+                right: 10px;
+                width: calc(100vw - 20px);
+                max-width: 350px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -1655,8 +1811,6 @@
 
         // Обработчик клика по кубикам игрока
         function handlePlayerDiceClick(player) {
-            console.log('🎲 CLICK: Клик по кубикам игрока', player);
-            console.log('🎲 CLICK: currentPlayer:', currentPlayer, 'gamePhase:', gamePhase);
 
             // Разрешаем броски во время определения очередности и игры
             if (player !== currentPlayer) {
@@ -1669,13 +1823,40 @@
                 return;
             }
 
-            console.log('🎲 CLICK: Запускаем rollPlayerDice()');
             // Запускаем бросок кубиков для этого игрока
             rollPlayerDice();
         }
 
         // Функция для обновления состояния кубиков игроков
         function updatePlayerDiceStates() {
+            // Отображаем текущее состояние кубиков в консоли для активного игрока
+            if (currentPlayer >= 1 && currentPlayer <= 4) {
+                const dice1 = lastDiceRoll[0];
+                const dice2 = lastDiceRoll[1];
+                const usedInfo = [];
+                const availableInfo = [];
+
+                if (diceUsed[0]) {
+                    usedInfo.push(`${dice1} (использован)`);
+                } else {
+                    availableInfo.push(`${dice1}`);
+                }
+
+                if (diceUsed[1]) {
+                    usedInfo.push(`${dice2} (использован)`);
+                } else {
+                    availableInfo.push(`${dice2}`);
+                }
+
+                const statusParts = [];
+                if (availableInfo.length > 0) statusParts.push(`доступны: ${availableInfo.join(', ')}`);
+                if (usedInfo.length > 0) statusParts.push(`использованы: ${usedInfo.join(', ')}`);
+
+                if (statusParts.length > 0) {
+                    console.log(`⚡ СОСТОЯНИЕ: Игрок ${currentPlayer} - ${statusParts.join(', ')}`);
+                }
+            }
+
             for (let player = 1; player <= 4; player++) {
                 const dice1 = document.getElementById(`player-dice-${player}-1`);
                 const dice2 = document.getElementById(`player-dice-${player}-2`);
@@ -1793,7 +1974,7 @@
             
             // Создать иконки телепортов
             createTeleportIcons();
-            
+
         }
 
         function createDirectionArrows() {
@@ -1932,7 +2113,6 @@
                     cell.style.height = 'calc(min(90vw, 600px) * 35 / 600)';
                     
                     board.appendChild(cell);
-                    console.log(`Создан невидимый контейнер для храма: ${coord}`);
                 }
                 
                 if (cell) {
@@ -1953,7 +2133,6 @@
                     });
                     
                     cell.appendChild(templeElement);
-                    console.log(`Храм создан для ${coord}`);
                 }
             });
             
@@ -1977,7 +2156,6 @@
                     cell.style.height = 'calc(min(90vw, 600px) * 35 / 600)';
                     
                     board.appendChild(cell);
-                    console.log(`Создан невидимый контейнер для тюрьмы: ${coord}`);
                 }
                 
                 if (cell) {
@@ -1998,7 +2176,6 @@
                     });
                     
                     cell.appendChild(jailElement);
-                    console.log(`Тюрьма создана для ${coord}`);
                 }
             });
         }
@@ -2078,9 +2255,9 @@
                 });
 
                 cell.appendChild(teleportElement);
-                console.log(`Телепорт создан для ${config.coord} цветом ${config.color}`);
             });
         }
+
 
         function createPieces() {
             const board = document.getElementById('game-board');
@@ -2264,7 +2441,6 @@
                     return;
                 }
 
-                console.log(`🔒 JAIL: Выход из тюрьмы на 6, движение завершено на ${targetCoord}`);
                 updateGameMessage(`Фишка выходит из тюрьмы! 6 потрачена на выход.`);
             }
 
@@ -2355,7 +2531,6 @@
                 availableMoves.add(dice1 + dice2);
             }
 
-            console.log('🎲 PERFORM_MOVE: Доступные ходы:', Array.from(availableMoves), 'Использованные кубики:', diceUsed);
 
             // Специальная проверка для фишек в START_ZONES: нужна 1 для выхода
             const currentPiecePosition = getPiecePosition(piece);
@@ -2368,14 +2543,11 @@
             }
 
             // ОПТИМИЗАЦИЯ: Используем кешированные ходы вместо повторных вычислений
-            console.log('🔄 PERFORM_MOVE: Проверяем кешированные ходы, доступно:', cachedValidMoves.length);
 
             // Ищем целевой ход среди кешированных валидных ходов
             let targetMove = cachedValidMoves.find(move => move.coord === targetCoord);
 
             if (!targetMove) {
-                console.log('🚫 PERFORM_MOVE: Целевая координата', targetCoord, 'не найдена в кешированных ходах');
-                console.log('💡 PERFORM_MOVE: Доступные кешированные ходы:', cachedValidMoves.map(m => `${m.coord}(${m.steps})`));
                 updateGameMessage('Недопустимый ход! Выберите одну из подсвеченных клеток.');
                 return;
             }
@@ -2384,7 +2556,6 @@
                 stepsUsed = targetMove.steps;
                 const isTeleportMove = targetMove.isTeleport;
 
-                console.log(`🎲 DEBUG: stepsUsed=${stepsUsed}, dice1=${dice1}, dice2=${dice2}, diceUsed=[${diceUsed[0]}, ${diceUsed[1]}]`);
 
                 // Проверяем, является ли это комбо-ходом из стартовой зоны
                 const isFromStartZone = Object.values(START_ZONES).flat().includes(currentPos);
@@ -2419,17 +2590,12 @@
                         if (stepsUsed === dice1 && !diceUsed[0]) {
                             diceUsed[0] = true;
                             usedSingleDie = true;
-                            console.log(`🎲 DICE: Использован первый кубик (${dice1})`);
                         } else if (stepsUsed === dice2 && !diceUsed[1]) {
                             diceUsed[1] = true;
                             usedSingleDie = true;
-                            console.log(`🎲 DICE: Использован второй кубик (${dice2})`);
                         } else if (stepsUsed === dice1 + dice2 && !diceUsed[0] && !diceUsed[1]) {
                             diceUsed[0] = true;
                             diceUsed[1] = true;
-                            console.log(`🎲 DICE: Использованы оба кубика (${dice1} + ${dice2} = ${stepsUsed})`);
-                        } else {
-                            console.log(`🎲 DICE: НЕ НАЙДЕНО СОВПАДЕНИЕ для stepsUsed=${stepsUsed}, dice1=${dice1}, dice2=${dice2}`);
                         }
                     }
                 } else {
@@ -2441,7 +2607,14 @@
                         diceUsed[1] = true; // 6 потрачена на выход
                         diceUsed[0] = true; // первый кубик использован для движения
                     }
-                    console.log(`🔒 JAIL: Оба кубика использованы (6 на выход + ${stepsUsed} на движение)`);
+                }
+
+                // Отображаем информацию об использованных кубиках в консоли
+                const usedDiceInfo = [];
+                if (diceUsed[0]) usedDiceInfo.push(`первый кубик (${dice1})`);
+                if (diceUsed[1]) usedDiceInfo.push(`второй кубик (${dice2})`);
+                if (usedDiceInfo.length > 0) {
+                    console.log(`🎯 ХОД: Игрок ${currentPlayer} использовал: ${usedDiceInfo.join(' и ')}, ${stepsUsed} ${stepsUsed === 1 ? 'шаг' : stepsUsed < 5 ? 'шага' : 'шагов'}`);
                 }
             } else {
                 updateGameMessage(`Недопустимый ход! Можно ходить только на: ${Array.from(availableMoves).join(', ')}`);
@@ -2491,9 +2664,6 @@
             }
             
             // Автосохранение после выполнения хода
-            console.log('🔴 MOVE: Вызов autoSaveGame после выполнения хода');
-            console.log('🔴 MOVE: currentGameId:', currentGameId);
-            console.log('🔴 MOVE: isRestoringState:', isRestoringState);
             autoSaveGame();
 
         }
@@ -2527,7 +2697,6 @@
             // Показываем кубики игрока для повторного броска
             showPlayerDice(currentPlayer);
 
-            console.log(`🎲 DOUBLES: Активирован повторный бросок для игрока ${currentPlayer}`);
         }
 
         function checkTurnCompletion() {
@@ -2541,14 +2710,11 @@
 
                 if (isStartZoneComboMove) {
                 } else {
-                    console.log('🎲 DICE: Все кубики использованы, ход завершен');
                 }
-                console.log('🎲 DOUBLES: Дубль?', isDoubleRoll, 'Последовательных дублей:', consecutiveDoubles);
 
                 if (isDoubleRoll && consecutiveDoubles < 3) {
                     // Увеличиваем счетчик дублей
                     consecutiveDoubles++;
-                    console.log(`🎲 DOUBLES: Дубль ${dice1}:${dice2}! Бросок №${consecutiveDoubles} из 3 возможных`);
 
                     updateGameMessage(`Дубль ${dice1}:${dice2}! Бросайте кубики еще раз (${consecutiveDoubles}/3)`);
 
@@ -2558,7 +2724,6 @@
                     }, 1000);
                 } else {
                     if (isDoubleRoll && consecutiveDoubles >= 3) {
-                        console.log('🎲 DOUBLES: Достигнут лимит дублей (3), передаем ход');
                         updateGameMessage('Достигнут лимит дублей (3 подряд). Ход передается!');
                     } else {
                         updateGameMessage('Все кубики использованы. Ход завершен!');
@@ -2577,7 +2742,6 @@
                 if (!diceUsed[0]) remainingDice.push(lastDiceRoll[0]);
                 if (!diceUsed[1]) remainingDice.push(lastDiceRoll[1]);
 
-                console.log('🎲 DICE: Остались неиспользованные кубики:', remainingDice);
 
                 // Обновляем анализ ходов с учетом использованных кубиков
                 const dice1 = lastDiceRoll[0];
@@ -2588,7 +2752,6 @@
                 if (isDoubleRoll && consecutiveDoubles < 3) {
                     // Увеличиваем счетчик дублей
                     consecutiveDoubles++;
-                    console.log(`🎲 DOUBLES: Дубль ${dice1}:${dice2}! Не все кубики использованы, но дубль дает право на повторный бросок №${consecutiveDoubles} из 3`);
 
                     const skipMessage = remainingDice.length > 0 ?
                         `Остались неиспользованные кубики: ${remainingDice.join(', ')}, но дубль дает право на повторный бросок!` :
@@ -2756,11 +2919,9 @@
         }
 
         function startGame() {
-            console.log('Начало игры');
             
             // Отписываемся от предыдущего канала при начале новой игры
             if (gameChannel) {
-                console.log('Отписка от предыдущего канала при старте новой игры');
                 supabaseClient.removeChannel(gameChannel);
                 gameChannel = null;
             }
@@ -2771,7 +2932,6 @@
             } else {
                 playerCount = 2; // Значение по умолчанию
             }
-            console.log('🎮 GAME: Запуск игры с количеством игроков:', playerCount);
 
             document.getElementById('setup-panel').style.display = 'none';
             document.getElementById('game-layout').style.display = 'flex';
@@ -2812,7 +2972,6 @@
             window.addEventListener('resize', handleResize);
             
             // Создание и сохранение начального состояния игры
-            console.log('Вызов initializeAutoSave из startGame');
             setTimeout(() => {
                 initializeAutoSave();
             }, 100); // Небольшая задержка для инициализации Supabase
@@ -2894,9 +3053,11 @@
                 diceUsed = [false, false]; // Сброс использованных кубиков при новом броске
                 isStartZoneComboMove = false; // Сброс флага комбо-хода из стартовой зоны
 
+                // Отображаем значения кубиков в консоли
+                console.log(`🎲 КУБИКИ: Игрок ${currentPlayer} (${playerColors[currentPlayer - 1]}) выбросил: ${value1} и ${value2}`);
+
                 // Очищаем кеш ходов при новом броске кубиков
                 cachedValidMoves = [];
-                console.log('🧹 CACHE: Очистен кеш при новом броске кубиков');
 
 
                 // Обработка результата
@@ -2970,9 +3131,6 @@
             }
             
             // Автосохранение после броска кубиков
-            console.log('🎲 DICE: Вызов autoSaveGame после броска кубиков');
-            console.log('🎲 DICE: currentGameId:', currentGameId);
-            console.log('🎲 DICE: isRestoringState:', isRestoringState);
             autoSaveGame();
 
             // Выводим таблицу комбинаций координат фишек
@@ -3008,6 +3166,7 @@
         }
 
         function calculateTargetCoordinate(currentCoord, steps, playerNum) {
+
             // Получаем зоны для данного игрока
             const startZones = START_ZONES[playerNum];
             const waitingZones = WAITING_ZONES[playerNum];
@@ -3084,11 +3243,13 @@
 
                     return targetCoord;
                 } else {
+                    console.log(`❌ Ход за пределы поля (финиш)`);
                     return null; // Ход за пределы поля (финиш)
                 }
             }
 
             // Неизвестная позиция
+            console.log(`❌ Неизвестная позиция`);
             return null;
         }
 
@@ -3155,8 +3316,119 @@
             }
         }
 
+        function calculateJailSequentialMoves(startCoord, dice1, dice2, playerNum) {
+            const moves = [];
+
+            // Шаг 2: Проверка кубика 6
+            const hasSix = dice1 === 6 || dice2 === 6;
+
+            if (!hasSix) {
+                // Без 6 никакие последовательные ходы из тюрьмы невозможны
+                moves.push([startCoord, null, null, null, 0, 0, dice1 > dice2 ? 1 : 0, 0]);
+                moves.push([startCoord, null, null, null, 0, 0, dice2 > dice1 ? 1 : 0, 0]);
+                return moves;
+            }
+
+            // Шаг 3: Определение кубика для движения
+            let moveDice, exitDice;
+            let validVariantA = false, validVariantB = false;
+
+            // Вариант A: dice1 → dice2
+            if (dice1 === 6) {
+                exitDice = dice1;  // 6 тратится на выход
+                moveDice = dice2;  // движение на второй кубик
+                validVariantA = true;
+            }
+
+            // Вариант B: dice2 → dice1
+            if (dice2 === 6) {
+                exitDice = dice2;  // 6 тратится на выход
+                moveDice = dice1;  // движение на первый кубик
+                validVariantB = true;
+            }
+
+            // Рассчитываем вариант A
+            if (validVariantA) {
+                // Шаг 4: СПЕЦИАЛЬНЫЙ расчет для тюремного хода
+                // Используем override-координату для движения, НЕ исходную тюремную
+                const overrideCoord = MOVE_CALCULATION_OVERRIDES[startCoord]; // N6 → N7
+                const playerPath = PLAYER_PATHS[playerNum];
+                const startIndex = playerPath.indexOf(overrideCoord);
+                let finalCoordA = null;
+
+                if (startIndex !== -1) {
+                    const targetIndex = startIndex + dice2;
+                    if (targetIndex < playerPath.length) {
+                        finalCoordA = playerPath[targetIndex];
+                        // Проверяем специальные поля с автоматическим перемещением
+                        if (SPECIAL_MOVES[finalCoordA]) {
+                            finalCoordA = SPECIAL_MOVES[finalCoordA];
+                        }
+                    }
+                }
+
+                // Шаг 5: Проверка препятствий - прямая проверка возможности хода
+                const canMoveA = canMakeMoveFromTo(startCoord, finalCoordA, dice2, playerNum);
+
+                // Сравнение кубиков для варианта A
+                const diceComparisonA = dice1 > dice2 ? 1 : 0;
+
+                // Формула для варианта A
+                const formulaResultA = 1 + canMoveA + 1 * diceComparisonA + (1 - diceComparisonA) * canMoveA;
+
+                // Промежуточная координата = стартовая (фишка остается в тюрьме после "выхода")
+                moves.push([startCoord, startCoord, startCoord, finalCoordA, 1, canMoveA, diceComparisonA, formulaResultA]);
+            } else {
+                // Невозможный вариант A (dice1 ≠ 6)
+                moves.push([startCoord, null, null, null, 0, 0, dice1 > dice2 ? 1 : 0, 0]);
+            }
+
+            // Рассчитываем вариант B
+            if (validVariantB) {
+                // Шаг 4: СПЕЦИАЛЬНЫЙ расчет для тюремного хода
+                // Используем override-координату для движения, НЕ исходную тюремную
+                const overrideCoord = MOVE_CALCULATION_OVERRIDES[startCoord]; // N6 → N7
+                const playerPath = PLAYER_PATHS[playerNum];
+                const startIndex = playerPath.indexOf(overrideCoord);
+                let finalCoordB = null;
+
+                if (startIndex !== -1) {
+                    const targetIndex = startIndex + dice1;
+                    if (targetIndex < playerPath.length) {
+                        finalCoordB = playerPath[targetIndex];
+                        // Проверяем специальные поля с автоматическим перемещением
+                        if (SPECIAL_MOVES[finalCoordB]) {
+                            finalCoordB = SPECIAL_MOVES[finalCoordB];
+                        }
+                    }
+                }
+
+                // Шаг 5: Проверка препятствий - прямая проверка возможности хода
+                const canMoveB = canMakeMoveFromTo(startCoord, finalCoordB, dice1, playerNum);
+
+                // Сравнение кубиков для варианта B
+                const diceComparisonB = dice2 > dice1 ? 1 : 0;
+
+                // Формула для варианта B
+                const formulaResultB = 1 + canMoveB + 1 * diceComparisonB + (1 - diceComparisonB) * canMoveB;
+
+                // Промежуточная координата = стартовая (фишка остается в тюрьме после "выхода")
+                moves.push([startCoord, startCoord, 0, startCoord, finalCoordB, canMoveB, diceComparisonB, formulaResultB]);
+            } else {
+                // Невозможный вариант B (dice2 ≠ 6)
+                moves.push([startCoord, null, null, null, 0, 0, dice2 > dice1 ? 1 : 0, 0]);
+            }
+
+            return moves;
+        }
+
         function calculateSequentialMoves(startCoord, dice1, dice2, playerNum) {
             const moves = [];
+
+            // Специальная логика для фишек в тюрьме
+            if (JAIL_COORDS.includes(startCoord)) {
+                return calculateJailSequentialMoves(startCoord, dice1, dice2, playerNum);
+            }
 
             // Вариант A: dice1 → dice2
             const intermediateCoordA = calculateTargetCoordinate(startCoord, dice1, playerNum);
@@ -3168,7 +3440,7 @@
             // Проверяем возможность второго хода через симуляцию
             const canMove2A = simulateFirstMoveAndCheckSecond(
                 startCoord, intermediateCoordA, canMove1A,
-                intermediateCoordA, finalCoordA, dice2, playerNum
+                intermediateCoordA, finalCoordA, dice1, dice2, playerNum
             );
 
             // Сравнение кубиков для варианта A
@@ -3177,7 +3449,7 @@
             // Формула для варианта A
             const formulaResultA = canMove1A + canMove2A + canMove1A * diceComparisonA + (1 - diceComparisonA) * canMove2A;
 
-            moves.push([startCoord, intermediateCoordA, 0, intermediateCoordA, finalCoordA, canMove1A, canMove2A, diceComparisonA, formulaResultA]);
+            moves.push([startCoord, intermediateCoordA, intermediateCoordA, finalCoordA, canMove1A, canMove2A, diceComparisonA, formulaResultA]);
 
             // Вариант B: dice2 → dice1
             const intermediateCoordB = calculateTargetCoordinate(startCoord, dice2, playerNum);
@@ -3189,7 +3461,7 @@
             // Проверяем возможность второго хода через симуляцию
             const canMove2B = simulateFirstMoveAndCheckSecond(
                 startCoord, intermediateCoordB, canMove1B,
-                intermediateCoordB, finalCoordB, dice1, playerNum
+                intermediateCoordB, finalCoordB, dice2, dice1, playerNum
             );
 
             // Сравнение кубиков для варианта B (обратное)
@@ -3198,29 +3470,98 @@
             // Формула для варианта B
             const formulaResultB = canMove1B + canMove2B + canMove1B * diceComparisonB + (1 - diceComparisonB) * canMove2B;
 
-            moves.push([startCoord, intermediateCoordB, 0, intermediateCoordB, finalCoordB, canMove1B, canMove2B, diceComparisonB, formulaResultB]);
+            moves.push([startCoord, intermediateCoordB, intermediateCoordB, finalCoordB, canMove1B, canMove2B, diceComparisonB, formulaResultB]);
 
             return moves;
         }
 
-        function simulateFirstMoveAndCheckSecond(coord1, targetCoord1, canMove1, coord2, targetCoord2, dice2, playerNum) {
+        function simulateTeleportMove(fromCoord, toCoord, playerNum) {
+            // Находим фишку в gameBoard на исходной координате
+            let piece = null;
+            if (gameBoard[fromCoord]) {
+                if (Array.isArray(gameBoard[fromCoord])) {
+                    // Ищем фишку нужного игрока
+                    piece = gameBoard[fromCoord].find(p => parseInt(p.dataset.player) === playerNum);
+                } else {
+                    // Проверяем что это фишка нужного игрока
+                    if (parseInt(gameBoard[fromCoord].dataset.player) === playerNum) {
+                        piece = gameBoard[fromCoord];
+                    }
+                }
+            }
+
+            if (!piece) return false;
+
+            // Удаляем фишку с телепорта
+            if (gameBoard[fromCoord]) {
+                if (Array.isArray(gameBoard[fromCoord])) {
+                    const index = gameBoard[fromCoord].indexOf(piece);
+                    if (index > -1) {
+                        gameBoard[fromCoord].splice(index, 1);
+                        if (gameBoard[fromCoord].length === 0) {
+                            delete gameBoard[fromCoord];
+                        }
+                    }
+                } else if (gameBoard[fromCoord] === piece) {
+                    delete gameBoard[fromCoord];
+                }
+            }
+
+            // Телепортируем фишку в целевую координату
+            if (!gameBoard[toCoord]) {
+                gameBoard[toCoord] = piece;
+            } else if (Array.isArray(gameBoard[toCoord])) {
+                gameBoard[toCoord].push(piece);
+            } else {
+                gameBoard[toCoord] = [gameBoard[toCoord], piece];
+            }
+
+            return true;
+        }
+
+        function simulateFirstMoveAndCheckSecond(coord1, targetCoord1, canMove1, coord2, targetCoord2, dice1, dice2, playerNum) {
             // Если первый ход невозможен или нет целевой координаты для второго хода
             if (!canMove1 || targetCoord2 === null) {
                 return 0;
             }
 
+
             // Сохраняем текущее состояние gameBoard
             const originalGameBoard = cloneGameBoard();
 
             try {
-                // Симулируем первый ход
-                const moveSuccessful = simulateMove(coord1, targetCoord1, playerNum);
+                // Проверяем является ли первый ход телепортацией
+                const playerTeleport = TELEPORT_COORDS[playerNum];
+                let isTeleportMove = false;
+                let teleportDiceValue = null;
+
+                // Если первая координата - телепорт игрока, проверяем возможные телепортации
+                if (coord1 === playerTeleport && TELEPORT_MAPPINGS[coord1]) {
+                    // Определяем какой кубик был использован для этой телепортации
+                    for (const [diceValue, targetCoord] of Object.entries(TELEPORT_MAPPINGS[coord1])) {
+                        if (targetCoord === targetCoord1) {
+                            isTeleportMove = true;
+                            teleportDiceValue = parseInt(diceValue);
+                            break;
+                        }
+                    }
+                }
+
+                let moveSuccessful;
+                if (isTeleportMove) {
+                    // Телепортация: фишка исчезает с телепорта и появляется в целевой точке
+                    moveSuccessful = simulateTeleportMove(coord1, targetCoord1, playerNum);
+                } else {
+                    // Обычный ход
+                    moveSuccessful = simulateMove(coord1, targetCoord1, playerNum);
+                }
+
                 if (!moveSuccessful) {
                     return 0;
                 }
 
                 // Проверяем возможность второго хода в новом состоянии
-                const canMove2 = canMakeMoveFromToGameBoard(coord2, targetCoord2, dice2, playerNum);
+                const canMove2 = canMakeMoveFromToGameBoard(coord2, targetCoord2, dice2, playerNum, dice1, dice2);
 
                 return canMove2;
 
@@ -3230,7 +3571,7 @@
             }
         }
 
-        function canMakeMoveFromToGameBoard(fromCoord, toCoord, steps, playerNum) {
+        function canMakeMoveFromToGameBoard(fromCoord, toCoord, steps, playerNum, dice1, dice2) {
             // Если целевая координата null - ход невозможен
             if (toCoord === null) {
                 return 0;
@@ -3254,6 +3595,16 @@
                 return 0; // Фишка не найдена в gameBoard
             }
 
+            // ДОБАВЛЯЕМ ПРОВЕРКУ ТЕЛЕПОРТАЦИИ
+            const playerTeleport = TELEPORT_COORDS[playerNum];
+            if (fromCoord === playerTeleport && TELEPORT_MAPPINGS[fromCoord]) {
+                // Проверяем возможна ли телепортация с данным значением кубика
+                const teleportTarget = TELEPORT_MAPPINGS[fromCoord][steps];
+                if (teleportTarget === toCoord) {
+                    return 1; // Телепортация возможна
+                }
+            }
+
             // Получаем позицию фишки из gameBoard (не из DOM)
             const position = getPiecePositionFromGameBoard(fromCoord, playerNum);
 
@@ -3261,7 +3612,7 @@
             const allMoves = calculateMovesFromGameBoardPosition(position, steps, playerNum);
 
             // Применяем фильтрацию препятствий с учетом gameBoard
-            const validMoves = filterMovesWithObstaclesFromGameBoard(allMoves, position, playerNum);
+            const validMoves = filterMovesWithObstaclesFromGameBoard(allMoves, position, playerNum, dice1, dice2);
 
             // Проверяем есть ли ход до целевой координаты
             const canMove = validMoves.some(move => move.coord === toCoord);
@@ -3314,12 +3665,21 @@
                         moves.push({ coord: finalCoord, steps: steps });
                     }
                 }
+            } else if (position.type === 'start') {
+                // Из стартовой зоны можно ходить только на кубик 1 в зоны ожидания
+                if (steps === 1) {
+                    const waitingZones = WAITING_ZONES[playerNum];
+                    // Добавляем все доступные зоны ожидания как возможные ходы
+                    waitingZones.forEach(coord => {
+                        moves.push({ coord: coord, steps: steps });
+                    });
+                }
             }
 
             return moves;
         }
 
-        function filterMovesWithObstaclesFromGameBoard(possibleMoves, position, playerNum) {
+        function filterMovesWithObstaclesFromGameBoard(possibleMoves, position, playerNum, dice1, dice2) {
             const path = PLAYER_PATHS[playerNum];
 
             // Получаем текущий индекс фишки на пути
@@ -3332,68 +3692,154 @@
                 currentIndex = path.indexOf(coordForCalculation);
             } else if (position.type === 'waiting') {
                 const entryCell = ENTRY_CELLS[playerNum];
-                currentIndex = path.indexOf(entryCell) - 1;
+                currentIndex = path.indexOf(entryCell) - 1; // -1 потому что выходим из зоны ожидания
             }
 
-            if (currentIndex === -1) {
+            if (currentIndex === -1 && position.type !== 'waiting') {
                 return possibleMoves; // Для стартовых зон возвращаем как есть
             }
 
             const validMoves = [];
 
+            // Создаем список доступных значений ходов (аналогично showMoveHints)
+            const availableMoveValues = new Set();
+
+            // Получаем значения кубиков с учетом использованных (из контекста вызова)
+            const availableDice1 = dice1 > 0 ? dice1 : 0;
+            const availableDice2 = dice2 > 0 ? dice2 : 0;
+
+            // Добавляем отдельные кубики
+            if (availableDice1 > 0) availableMoveValues.add(availableDice1);
+            if (availableDice2 > 0) availableMoveValues.add(availableDice2);
+
+            // Добавляем сумму если оба кубика доступны
+            if (availableDice1 > 0 && availableDice2 > 0) {
+                availableMoveValues.add(availableDice1 + availableDice2);
+            }
+
+            const individualDiceValues = Array.from(availableMoveValues);
+
             for (const move of possibleMoves) {
-                const targetCoord = move.coord;
-                let canMoveToTarget = true;
+                const targetIndex = currentIndex + move.steps;
+                let canMakeMove = true;
+                let obstacleFound = false;
 
-                // Проверяем путь до цели на препятствия (НЕ включая финальную клетку)
-                const targetIndex = path.indexOf(targetCoord);
-                if (targetIndex !== -1) {
-                    // Проверяем каждую промежуточную клетку на пути (исключая финальную)
-                    for (let i = currentIndex + 1; i < targetIndex; i++) { // ИЗМЕНЕНО: i < targetIndex вместо i <= targetIndex
-                        const checkCoord = path[i];
+                // Проверяем путь от текущей позиции до целевой (НЕ включая финальную клетку)
+                for (let i = currentIndex + 1; i < targetIndex && i < path.length; i++) {
+                    const checkCoord = path[i];
 
-                        // Проверяем есть ли препятствие в gameBoard
-                        if (gameBoard[checkCoord]) {
-                            if (Array.isArray(gameBoard[checkCoord])) {
-                                // Если есть фишки другого игрока
-                                const hasBlockingPiece = gameBoard[checkCoord].some(piece =>
-                                    parseInt(piece.dataset.player) !== playerNum
-                                );
-                                if (hasBlockingPiece) {
-                                    canMoveToTarget = false;
-                                    break;
-                                }
-                            } else {
-                                // Одна фишка - проверяем игрока
-                                if (parseInt(gameBoard[checkCoord].dataset.player) !== playerNum) {
-                                    canMoveToTarget = false;
-                                    break;
-                                }
-                            }
+                    // Проверяем есть ли препятствие в gameBoard
+                    let piecesAtPosition = [];
+                    if (gameBoard[checkCoord]) {
+                        if (Array.isArray(gameBoard[checkCoord])) {
+                            piecesAtPosition = gameBoard[checkCoord];
+                        } else {
+                            piecesAtPosition = [gameBoard[checkCoord]];
                         }
                     }
 
-                    // Отдельная проверка финальной клетки - нельзя ходить на свои фишки, можно на чужие
-                    if (canMoveToTarget && gameBoard[targetCoord]) {
-                        if (Array.isArray(gameBoard[targetCoord])) {
-                            // Если есть свои фишки - блокируем ход
-                            const hasOwnPiece = gameBoard[targetCoord].some(piece =>
-                                parseInt(piece.dataset.player) === playerNum
-                            );
-                            if (hasOwnPiece) {
-                                canMoveToTarget = false;
+                    // Используем gameBoard как источник данных для фишек
+                    if (piecesAtPosition.length > 0) {
+                        // Найдена фишка на пути
+                        const obstacleSteps = i - currentIndex;
+                        const obstaclePiece = piecesAtPosition[0]; // Берем первую фишку
+                        const obstaclePlayerNum = parseInt(obstaclePiece.dataset.player);
+
+                        // Проверяем, находится ли фишка в храме, тюрьме или зоне ожидания
+                        const isWaitingZone = Object.values(WAITING_ZONES).flat().includes(checkCoord);
+                        if (isInSpecialZone(checkCoord) || isWaitingZone) {
+                            // Фишки в храмах, тюрьмах и зонах ожидания не блокируют движение - пропускаем их
+                            continue;
+                        }
+
+                        if (obstaclePlayerNum === playerNum) {
+                            // Свою фишку нельзя перепрыгивать - останавливаемся перед ней
+                            if (obstacleSteps <= move.steps) {
+                                canMakeMove = false;
+                                obstacleFound = true;
+                                break;
                             }
                         } else {
-                            // Одна фишка - блокируем только если своя
-                            if (parseInt(gameBoard[targetCoord].dataset.player) === playerNum) {
-                                canMoveToTarget = false;
+                            // Чужая фишка
+                            if (obstacleSteps === move.steps) {
+                                // Если чужая фишка стоит точно на конечной позиции - можно "съесть"
+                                // Но только если это точное значение одного из кубиков
+                                if (!individualDiceValues.includes(move.steps)) {
+                                    canMakeMove = false;
+                                    obstacleFound = true;
+                                }
+                                break;
+                            } else if (obstacleSteps < move.steps) {
+                                // Чужая фишка стоит на пути - блокирует движение
+                                // Нельзя перепрыгивать чужие фишки
+                                canMakeMove = false;
+                                obstacleFound = true;
+                                break;
                             }
                         }
                     }
                 }
 
-                if (canMoveToTarget) {
-                    validMoves.push(move);
+                // Дополнительная проверка финальной клетки на свои фишки
+                if (canMakeMove && targetIndex < path.length) {
+                    const finalCoord = path[targetIndex];
+                    const finalCoordAfterSpecial = SPECIAL_MOVES[finalCoord] || finalCoord;
+
+                    // Проверяем через gameBoard
+                    let piecesAtFinalPosition = [];
+                    if (gameBoard[finalCoordAfterSpecial]) {
+                        if (Array.isArray(gameBoard[finalCoordAfterSpecial])) {
+                            piecesAtFinalPosition = gameBoard[finalCoordAfterSpecial];
+                        } else {
+                            piecesAtFinalPosition = [gameBoard[finalCoordAfterSpecial]];
+                        }
+                    }
+
+                    // Проверяем, является ли финальная позиция зоной ожидания
+                    const isWaitingZoneFinal = Object.values(WAITING_ZONES).flat().includes(finalCoordAfterSpecial);
+
+                    // Если на финальной позиции есть свои фишки - блокируем ход (КРОМЕ зон ожидания)
+                    if (!isWaitingZoneFinal) {
+                        const hasOwnPieceAtTarget = piecesAtFinalPosition.some(piece =>
+                            parseInt(piece.dataset.player) === playerNum
+                        );
+
+                        if (hasOwnPieceAtTarget) {
+                            canMakeMove = false;
+                        }
+                    }
+                }
+
+                if (canMakeMove) {
+                    // НОВАЯ ПРОВЕРКА: проверяем финальную позицию для храмов/тюрем
+                    let finalTargetCoord = path[targetIndex];
+
+                    // Учитываем автоматические перемещения
+                    if (finalTargetCoord && SPECIAL_MOVES[finalTargetCoord]) {
+                        finalTargetCoord = SPECIAL_MOVES[finalTargetCoord];
+                    }
+
+                    // Проверяем финальную позицию для храмов/тюрем (но НЕ для зон ожидания)
+                    const isWaitingZone = Object.values(WAITING_ZONES).flat().includes(finalTargetCoord);
+                    if (finalTargetCoord && isInSpecialZone(finalTargetCoord) && !isWaitingZone) {
+                        let piecesAtTargetCount = 0;
+                        if (gameBoard[finalTargetCoord]) {
+                            if (Array.isArray(gameBoard[finalTargetCoord])) {
+                                piecesAtTargetCount = gameBoard[finalTargetCoord].length;
+                            } else {
+                                piecesAtTargetCount = 1;
+                            }
+                        }
+
+                        if (piecesAtTargetCount > 0) {
+                            // В храме/тюрьме уже есть фишка - ход заблокирован
+                            canMakeMove = false;
+                        }
+                    }
+
+                    if (canMakeMove) {
+                        validMoves.push(move);
+                    }
                 }
             }
 
@@ -3401,6 +3847,7 @@
         }
 
         function canMakeMoveFromTo(fromCoord, toCoord, steps, playerNum) {
+
             // Если целевая координата null - ход невозможен
             if (toCoord === null) {
                 return 0;
@@ -3414,14 +3861,18 @@
                 return 0; // Фишка не найдена
             }
 
+
             // Рассчитываем все возможные ходы для этой фишки
             const allMoves = calculatePossibleMoves(piece, 12, lastDiceRoll[0], lastDiceRoll[1]);
+
 
             // Фильтруем по количеству шагов
             const movesWithSteps = allMoves.filter(move => move.steps === steps);
 
+
             // Применяем фильтрацию препятствий
             const validMoves = filterMovesWithObstacles(movesWithSteps, piece, lastDiceRoll[0], lastDiceRoll[1]);
+
 
             // Проверяем есть ли ход до целевой координаты
             const canMove = validMoves.some(move => move.coord === toCoord);
@@ -3430,7 +3881,6 @@
         }
 
         function logPieceCombinations() {
-            console.log(`🎲 COMBINATIONS: Таблица комбинаций для игрока ${currentPlayer}, кубики: ${lastDiceRoll[0]}, ${lastDiceRoll[1]}`);
 
             // Очищаем предыдущую таблицу
             pieceCombinationsTable = [];
@@ -3439,7 +3889,6 @@
             const currentPlayerPieces = Array.from(document.querySelectorAll(`.piece.player${currentPlayer}`));
 
             if (currentPlayerPieces.length === 0) {
-                console.log('❌ COMBINATIONS: Нет фишек для анализа');
                 return;
             }
 
@@ -3451,22 +3900,32 @@
                     const piece1 = currentPlayerPieces[i];
                     const piece2 = currentPlayerPieces[j];
 
-                    const coord1 = getCurrentPosition(piece1);
-                    const coord2 = getCurrentPosition(piece2);
+                    let coord1 = getCurrentPosition(piece1);
+                    let coord2 = getCurrentPosition(piece2);
 
+					// ЛОКАЛЬНЫЕ переменные - только для ЭТОЙ пары фишек!
+					let dice1 = lastDiceRoll[0];
+					let dice2 = lastDiceRoll[1];
+					
                     // Определяем прогресс каждой фишки
                     const pos1 = getPieceProgressPosition(coord1, currentPlayer);
                     const pos2 = getPieceProgressPosition(coord2, currentPlayer);
+					// Если вторая фишка ближе к финишу, меняем местами
+					if (pos2 > pos1) {
+					[coord1, coord2] = [coord2, coord1]; // swap координат
+					[dice1, dice2] = [dice2, dice1];     // swap кубиков - ЛОКАЛЬНО!
+					}
 
                     // Сравниваем: 1 если первая ближе к финишу, 0 если дальше или равно
-                    const comparison = pos1 > pos2 ? 1 : 0;
+                    //const comparison = pos1 > pos2 ? 1 : 0;
 
                     // Рассчитываем целевые координаты
-                    const targetCoord1 = calculateTargetCoordinate(coord1, lastDiceRoll[0], currentPlayer);
-                    const targetCoord2 = calculateTargetCoordinate(coord2, lastDiceRoll[1], currentPlayer);
+					// Используем ЛОКАЛЬНЫЕ dice1, dice2 для ЭТОЙ пары
+					const targetCoord1 = calculateTargetCoordinate(coord1, dice1, currentPlayer);
+					const targetCoord2 = calculateTargetCoordinate(coord2, dice2, currentPlayer);
 
                     // Проверяем возможность хода из первой координаты
-                    let canMove1 = canMakeMoveFromTo(coord1, targetCoord1, lastDiceRoll[0], currentPlayer);
+                    let canMove1 = canMakeMoveFromTo(coord1, targetCoord1, dice1, currentPlayer);
 
                     // Дополнительная проверка: из тюрьмы нельзя выйти при ходе разными фишками
                     if (JAIL_COORDS.includes(coord1)) {
@@ -3475,23 +3934,30 @@
 
                     // Проверяем возможность хода из второй координаты ПОСЛЕ первого хода
                     let canMove2AfterMove1 = simulateFirstMoveAndCheckSecond(
-                        coord1, targetCoord1, canMove1, coord2, targetCoord2, lastDiceRoll[1], currentPlayer
+                        coord1, targetCoord1, canMove1, coord2, targetCoord2, dice1, dice2, currentPlayer
                     );
 
                     // Дополнительная проверка: из тюрьмы нельзя выйти при ходе разными фишками
                     if (JAIL_COORDS.includes(coord2)) {
                         canMove2AfterMove1 = 0; // Из тюрьмы нельзя выйти при ходе разными фишками
                     }
+                    // Дополнительная проверка: из зоны ожидания нельзя вывести две фишки одновременно
+                    if (START_ZONES[currentPlayer].includes(coord1)&&START_ZONES[currentPlayer].includes(coord2)&&(canMove1===1)) {
+                        canMove2AfterMove1 = 0; // Из зоны ожидания нельзя вывести две фишки одновременно
+                    }					
+					
+					
+					
 
                     // Сравниваем значения кубиков: 1 если первый кубик больше второго, 0 если меньше или равно
-                    const diceComparison = lastDiceRoll[0] > lastDiceRoll[1] ? 1 : 0;
+                    const diceComparison = dice1 > dice2 ? 1 : 0;
 
                     // Рассчитываем формулу: 6столбец+7столбец+6столбец*8столбец+(1-8столбец)*7столбец
                     // где 6столбец = canMove1, 7столбец = canMove2AfterMove1, 8столбец = diceComparison
                     const formulaResult = canMove1 + canMove2AfterMove1 + canMove1 * diceComparison + (1 - diceComparison) * canMove2AfterMove1;
 
                     // Сохраняем в таблицу все данные
-                    pieceCombinationsTable.push([coord1, coord2, comparison, targetCoord1, targetCoord2, canMove1, canMove2AfterMove1, diceComparison, formulaResult]);
+                    pieceCombinationsTable.push([coord1, coord2, targetCoord1, targetCoord2, canMove1, canMove2AfterMove1, diceComparison, formulaResult]);
                 }
             }
 
@@ -3507,9 +3973,159 @@
                 pieceCombinationsTable.push(...sequentialMoves);
             }
 
-            // Выводим всю таблицу как объект для отладки
+            // 3. Проверяем есть ли фишка в телепорте текущего игрока
+            const playerTeleportCoord = TELEPORT_COORDS[currentPlayer];
+            const teleportPiece = currentPlayerPieces.find(piece =>
+                getCurrentPosition(piece) === playerTeleportCoord
+            );
+
+            if (teleportPiece) {
+                const teleportCoord = getCurrentPosition(teleportPiece);
+
+                // 3a. Блок 1: Телепорт → Другие фишки (5 строк)
+                for (let i = 0; i < currentPlayerPieces.length; i++) {
+                    const otherPiece = currentPlayerPieces[i];
+                    const otherCoord = getCurrentPosition(otherPiece);
+
+                    if (otherCoord === teleportCoord) continue; // Пропускаем саму фишку в телепорте
+
+                    // Определяем прогресс (телепорт vs другая фишка)
+                    const pos1 = getPieceProgressPosition(teleportCoord, currentPlayer);
+                    const pos2 = getPieceProgressPosition(otherCoord, currentPlayer);
+                    //const comparison = pos1 > pos2 ? 1 : 0;
+
+                    // Рассчитываем ходы
+                    const targetCoord1 = calculateSingleTeleportMove(teleportCoord, lastDiceRoll[0], currentPlayer);
+                    const targetCoord2 = calculateTargetCoordinate(otherCoord, lastDiceRoll[1], currentPlayer);
+
+                    // Проверяем возможность ходов
+                    let canMove1 = targetCoord1 ? 1 : 0; // Телепорт возможен только для 1,3,6
+
+                    // Дополнительная проверка: из тюрьмы нельзя выйти при ходе разными фишками
+                    if (JAIL_COORDS.includes(otherCoord)) {
+                        canMove1 = 0; // Блокируем телепорт если вторая фишка в тюрьме
+                    }
+
+                    const canMove2AfterMove1 = simulateFirstMoveAndCheckSecond(
+                        teleportCoord, targetCoord1, canMove1, otherCoord, targetCoord2, lastDiceRoll[0], lastDiceRoll[1], currentPlayer
+                    );
+
+                    // Сравнение кубиков и формула
+                    const diceComparison = lastDiceRoll[0] > lastDiceRoll[1] ? 1 : 0;
+                    const formulaResult = canMove1 + canMove2AfterMove1 + canMove1 * diceComparison + (1 - diceComparison) * canMove2AfterMove1;
+
+                    pieceCombinationsTable.push([teleportCoord, otherCoord, targetCoord1, targetCoord2, canMove1, canMove2AfterMove1, diceComparison, formulaResult]);
+                }
+
+                // 3b. Блок 2: Другие фишки → Телепорт (5 строк)
+                for (let i = 0; i < currentPlayerPieces.length; i++) {
+                    const otherPiece = currentPlayerPieces[i];
+                    const otherCoord = getCurrentPosition(otherPiece);
+
+                    if (otherCoord === teleportCoord) continue; // Пропускаем саму фишку в телепорте
+
+                    // Определяем прогресс (другая фишка vs телепорт)
+                    const pos1 = getPieceProgressPosition(otherCoord, currentPlayer);
+                    const pos2 = getPieceProgressPosition(teleportCoord, currentPlayer);
+                    //const comparison = pos1 > pos2 ? 1 : 0;
+
+                    // Рассчитываем ходы
+                    const targetCoord1 = calculateTargetCoordinate(otherCoord, lastDiceRoll[0], currentPlayer);
+                    const targetCoord2 = calculateSingleTeleportMove(teleportCoord, lastDiceRoll[1], currentPlayer);
+
+                    // Проверяем возможность ходов
+                    let canMove1 = canMakeMoveFromTo(otherCoord, targetCoord1, lastDiceRoll[0], currentPlayer);
+                    let canMove2AfterMove1 = targetCoord2 ? 1 : 0; // Телепорт возможен только для 1,3,6
+
+                    // Дополнительные проверки для тюрем
+                    if (JAIL_COORDS.includes(otherCoord)) {
+                        canMove1 = 0; // Из тюрьмы нельзя выйти при ходе разными фишками
+                    }
+
+                    if (canMove1) {
+                        canMove2AfterMove1 = simulateFirstMoveAndCheckSecond(
+                            otherCoord, targetCoord1, canMove1, teleportCoord, targetCoord2, lastDiceRoll[0], lastDiceRoll[1], currentPlayer
+                        );
+                    } else {
+                        canMove2AfterMove1 = 0;
+                    }
+
+                    // Сравнение кубиков и формула
+                    const diceComparison = lastDiceRoll[0] > lastDiceRoll[1] ? 1 : 0;
+                    const formulaResult = canMove1 + canMove2AfterMove1 + canMove1 * diceComparison + (1 - diceComparison) * canMove2AfterMove1;
+
+                    pieceCombinationsTable.push([otherCoord, teleportCoord, targetCoord1, targetCoord2, canMove1, canMove2AfterMove1, diceComparison, formulaResult]);
+                }
+
+                // 3c. Блок 3: Последовательная телепортация (2 строки)
+                // Вариант A: телепорт на dice1 → обычный ход на dice2
+                const targetCoordA1 = calculateSingleTeleportMove(teleportCoord, lastDiceRoll[0], currentPlayer);
+                const targetCoordA2 = targetCoordA1 ? calculateTargetCoordinate(targetCoordA1, lastDiceRoll[1], currentPlayer) : null;
+
+                const canMoveA1 = targetCoordA1 ? 1 : 0;
+                const canMoveA2 = simulateFirstMoveAndCheckSecond(
+                    teleportCoord, targetCoordA1, canMoveA1, targetCoordA1, targetCoordA2, lastDiceRoll[0], lastDiceRoll[1], currentPlayer
+                );
+
+                const diceComparisonA = lastDiceRoll[0] > lastDiceRoll[1] ? 1 : 0;
+                const formulaResultA = canMoveA1 + canMoveA2 + canMoveA1 * diceComparisonA + (1 - diceComparisonA) * canMoveA2;
+
+                pieceCombinationsTable.push([teleportCoord, targetCoordA1, targetCoordA1, targetCoordA2, canMoveA1, canMoveA2, diceComparisonA, formulaResultA]);
+
+                // Вариант B: телепорт на dice2 → обычный ход на dice1
+                const targetCoordB1 = calculateSingleTeleportMove(teleportCoord, lastDiceRoll[1], currentPlayer);
+                const targetCoordB2 = targetCoordB1 ? calculateTargetCoordinate(targetCoordB1, lastDiceRoll[0], currentPlayer) : null;
+
+                const canMoveB1 = targetCoordB1 ? 1 : 0;
+                const canMoveB2 = simulateFirstMoveAndCheckSecond(
+                    teleportCoord, targetCoordB1, canMoveB1, targetCoordB1, targetCoordB2, lastDiceRoll[1], lastDiceRoll[0], currentPlayer
+                );
+
+                const diceComparisonB = lastDiceRoll[1] > lastDiceRoll[0] ? 1 : 0;
+                const formulaResultB = canMoveB1 + canMoveB2 + canMoveB1 * diceComparisonB + (1 - diceComparisonB) * canMoveB2;
+
+                pieceCombinationsTable.push([teleportCoord, targetCoordB1, targetCoordB1, targetCoordB2, canMoveB1, canMoveB2, diceComparisonB, formulaResultB]);
+            }
+
+            // Выводим полную таблицу в консоль
             console.log('🔍 COMBINATIONS: Полная таблица:', pieceCombinationsTable);
-        }
+			  // Фильтруем и выводим допустимые ходы
+			  let movesWithFormula3 = pieceCombinationsTable.filter(row => row[7] === 3);
+			  let movesWithFormula2 = pieceCombinationsTable.filter(row => row[7] === 2);
+
+			  // Удаляем дублирующиеся записи из movesWithFormula3
+			  const uniqueFormula3 = [];
+			  const seenFormula3 = new Set();
+			  for (const row of movesWithFormula3) {
+				  const key = row.slice(0, 7).join('|');
+				  if (!seenFormula3.has(key)) {
+					  seenFormula3.add(key);
+					  uniqueFormula3.push(row);
+				  }
+			  }
+			  movesWithFormula3 = uniqueFormula3;
+
+			  // Удаляем дублирующиеся записи из movesWithFormula2
+			  const uniqueFormula2 = [];
+			  const seenFormula2 = new Set();
+			  for (const row of movesWithFormula2) {
+				  const key = row.slice(0, 7).join('|');
+				  if (!seenFormula2.has(key)) {
+					  seenFormula2.add(key);
+					  uniqueFormula2.push(row);
+				  }
+			  }
+			  movesWithFormula2 = uniqueFormula2;
+
+			  if (movesWithFormula3.length > 0) {
+			  console.log('🎯 ДОПУСТИМЫЕ ХОДЫ (formulaResult = 3):', movesWithFormula3);
+			  } else if (movesWithFormula2.length > 0) {
+			  console.log('🎯 ДОПУСТИМЫЕ ХОДЫ (formulaResult = 2):', movesWithFormula2);
+			  } else {
+			  console.log('❌ Допустимых ходов не обнаружено');
+			  }
+			  
+		}
 
         function handleOrderDetermination(sum) {
             // Добавляем результат текущего игрока
@@ -3611,7 +4227,6 @@
                 document.getElementById('random-move-btn').disabled = false;
                 
                 // Автосохранение после определения очередности
-                console.log('Вызов autoSaveGame после определения очередности');
                 autoSaveGame();
             }
         }
@@ -3645,7 +4260,6 @@
                         nextPlayerBtn.textContent = 'Передать ход';
                     }
 
-                    console.log(`🎲 DOUBLE_NO_MOVES: Дубль ${dice1}:${dice2}, нет ходов, но предоставлен повторный бросок`);
                     return;
                 } else {
                     // Дубль и есть валидные ходы
@@ -3699,9 +4313,6 @@
 
                 // Автоматически переходим к следующему игроку через 1 секунду
                 setTimeout(() => {
-                    console.log(`⏭️ AUTO_SKIP: Выполняем автоматический переход к следующему игроку`);
-                    console.log(`⏭️ AUTO_SKIP: gamePhase перед nextPlayer():`, gamePhase);
-                    console.log(`⏭️ AUTO_SKIP: currentPlayer перед nextPlayer():`, currentPlayer);
                     nextPlayer();
                 }, 3000);
 
@@ -3744,8 +4355,7 @@
         function nextPlayer() {
 
             if (gamePhase === 'playing') {
-				console.log(`мой первый лог`);
-
+	
                 const playerIndex = playersOrder.findIndex(p => p.player === currentPlayer);
                 const nextIndex = (playerIndex + 1) % playersOrder.length;
                 const previousPlayer = currentPlayer;
@@ -3753,7 +4363,6 @@
 
                 // Очищаем кеш ходов при смене игрока
                 cachedValidMoves = [];
-                console.log('🧹 CACHE: Очистен кеш при смене игрока');
 
 
                 // Увеличиваем счетчик ходов
@@ -3828,18 +4437,15 @@
         }
 
         async function performRandomMove(isRecursiveCall = false) {
-            console.log('🎲 RANDOM_MOVE: Начинаем случайный ход', isRecursiveCall ? '(рекурсивный вызов для дубля)' : '(начальный вызов)');
 
             // Проверяем фазу игры
             if (gamePhase !== 'playing') {
-                console.log('🎲 RANDOM_MOVE: Не в фазе игры, отменяем случайный ход');
                 return;
             }
 
             // Блокируем restore во время выполнения случайного хода (только при первом вызове)
             if (!isRecursiveCall) {
                 isPerformingRandomMove = true;
-                console.log('🔄 RANDOM_MOVE: Блокируем restore до завершения операции');
             }
 
             // Деактивируем кнопку во время выполнения (только при первом вызове)
@@ -3854,52 +4460,39 @@
                 let dice1 = lastDiceRoll[0];
                 let dice2 = lastDiceRoll[1];
 
-                console.log(`🎲 RANDOM_MOVE: Текущие кубики: ${dice1}, ${dice2}`);
-                console.log(`🎲 RANDOM_MOVE: diceUsed: [${diceUsed[0]}, ${diceUsed[1]}]`);
 
                 // Проверяем, бросал ли текущий игрок кубики в этом ходу через журнал бросков
                 // Используем массив diceLog напрямую вместо парсинга DOM
                 let currentPlayerHasRolled = false;
 
-                console.log(`🎲 RANDOM_MOVE: Проверяем журнал бросков (${diceLog.length} записей)`);
 
                 // Проверяем последнюю запись в журнале (она добавляется в начало массива через unshift)
                 if (diceLog.length > 0) {
                     const lastEntry = diceLog[0];
-                    console.log(`🎲 RANDOM_MOVE: Последняя запись в журнале:`, lastEntry);
 
                     if (lastEntry.isFirstMoveWinner) {
                         // Последняя запись - это розыгрыш очередности, не игровой ход
-                        console.log(`🎲 RANDOM_MOVE: Последняя запись - розыгрыш очередности, кубики нельзя использовать для ходов`);
                     } else if (lastEntry.player === currentPlayer) {
                         // Последняя запись принадлежит текущему игроку и это настоящий игровой ход
                         currentPlayerHasRolled = true;
-                        console.log(`🎲 RANDOM_MOVE: Текущий игрок ${currentPlayer} уже бросал кубики в игровом ходу`);
                     } else {
-                        console.log(`🎲 RANDOM_MOVE: Последняя запись принадлежит игроку ${lastEntry.player}, текущий игрок ${currentPlayer} еще не бросал`);
                     }
                 } else {
-                    console.log(`🎲 RANDOM_MOVE: Журнал пуст - никто еще не бросал кубики`);
                 }
 
                 if (!currentPlayerHasRolled) {
-                    console.log('🎲 RANDOM_MOVE: Кубики не брошены для текущего игрока, выполняем бросок');
                     await rollPlayerDice();
                     // Ждем небольшую паузу для завершения анимации
                     await new Promise(resolve => setTimeout(resolve, 1500));
                     // Обновляем значения после броска
                     dice1 = lastDiceRoll[0];
                     dice2 = lastDiceRoll[1];
-                    console.log(`🎲 RANDOM_MOVE: После броска кубики: ${dice1}, ${dice2}`);
                 } else {
-                    console.log('🎲 RANDOM_MOVE: Кубики уже брошены для текущего игрока, используем существующие значения');
                 }
 
-                console.log(`🎲 RANDOM_MOVE: Используем кубики ${dice1} и ${dice2}`);
 
                 // Получаем всех фишек текущего игрока
                 const currentPlayerPieces = Array.from(document.querySelectorAll(`.piece.player${currentPlayer}`));
-                console.log(`🎲 RANDOM_MOVE: Фишек игрока ${currentPlayer}:`, currentPlayerPieces.length);
 
                 // Находим фишки с возможными ходами (как в showMoveHints)
                 const piecesWithMoves = [];
@@ -3944,7 +4537,6 @@
                     }
                 }
 
-                console.log(`🎲 RANDOM_MOVE: Фишек с возможными ходами: ${piecesWithMoves.length}`);
 
                 // ПРИОРИТЕТ ДУБЛЕЙ: Проверяем дубли даже при отсутствии ходов
                 dice1 = lastDiceRoll[0];
@@ -3952,12 +4544,10 @@
                 const isDoubleRoll = isDouble(dice1, dice2);
 
                 if (piecesWithMoves.length === 0) {
-                    console.log('🎲 RANDOM_MOVE: Нет доступных ходов');
 
                     // Если это дубль и не превышен лимит - даем повторный бросок
                     if (isDoubleRoll && consecutiveDoubles < 3) {
                         consecutiveDoubles++;
-                        console.log(`🎲 RANDOM_MOVE: Дубль ${dice1}:${dice2}! Нет ходов, но продолжаем случайный ход (дубль №${consecutiveDoubles}/3)`);
 
                         updateGameMessage(`Дубль ${dice1}:${dice2}! Нет ходов, но продолжаем случайный ход (${consecutiveDoubles}/3)`);
 
@@ -3975,7 +4565,6 @@
                                 // Рекурсивно вызываем performRandomMove для продолжения
                                 await performRandomMove(true);
                             } catch (error) {
-                                console.error('🎲 RANDOM_MOVE: Ошибка при продолжении дубля (нет ходов):', error);
                                 // В случае ошибки завершаем случайный ход
                                 isPerformingRandomMove = false;
                                 if (randomMoveBtn) {
@@ -3991,7 +4580,6 @@
 
                         // Если достигнут лимит дублей, вызываем checkTurnCompletion для корректной передачи хода
                         if (isDoubleRoll && consecutiveDoubles >= 3) {
-                            console.log('🎲 RANDOM_MOVE: Лимит дублей достигнут, передаем ход');
                             setTimeout(() => {
                                 checkTurnCompletion();
                             }, 500);
@@ -4004,24 +4592,20 @@
                 let moveCount = 0;
                 let loopIterations = 0;
                 const maxLoopIterations = 50; // Защита от бесконечного цикла
-                console.log(`🎲 RANDOM_MOVE: Начинаем выполнение ходов`);
 
                 while (true) {
                     loopIterations++;
                     if (loopIterations > maxLoopIterations) {
-                        console.error(`🚫 RANDOM_MOVE: КРИТИЧЕСКАЯ ОШИБКА - превышен лимит итераций цикла (${maxLoopIterations}), принудительно завершаем`);
                         break;
                     }
                     // Обновляем значения кубиков (могли измениться после предыдущего хода)
                     dice1 = lastDiceRoll[0];
                     dice2 = lastDiceRoll[1];
 
-                    console.log(`🎲 RANDOM_MOVE: Итерация ${loopIterations}: dice1=${dice1}, dice2=${dice2}, diceUsed=[${diceUsed[0]},${diceUsed[1]}]`);
 
                     // Проверяем, остались ли доступные кубики
                     const hasAvailableDice = (!diceUsed[0] && dice1 > 0) || (!diceUsed[1] && dice2 > 0);
                     if (!hasAvailableDice) {
-                        console.log(`🎲 RANDOM_MOVE: Все кубики использованы, завершаем ходы (сделано ${moveCount} ходов)`);
                         break;
                     }
 
@@ -4069,7 +4653,6 @@
                     }
 
                     if (availablePieces.length === 0) {
-                        console.log(`🎲 RANDOM_MOVE: Нет доступных ходов, завершаем (сделано ${moveCount} ходов)`);
                         break;
                     }
 
@@ -4082,7 +4665,6 @@
                     const selectedMove = selectedPieceData.moves[randomMoveIndex];
 
                     moveCount++;
-                    console.log(`🎲 RANDOM_MOVE: Ход ${moveCount}: фишка перемещается на ${selectedMove.coord} (${selectedMove.steps} шагов)`);
 
                     // Выделяем фишку и показываем подсветку возможных ходов
                     selectPiece(selectedPieceData.piece);
@@ -4097,36 +4679,28 @@
 
                     // Заполняем кеш для выполнения хода
                     cachedValidMoves = calculateAndCacheValidMoves(selectedPieceData.piece);
-                    console.log('🔄 RANDOM_MOVE: Заполнен кеш ходов перед performMove, размер:', cachedValidMoves.length);
 
-                    console.log(`🎲 RANDOM_MOVE: Выполняем performMove - фишка: ${selectedPieceData.piece.dataset.id}, цель: ${selectedMove.coord}`);
                     performMove(selectedPieceData.piece, selectedMove.coord);
-                    console.log(`🎲 RANDOM_MOVE: performMove завершен, diceUsed теперь: [${diceUsed[0]},${diceUsed[1]}]`);
 
                     // Дополнительная пауза для завершения асинхронных операций в performMove
                     await new Promise(resolve => setTimeout(resolve, 1500));
 
                     // Проверяем состояние после паузы
-                    console.log(`🎲 RANDOM_MOVE: После паузы, diceUsed: [${diceUsed[0]},${diceUsed[1]}], gamePhase: ${gamePhase}`);
 
                     // Если game phase изменилась или все кубики использованы, завершаем цикл
                     if (gamePhase !== 'playing' || (diceUsed[0] && diceUsed[1])) {
-                        console.log(`🎲 RANDOM_MOVE: Принудительное завершение цикла - gamePhase: ${gamePhase}, все кубики использованы: ${diceUsed[0] && diceUsed[1]}`);
                         break;
                     }
                 }
 
-                console.log(`🎲 RANDOM_MOVE: Случайные ходы выполнены (всего ходов: ${moveCount})`);
 
                 // Проверяем дубли для продолжения случайных ходов (используем ранее объявленную isDoubleRoll)
                 const allDiceUsed = diceUsed[0] && diceUsed[1];
 
-                console.log(`🎲 RANDOM_MOVE: Проверяем дубли - dice: ${dice1}:${dice2}, isDouble: ${isDoubleRoll}, consecutiveDoubles: ${consecutiveDoubles}, allDiceUsed: ${allDiceUsed}`);
 
                 if (isDoubleRoll && consecutiveDoubles < 3 && (allDiceUsed || isStartZoneComboMove)) {
                     // Дубль выпал и мы можем продолжить
                     consecutiveDoubles++;
-                    console.log(`🎲 RANDOM_MOVE: Дубль ${dice1}:${dice2}! Продолжаем случайный ход (дубль №${consecutiveDoubles}/3)`);
 
                     updateGameMessage(`Дубль ${dice1}:${dice2}! Продолжаем случайный ход (${consecutiveDoubles}/3)`);
 
@@ -4144,7 +4718,6 @@
                             // Рекурсивно вызываем performRandomMove для продолжения
                             await performRandomMove(true);
                         } catch (error) {
-                            console.error('🎲 RANDOM_MOVE: Ошибка при продолжении дубля:', error);
                             // В случае ошибки завершаем случайный ход
                             isPerformingRandomMove = false;
                             if (randomMoveBtn) {
@@ -4157,11 +4730,9 @@
                 } else {
                     // Нет дубля или достигнут лимит - завершаем ход
                     // НЕ вызываем checkTurnCompletion() - он уже вызван в performMove()
-                    console.log(`🎲 RANDOM_MOVE: Завершаем случайный ход - checkTurnCompletion уже вызван в performMove`);
                 }
 
             } catch (error) {
-                console.error('🎲 RANDOM_MOVE: Ошибка при выполнении случайного хода:', error);
                 document.getElementById('game-message').textContent = 'Ошибка при выполнении случайного хода';
             } finally {
                 // Очищаем подсветка и выделение на случай ошибки
@@ -4171,7 +4742,6 @@
                 // Разблокируем restore и восстанавливаем кнопку только при завершении основного вызова
                 if (!isRecursiveCall) {
                     isPerformingRandomMove = false;
-                    console.log('🔄 RANDOM_MOVE: Разблокируем restore (завершение основного вызова)');
 
                     // Восстанавливаем состояние кнопки
                     if (randomMoveBtn) {
@@ -4179,7 +4749,6 @@
                         randomMoveBtn.textContent = 'Сделать случайный ход';
                     }
                 } else {
-                    console.log('🔄 RANDOM_MOVE: Рекурсивный вызов завершен, restore остается заблокированным');
                 }
             }
         }
@@ -4313,11 +4882,9 @@
 
         // Вычисляет и кеширует возможные ходы для фишки
         function calculateAndCacheValidMoves(piece) {
-            console.log('🔄 CACHE: Вычисляем и кешируем ходы для фишки:', piece.dataset.id);
 
             // Проверяем, не является ли последний бросок розыгрышем очередности
             if (diceLog.length > 0 && diceLog[0].isFirstMoveWinner) {
-                console.log('🎯 CACHE: Последний бросок - розыгрыш очередности, подсказки ходов недоступны');
                 return []; // Возвращаем пустой массив
             }
 
@@ -4331,19 +4898,16 @@
 
             // Специальная логика для фишек в тюрьме
             if (isInJail && dice1 !== 0 && dice2 !== 0) {
-                console.log('🔒 CACHE: Фишка находится в тюрьме:', piecePosition);
 
                 // Проверяем, есть ли 6 на кубиках
                 const hasSix = dice1 === 6 || dice2 === 6;
 
                 if (!hasSix) {
-                    console.log('🔒 CACHE: Нет 6 на кубиках - выход из тюрьмы невозможен');
                     return []; // Возвращаем пустой массив
                 }
 
                 // Если есть 6, рассчитываем ходы только на второе значение кубика
                 const exitDiceValue = dice1 === 6 ? dice2 : dice1;
-                console.log(`🔒 CACHE: Выход из тюрьмы на 6, движение на ${exitDiceValue}`);
 
                 // Рассчитываем возможные ходы только на второе значение
                 const allPossibleMoves = calculatePossibleMoves(piece);
@@ -4371,17 +4935,14 @@
                 availableMoves.add(dice1 + dice2);
             }
 
-            console.log('🎲 CACHE: Доступные ходы:', Array.from(availableMoves), 'Использованные кубики:', diceUsed);
 
             // Специальная проверка для фишек в START_ZONES: нужна 1 для выхода
             const currentPiecePosition = getPiecePosition(piece);
             if (currentPiecePosition.type === 'start') {
                 const hasOne = availableMoves.has(1);
                 if (!hasOne) {
-                    console.log('🚫 CACHE: Нет единицы на кубиках для выхода из стартовой зоны');
                     return []; // Возвращаем пустой массив
                 }
-                console.log('✅ CACHE: Есть единица на кубиках, можно выходить');
             }
 
             // Рассчитываем все возможные ходы для фишки
@@ -4395,12 +4956,10 @@
 
             // Добавляем телепортные ходы если фишка находится в своем телепорте
             const teleportMoves = calculateTeleportMoves(piece, dice1, dice2);
-            console.log('🚀 CACHE: Найдено телепортных ходов:', teleportMoves.length);
 
             // Объединяем обычные и телепортные ходы
             const allMoves = [...validMoves, ...teleportMoves];
 
-            console.log('🔄 CACHE: Закешировано ходов:', allMoves.length);
             return allMoves;
         }
 
@@ -4412,11 +4971,9 @@
                 showSingleMoveHint(move);
             });
 
-            console.log('💡 HINTS: Показано подсказок из кеша:', cachedValidMoves.length);
         }
 
         function handlePieceClick(piece) {
-            console.log('Piece clicked:', piece.dataset.player); // Для отладки
 
             const piecePlayer = parseInt(piece.dataset.player);
             const pieceCoord = getCurrentPosition(piece);
@@ -4425,7 +4982,6 @@
             if (gamePhase === 'playing' && piecePlayer !== currentPlayer) {
                 // Если есть выделенная своя фишка - рассматриваем как попытку хода (захвата)
                 if (selectedPiece) {
-                    console.log('Попытка захвата чужой фишки:', pieceCoord);
                     performMove(selectedPiece, pieceCoord);
                     clearMoveHints();
                     updateSelectedPiece(null);
@@ -4656,6 +5212,19 @@
             return possibleMoves;
         }
 
+        // Упрощенная функция для расчета одного телепортного хода
+        function calculateSingleTeleportMove(teleportCoord, diceValue, playerNum) {
+            // Проверяем есть ли маппинг для данного телепорта
+            const teleportMapping = TELEPORT_MAPPINGS[teleportCoord];
+            if (!teleportMapping) {
+                return null;
+            }
+
+            // Проверяем есть ли телепортация для данного значения кубика
+            const targetCoord = teleportMapping[diceValue];
+            return targetCoord || null; // Возвращает координату или null для 2,4,5
+        }
+
         // Функция для расчета телепортных ходов
         function calculateTeleportMoves(piece, dice1, dice2) {
             const playerNum = parseInt(piece.dataset.player);
@@ -4770,10 +5339,8 @@
                                             teleportPath: `${playerTeleport}→${targetTeleport}→${finalMove.coord}`
                                         });
                                     } else {
-                                        console.log(`🚀 TELEPORT: ❌ Комбинированный ход заблокирован препятствием: ${playerTeleport} → ${targetTeleport} → ${finalMove.coord}`);
                                     }
                                 } else {
-                                    console.log(`🚀 TELEPORT: ❌ ПРОБЛЕМА! calculateSingleMoveFromPosition не вернул финальную позицию для ${targetTeleport} + ${remainingValue} шагов`);
                                 }
                             });
                         } // Закрываем блок if (canTeleportToTarget)
@@ -4789,42 +5356,32 @@
             const playerNum = parseInt(piece.dataset.player);
             const path = PLAYER_PATHS[playerNum];
 
-            console.log(`🎯 calculateSingleMoveFromPosition: игрок=${playerNum}, позиция=${fromCoord}, шаги=${steps}`);
-            console.log(`🎯 calculateSingleMoveFromPosition: путь игрока ${playerNum} имеет ${path.length} клеток`);
 
             // Находим индекс стартовой позиции на пути игрока
             const currentIndex = path.indexOf(fromCoord);
-            console.log(`🎯 calculateSingleMoveFromPosition: индекс позиции ${fromCoord} в пути: ${currentIndex}`);
 
             if (currentIndex >= 0) {
                 const targetIndex = currentIndex + steps;
-                console.log(`🎯 calculateSingleMoveFromPosition: целевой индекс: ${targetIndex} (макс ${path.length - 1})`);
 
                 if (targetIndex < path.length) {
                     let targetCoord = path[targetIndex];
-                    console.log(`🎯 calculateSingleMoveFromPosition: целевая координата: ${targetCoord}`);
 
                     // Проверяем специальные поля с автоперемещением
                     if (SPECIAL_MOVES[targetCoord]) {
                         const originalCoord = targetCoord;
                         targetCoord = SPECIAL_MOVES[targetCoord];
-                        console.log(`🎯 calculateSingleMoveFromPosition: специальное поле: ${originalCoord} → ${targetCoord}`);
                     }
 
                     const result = {
                         coord: targetCoord,
                         steps: steps
                     };
-                    console.log(`🎯 calculateSingleMoveFromPosition: возвращаю результат:`, result);
                     return result;
                 } else {
-                    console.log(`🎯 calculateSingleMoveFromPosition: целевой индекс ${targetIndex} выходит за границы пути (${path.length})`);
                 }
             } else {
-                console.log(`🎯 calculateSingleMoveFromPosition: позиция ${fromCoord} не найдена в пути игрока ${playerNum}`);
             }
 
-            console.log(`🎯 calculateSingleMoveFromPosition: возвращаю null`);
             return null;
         }
 
@@ -4869,7 +5426,6 @@
             const position = getPiecePosition(movingPiece);
             const path = PLAYER_PATHS[movingPlayerNum];
 
-            console.log(`🔍 FILTER_DEBUG: Игрок ${movingPlayerNum}, позиция ${position.type}-${position.coord}, входящих ходов: ${possibleMoves.length}`);
 
             // Получаем текущий индекс фишки на пути
             let currentIndex = -1;
@@ -4884,10 +5440,8 @@
                 currentIndex = path.indexOf(entryCell) - 1; // -1 потому что выходим из зоны ожидания
             }
 
-            console.log(`🔍 FILTER_DEBUG: currentIndex = ${currentIndex}`);
 
             if (currentIndex === -1) {
-                console.log(`🔍 FILTER_DEBUG: currentIndex = -1, возвращаем все ходы как есть (для стартовых зон)`);
                 return possibleMoves; // Для стартовых зон возвращаем как есть
             }
 
@@ -5058,8 +5612,6 @@
                 }
             }
 
-            console.log(`🔍 FILTER_DEBUG: Отфильтровано ходов: ${validMoves.length} из ${possibleMoves.length}`);
-            console.log(`🔍 FILTER_DEBUG: Валидные ходы:`, validMoves);
 
             return validMoves;
         }
@@ -5068,8 +5620,6 @@
         function checkTeleportPathObstacles(fromCoord, toCoord, playerNum, steps, availableDice) {
             const path = PLAYER_PATHS[playerNum];
 
-            console.log(`🔍 checkTeleportPathObstacles: от ${fromCoord} до ${toCoord}, игрок ${playerNum}, шаги ${steps}`);
-            console.log(`🔍 checkTeleportPathObstacles: доступные кубики:`, availableDice);
 
             // Находим индексы начальной и конечной точек
             const fromIndex = path.indexOf(fromCoord);
@@ -5083,26 +5633,21 @@
                     if (specialTo === toCoord) {
                         originalToCoord = specialFrom;
                         toIndex = path.indexOf(specialFrom);
-                        console.log(`🔍 checkTeleportPathObstacles: ${toCoord} является результатом специального перемещения с ${specialFrom}`);
                         break;
                     }
                 }
             }
 
-            console.log(`🔍 checkTeleportPathObstacles: fromIndex=${fromIndex}, toIndex=${toIndex} (оригинальная позиция: ${originalToCoord})`);
 
             if (fromIndex === -1 || toIndex === -1) {
-                console.log(`🚀 TELEPORT: Не найден путь от ${fromCoord} до ${originalToCoord}`);
                 return false; // Если не можем найти путь, блокируем ход
             }
 
             // Проверяем, что движение идет в правильном направлении
             if (toIndex <= fromIndex) {
-                console.log(`🚀 TELEPORT: Некорректное направление движения от ${fromCoord} до ${toCoord}`);
                 return false;
             }
 
-            console.log(`🔍 checkTeleportPathObstacles: проверяем путь от индекса ${fromIndex + 1} до ${toIndex}`);
 
             // Проверяем каждую клетку на пути
             for (let i = fromIndex + 1; i <= toIndex; i++) {
@@ -5121,30 +5666,24 @@
                     const obstaclePiece = piecesAtCoord[0]; // Берем первую фишку
                     const obstaclePlayerNum = parseInt(obstaclePiece.dataset.player);
 
-                    console.log(`🚀 TELEPORT: Найдено препятствие на ${checkCoord} (${obstacleSteps} шагов от ${fromCoord})`);
 
                     if (obstaclePlayerNum === playerNum) {
                         // Свою фишку нельзя перепрыгивать - блокируем ход
-                        console.log(`🚀 TELEPORT: Своя фишка на ${checkCoord} блокирует движение`);
                         return false;
                     } else {
                         // Чужая фишка - можно съесть только на точном значении кубика
                         if (i === toIndex) {
                             // Препятствие в конечной точке - можно съесть, если есть точный кубик
                             if (availableDice.includes(steps)) {
-                                console.log(`🚀 TELEPORT: Можно съесть чужую фишку в конечной точке ${checkCoord}`);
                                 continue;
                             } else {
-                                console.log(`🚀 TELEPORT: Нельзя съесть чужую фишку в конечной точке ${checkCoord} - нет точного кубика`);
                                 return false;
                             }
                         } else {
                             // Препятствие по пути - можно перепрыгнуть только если можем съесть
                             if (availableDice.includes(obstacleSteps)) {
-                                console.log(`🚀 TELEPORT: Можно съесть чужую фишку по пути на ${checkCoord}`);
                                 continue;
                             } else {
-                                console.log(`🚀 TELEPORT: Чужая фишка на ${checkCoord} блокирует движение - нет точного кубика для съедения`);
                                 return false;
                             }
                         }
@@ -5156,12 +5695,10 @@
             if (isInSpecialZone(originalToCoord)) {
                 const piecesAtFinalTarget = gameBoard[originalToCoord] || [];
                 if (piecesAtFinalTarget.length > 0) {
-                    console.log(`🚀 TELEPORT: Финальная позиция ${originalToCoord} является храмом/тюрьмой и занята - ход заблокирован`);
                     return false;
                 }
             }
 
-            console.log(`🚀 TELEPORT: Путь от ${fromCoord} до ${toCoord} свободен`);
             return true; // Путь свободен
         }
 
@@ -5361,7 +5898,6 @@
 
             // Проверяем, не является ли последний бросок розыгрышем очередности
             if (diceLog.length > 0 && diceLog[0].isFirstMoveWinner) {
-                console.log('🎯 HINTS: Последний бросок - розыгрыш очередности, подсказки ходов недоступны');
                 return; // Не показываем никаких ходов
             }
 
@@ -5375,19 +5911,16 @@
 
             // Специальная логика для фишек в тюрьме
             if (isInJail && dice1 !== 0 && dice2 !== 0) {
-                console.log('🔒 JAIL: Фишка находится в тюрьме:', piecePosition);
 
                 // Проверяем, есть ли 6 на кубиках
                 const hasSix = dice1 === 6 || dice2 === 6;
 
                 if (!hasSix) {
-                    console.log('🔒 JAIL: Нет 6 на кубиках - выход из тюрьмы невозможен');
                     return; // Не показываем никаких ходов
                 }
 
                 // Если есть 6, показываем ходы только на второе значение кубика
                 const exitDiceValue = dice1 === 6 ? dice2 : dice1;
-                console.log(`🔒 JAIL: Выход из тюрьмы на 6, движение на ${exitDiceValue}`);
 
                 // Рассчитываем возможные ходы только на второе значение
                 const allPossibleMoves = calculatePossibleMoves(piece);
@@ -5423,17 +5956,14 @@
                 availableMoves.add(dice1 + dice2);
             }
 
-            console.log('🎲 DICE: Доступные ходы:', Array.from(availableMoves), 'Использованные кубики:', diceUsed);
 
             // Специальная проверка для фишек в START_ZONES: нужна 1 для выхода
             const currentPiecePosition = getPiecePosition(piece);
             if (currentPiecePosition.type === 'start') {
                 const hasOne = availableMoves.has(1);
                 if (!hasOne) {
-                    console.log('🚫 START_ZONES: Нет единицы на кубиках для выхода из стартовой зоны');
                     return; // Не показываем никаких ходов
                 }
-                console.log('✅ START_ZONES: Есть единица на кубиках, можно выходить');
             }
 
             // Рассчитываем все возможные ходы для фишки
@@ -5447,7 +5977,6 @@
 
             // Добавляем телепортные ходы если фишка находится в своем телепорте
             const teleportMoves = calculateTeleportMoves(piece, dice1, dice2);
-            console.log('🚀 TELEPORT: Найдено телепортных ходов:', teleportMoves.length);
 
             // Объединяем обычные и телепортные ходы
             const allMoves = [...validMoves, ...teleportMoves];
@@ -5503,7 +6032,6 @@
                 cell.classList.add('possible-move');
 
                 if (isTeleportion) {
-                    console.log(`🚀 TELEPORT: Показана телепортная подсказка на ${move.coord} для хода на ${move.steps}`);
                 }
             }
         }
@@ -5521,7 +6049,6 @@
         }
 
         function handleCellClick(coord) {
-            console.log('Cell clicked:', coord, 'Selected piece:', selectedPiece ? selectedPiece.dataset.player : 'none'); // Для отладки
             if (selectedPiece && gamePhase === 'playing') {
                 // Переместить выбранную фишку на указанную клетку
                 performMove(selectedPiece, coord);
@@ -5544,12 +6071,10 @@
                         }
                     }
                 });
-                console.log('Supabase клиент инициализирован с Realtime');
                 
                 // Проверяем доступность Realtime
                 setTimeout(() => {
                     if (supabaseClient.realtime) {
-                        console.log('✅ Realtime доступен');
                     } else {
                         console.warn('⚠️ Realtime недоступен');
                     }
@@ -5572,11 +6097,9 @@
         // Обновление состояния игры в Supabase
         async function updateGameState(gameId, gameState, updatedAt) {
             if (!supabaseClient || !gameId) {
-                console.log('🔴 UPDATE: Пропускаем обновление - нет клиента или ID');
                 return;
             }
 
-            console.log('🔵 UPDATE: Обновляем состояние игры:', gameId);
 
             try {
                 const { data, error } = await supabaseClient
@@ -5590,8 +6113,7 @@
                 if (error) {
                     console.error('❌ UPDATE: Ошибка обновления состояния игры:', error);
                 } else {
-                    console.log('✅ UPDATE: Состояние игры успешно обновлено, data:', data);
-                }
+                    }
             } catch (error) {
                 console.error('❌ UPDATE: Исключение при обновлении:', error);
             }
@@ -5607,7 +6129,6 @@
             
             try {
                 await updateGameState(currentGameId, gameState, updatedAt);
-                console.log('✅ AUTOSAVE: Автосохранение завершено успешно');
                 
                 // Включить кнопку "Передать ход" после успешного автосохранения
                 const nextPlayerBtn = document.getElementById('next-player-btn');
@@ -5616,7 +6137,6 @@
                     nextPlayerBtn.textContent = 'Передать ход';
                 }
             } catch (error) {
-                console.error('❌ AUTOSAVE: Ошибка автосохранения:', error);
                 // В случае ошибки все равно разблокировать кнопку через 3 секунды
                 setTimeout(() => {
                     const nextPlayerBtn = document.getElementById('next-player-btn');
@@ -5630,11 +6150,9 @@
 
         // Инициализация автосохранения при старте игры
         async function initializeAutoSave() {
-            console.log('Инициализация автосохранения...');
             
             // Ждем инициализации Supabase клиента
             if (!supabaseClient) {
-                console.log('Ожидание инициализации Supabase клиента...');
                 await new Promise(resolve => {
                     const checkClient = () => {
                         if (supabaseClient) {
@@ -5649,7 +6167,6 @@
 
             try {
                 currentGameId = generateGameId();
-                console.log('Создан ID игры:', currentGameId);
                 const gameState = serializeGameState();
                 const now = new Date().toISOString();
 
@@ -5668,7 +6185,6 @@
                     console.error('Ошибка создания начального сохранения:', error);
                     currentGameId = null;
                 } else {
-                    console.log('Игра успешно сохранена с ID:', currentGameId);
                     // Показать ID игры сразу после создания
                     showGameId();
                     // Подписаться на изменения игры
@@ -5689,12 +6205,10 @@
 
             // Отписываемся от предыдущего канала, если он существует
             if (gameChannel) {
-                console.log('Отписка от предыдущего канала');
                 supabaseClient.removeChannel(gameChannel);
                 gameChannel = null;
             }
 
-            console.log('🔴 ПОДПИСКА: Начинаем подписку на изменения игры:', gameId);
             
             // Создаем новый канал для подписки с упрощенной конфигурацией
             gameChannel = supabaseClient.channel(`game-${gameId}`)
@@ -5704,57 +6218,45 @@
                     table: 'saved_games',
                     filter: `CHPR_id=eq.${gameId}`
                 }, (payload) => {
-                    console.log('🟢 ПОЛУЧЕНО ОБНОВЛЕНИЕ:', payload);
-                    console.log('🟢 Payload old:', payload.old);
-                    console.log('🟢 Payload new:', payload.new);
-                    console.log('🟢 Game state:', payload.new?.game_state);
-                    console.log('🟢 Updated at:', payload.new?.updated_at);
-                    console.log('🟢 Current player from payload:', payload.new?.game_state?.currentPlayer);
 
                     if (payload.new && payload.new.game_state) {
                         // Проверяем, не выполняется ли случайный ход
                         if (isPerformingRandomMove) {
-                            console.log('🟡 RESTORE: Отложено - выполняется случайный ход');
                             return;
                         }
 
-                        console.log('🟢 Вызываем restoreGameState...');
                         restoreGameState(payload.new.game_state);
                     } else {
                         console.warn('Получен пустой game_state');
                     }
                 })
                 .subscribe((status, err) => {
-                    console.log('📡 СТАТУС ПОДПИСКИ:', status, err);
                     if (status === 'SUBSCRIBED') {
-                        console.log('✅ Успешно подписались на канал для игры:', gameId);
+                        // Успешная подписка, автосохранение работает
                     } else if (status === 'CHANNEL_ERROR') {
                         console.error('❌ Ошибка канала:', err);
+                        updateGameMessage('⚠️ Ошибка синхронизации. Игра работает локально.');
                     } else if (status === 'TIMED_OUT') {
                         console.error('⏱️ Таймаут подписки');
+                        updateGameMessage('⚠️ Таймаут соединения. Игра работает локально.');
                     } else if (status === 'CLOSED') {
                         console.error('❌ Канал закрыт. Возможно, Realtime не включен для таблицы saved_games');
+                        updateGameMessage('⚠️ Соединение закрыто. Игра работает локально.');
                     }
                 });
                 
-            console.log('📝 Создан канал:', gameChannel);
             
             // Тестовая проверка подписки через 3 секунды
             setTimeout(() => {
-                console.log('🧪 ТЕСТ: Проверяем активность канала через 3 сек');
                 if (gameChannel) {
-                    console.log('🧪 ТЕСТ: Канал существует, состояние:', gameChannel.state);
                     
                     // Добавляем глобальную функцию для тестирования
                     window.testRealtimeUpdate = () => {
-                        console.log('🧪 РУЧНОЙ ТЕСТ: Принудительное обновление');
                         const testState = serializeGameState();
                         testState.testField = Date.now(); // Добавляем уникальное поле
                         updateGameState(gameId, testState, new Date().toISOString());
                     };
-                    console.log('🧪 ТЕСТ: Используйте window.testRealtimeUpdate() для тестирования');
                 } else {
-                    console.log('🧪 ТЕСТ: Канал отсутствует!');
                 }
             }, 3000);
         }
@@ -5764,13 +6266,11 @@
 
             // Если уже идет восстановление, пропускаем
             if (isRestoringState) {
-                console.log('🟡 RESTORE: Уже идет восстановление, пропускаем');
                 return;
             }
 
             // Проверяем, отличается ли новое состояние от текущего
             const currentState = serializeGameState();
-            console.log('🟡 RESTORE: Текущее состояние:', currentState);
 
             // Сравниваем ключевые поля, а не всё состояние целиком
             const isStateChanged =
@@ -5782,22 +6282,11 @@
                 currentState.rollCount !== newGameState.rollCount ||
                 JSON.stringify(currentState.selectedPiece) !== JSON.stringify(newGameState.selectedPiece);
 
-            console.log('🟡 RESTORE: Анализ изменений:');
-            console.log('  - currentPlayer:', currentState.currentPlayer, '->', newGameState.currentPlayer);
-            console.log('  - gamePhase:', currentState.gamePhase, '->', newGameState.gamePhase);
-            console.log('  - playerDiceValues изменились:', JSON.stringify(currentState.playerDiceValues) !== JSON.stringify(newGameState.playerDiceValues));
-            console.log('  - diceLog изменился:', JSON.stringify(currentState.diceLog) !== JSON.stringify(newGameState.diceLog));
-            console.log('  - diceUsed изменился:', JSON.stringify(currentState.diceUsed) !== JSON.stringify(newGameState.diceUsed));
-            console.log('  - diceUsed:', JSON.stringify(currentState.diceUsed), '->', JSON.stringify(newGameState.diceUsed));
-            console.log('  - rollCount:', currentState.rollCount, '->', newGameState.rollCount);
-            console.log('  - isStateChanged:', isStateChanged);
 
             if (!isStateChanged) {
-                console.log('🟡 RESTORE: Ключевые поля не изменились, пропускаем обновление');
                 return;
             }
 
-            console.log('🟢 RESTORE: Состояние изменилось, выполняем восстановление');
 
             // Устанавливаем флаг восстановления, чтобы избежать циклических обновлений
             isRestoringState = true;
@@ -5819,7 +6308,6 @@
             deserializeGameState(newGameState);
             
             // Обновляем интерфейс после восстановления
-            console.log('🟢 RESTORE: Обновляем интерфейс, diceLog:', diceLog);
             updatePlayerDisplay();
             updateDiceLogDisplay();
             
@@ -5829,7 +6317,6 @@
             } else if (gamePhase === 'determining-order') {
                 /*updateGameMessage('Определение очередности хода. Бросайте кубики!')*/;
             }
-            console.log('🟢 RESTORE: Обновлено сообщение для фазы:', gamePhase);
             
             // Фишки перемещены через movePiece() с использованием CSS transitions (0.3s)
 
@@ -5839,7 +6326,6 @@
             // Снимаем флаг восстановления через 1 секунду
             setTimeout(() => {
                 isRestoringState = false;
-                console.log('🟢 RESTORE: Восстановление завершено, автосохранение снова активно');
             }, 1000);
         }
 
@@ -5914,13 +6400,9 @@
             piecesTeleportHistory = gameState.piecesTeleportHistory || {};
             currentTurnNumber = gameState.currentTurnNumber || 0;
             diceLog = gameState.diceLog || [];
-            console.log('🔄 DESERIALIZE: Восстановлен diceLog:', diceLog);
-            console.log('🔄 DESERIALIZE: Восстановлена история телепортов:', piecesTeleportHistory);
-            console.log('🔄 DESERIALIZE: Восстановлен номер хода:', currentTurnNumber);
 
             // Восстанавливаем кеш ходов из состояния игры
             cachedValidMoves = gameState.cachedValidMoves || [];
-            console.log('🔄 DESERIALIZE: Восстановлен кеш ходов, размер:', cachedValidMoves.length);
             orderResults = gameState.orderResults || [];
             playersToRoll = gameState.playersToRoll || [];
             firstMoveWinner = gameState.firstMoveWinner;
@@ -5928,27 +6410,22 @@
             if (gameState.selectedPiece) {
                 const targetPlayer = parseInt(gameState.selectedPiece.player);
                 const targetId = gameState.selectedPiece.id;
-                console.log('🔄 DESERIALIZE: Восстанавливаем selectedPiece для игрока', targetPlayer, 'ID:', targetId);
 
                 // Отложим восстановление выделения до после создания фишек
                 setTimeout(() => {
                     const piece = pieces[targetPlayer]?.find(p => p.element.dataset.id === targetId);
                     if (piece) {
-                        console.log('🔄 DESERIALIZE: Найдена фишка для восстановления выделения:', piece.element);
                         isUpdatingSelection = true;
                         selectPiece(piece.element);
 
                         // Показываем подсказки из восстановленного кеша
                         if (cachedValidMoves.length > 0) {
                             showCachedMoveHints();
-                            console.log('🔄 DESERIALIZE: Показаны подсказки из кеша, количество:', cachedValidMoves.length);
                         } else {
-                            console.log('🔄 DESERIALIZE: Кеш пуст, подсказки не показаны');
                         }
 
                         isUpdatingSelection = false;
                     } else {
-                        console.log('🔄 DESERIALIZE: Фишка для восстановления выделения не найдена');
                         selectedPiece = null;
                     }
                 }, 200);
@@ -6025,13 +6502,8 @@
             if (gameMessages.length > 0) {
                 const displayMessage = [...gameMessages].reverse().join('\n\n───────────────\n\n');
                 document.getElementById('game-message').textContent = displayMessage;
-                console.log('🔄 DESERIALIZE: Обновлены gameMessages:', gameMessages.length, 'сообщений');
             }
 
-            console.log('🔄 DESERIALIZE: Десериализация завершена');
-            console.log('🔄 DESERIALIZE: currentGameId после десериализации:', currentGameId);
-            console.log('🔄 DESERIALIZE: Текущий игрок:', currentPlayer);
-            console.log('🔄 DESERIALIZE: Фаза игры:', gamePhase);
         }
 
 
@@ -6095,19 +6567,30 @@
 
         // Загрузка игры с исправленной логикой
         async function loadGame() {
-            console.log('loadGame() вызвана');
-
-            // Инициализируем стандартную новую игру с 2 участниками
-            playerCount = 2;
-            startGame();
-            
             // Затем запрашиваем ID сохраненной игры
             const gameId = prompt('Введите ID сохраненной игры:');
             if (!gameId) {
-                // Если пользователь отменил ввод, остаемся в новой игре
+                // Если пользователь отменил ввод, инициализируем новую игру
+                playerCount = 2;
+                startGame();
                 return;
             }
 
+            // Показываем индикатор загрузки
+            updateGameMessage('Загрузка игры...');
+
+            // Используем setTimeout для разделения операций
+            setTimeout(async () => {
+                // Инициализируем стандартную новую игру с 2 участниками
+                playerCount = 2;
+                startGame();
+
+                await loadGameData(gameId);
+            }, 10);
+        }
+
+        // Отдельная функция для загрузки данных игры
+        async function loadGameData(gameId) {
             if (!supabaseClient) {
                 alert('Ошибка подключения к базе данных. Продолжаем с новой игрой.');
                 return;
@@ -6132,11 +6615,10 @@
                 // Заменяем состояние игры на сохраненное
                 try {
                     currentGameId = gameId.trim(); // Устанавливаем ID для автосохранения
-                    console.log('🔵 LOAD: Установлен currentGameId:', currentGameId);
-                    
+
                     // При загрузке игры не нужно использовать флаг восстановления
                     deserializeGameState(data.game_state);
-                    
+
                     // Обновляем интерфейс после загрузки
                     updatePlayerDisplay();
                     updateDiceLogDisplay();
@@ -6154,22 +6636,16 @@
 
                     // Подписаться на изменения загруженной игры
                     subscribeToGameChanges(currentGameId);
-                    console.log('🔵 LOAD: Подписка настроена для загруженной игры:', currentGameId);
-                    
+
                     // Добавляем тестовую функцию для проверки автосохранения после загрузки
                     window.testAutoSaveAfterLoad = () => {
-                        console.log('🧪 ТЕСТ ЗАГРУЗКИ: Проверяем автосохранение');
-                        console.log('🧪 currentGameId:', currentGameId);
-                        console.log('🧪 isRestoringState:', isRestoringState);
-                        console.log('🧪 supabaseClient:', !!supabaseClient);
                         autoSaveGame();
                     };
-                    console.log('🧪 LOAD: Используйте window.testAutoSaveAfterLoad() для тестирования');
-                    
+
                     // Обновляем состояние кнопок - продолжаем игру с того же состояния
                     const rollDiceBtn = document.getElementById('roll-dice-btn');
                     const nextPlayerBtn = document.getElementById('next-player-btn');
-                    
+
                     if (gamePhase === 'playing') {
                         // Включаем возможность бросать кубики - игрок может продолжать ход
                         if (rollDiceBtn) rollDiceBtn.disabled = false;
@@ -6305,20 +6781,20 @@
                     touchTimeout = setTimeout(() => {
                         gameIdField.classList.add('touch-active');
                     }, 500);
-                });
-                
+                }, { passive: true });
+
                 gameIdField.addEventListener('touchend', function(e) {
                     clearTimeout(touchTimeout);
-                    
+
                     // Скрыть тултип через некоторое время
                     setTimeout(() => {
                         gameIdField.classList.remove('touch-active');
                     }, 2000);
-                });
-                
+                }, { passive: true });
+
                 gameIdField.addEventListener('touchmove', function(e) {
                     clearTimeout(touchTimeout);
-                });
+                }, { passive: true });
             }
         }
 
@@ -6326,14 +6802,87 @@
         // Инициализация при загрузке страницы
         window.addEventListener('load', function() {
             initSupabase();
-            
+
             // Изначально скрыть контейнер с ID игры
             hideGameId();
-            
+
             // Настроить тач-события для ID игры
             setupGameIdTouchEvents();
-            
+
+            // Инициализация debug режима
+            initDebugMode();
+
         });
+
+        // Инициализация debug режима
+        function initDebugMode() {
+            // 1. Горячие клавиши
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+Shift+D - переключить debug панель
+                if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                    e.preventDefault();
+                    toggleDebugMode();
+                }
+
+                // Esc - закрыть debug панель
+                if (e.key === 'Escape') {
+                    const panel = document.getElementById('debug-panel');
+                    if (panel.style.display !== 'none') {
+                        toggleDebugMode();
+                    }
+                }
+            });
+
+            // 2. Double-click по области кубиков для активации
+            const diceArea = document.querySelector('.dice-panel');
+            if (diceArea) {
+                let clickCount = 0;
+                diceArea.addEventListener('click', function(e) {
+                    clickCount++;
+                    setTimeout(function() {
+                        if (clickCount === 2) {
+                            toggleDebugMode();
+                        }
+                        clickCount = 0;
+                    }, 400);
+                });
+            }
+
+            // 3. Triple-click по игровому полю (запасной способ активации)
+            const gameBoard = document.querySelector('.game-board');
+            if (gameBoard) {
+                gameBoard.addEventListener('click', function(e) {
+                    // Только если клик по свободной области (не по фишке или клетке)
+                    if (e.target === gameBoard) {
+                        if (!gameBoard._clickCount) gameBoard._clickCount = 0;
+                        gameBoard._clickCount++;
+
+                        setTimeout(function() {
+                            if (gameBoard._clickCount === 3) {
+                                toggleDebugMode();
+                                console.log('🔧 DEBUG активирован triple-click');
+                            }
+                            gameBoard._clickCount = 0;
+                        }, 600);
+                    }
+                });
+            }
+
+            // 4. Секретная комбинация букв "debug" (для веселья)
+            let debugSequence = '';
+            document.addEventListener('keypress', function(e) {
+                debugSequence += e.key.toLowerCase();
+                if (debugSequence.length > 5) {
+                    debugSequence = debugSequence.slice(-5);
+                }
+
+                if (debugSequence === 'debug') {
+                    toggleDebugMode();
+                    console.log('🔧 DEBUG активирован секретной командой');
+                    debugSequence = '';
+                }
+            });
+        }
 
         // Очистка при закрытии страницы
         window.addEventListener('beforeunload', function() {
@@ -6418,6 +6967,217 @@
                 hideTooltip();
             });
         }
+
+        // ================================
+        // DEBUG FUNCTIONS
+        // ================================
+
+        // Переключение видимости debug панели
+        function toggleDebugMode() {
+            const panel = document.getElementById('debug-panel');
+            const isVisible = panel.style.display !== 'none';
+            panel.style.display = isVisible ? 'none' : 'block';
+
+            if (!isVisible) {
+                console.log('🔧 DEBUG MODE активирован');
+                // Обновляем селекторы значениями текущих кубиков
+                document.getElementById('debug-dice1').value = lastDiceRoll[0] || 1;
+                document.getElementById('debug-dice2').value = lastDiceRoll[1] || 1;
+            }
+        }
+
+        // Установка кубиков через селекторы
+        function setDebugDice() {
+            const dice1 = parseInt(document.getElementById('debug-dice1').value);
+            const dice2 = parseInt(document.getElementById('debug-dice2').value);
+            setDice(dice1, dice2);
+        }
+
+        // Основная функция установки значений кубиков
+        function setDice(dice1, dice2) {
+            if (dice1 < 1 || dice1 > 6 || dice2 < 1 || dice2 > 6) {
+                console.error('❌ Значения кубиков должны быть от 1 до 6');
+                return;
+            }
+
+            // Устанавливаем значения
+            lastDiceRoll = [dice1, dice2];
+            playerDiceValues[currentPlayer] = [dice1, dice2];
+            diceUsed = [false, false];
+
+            // Обновляем визуал кубиков
+            updatePlayerDiceStates();
+
+            // Выводим в консоль
+            console.log(`🎲 УСТАНОВЛЕНЫ КУБИКИ: ${dice1} и ${dice2} для игрока ${currentPlayer} (${playerColors[currentPlayer - 1]})`);
+
+            // Очищаем кеш ходов для пересчета
+            cachedValidMoves = [];
+
+            // Обновляем анализ ходов
+            logPieceCombinations();
+        }
+
+        // Отправка выбранной фишки в тюрьму игрока
+        function sendSelectedToJail() {
+            if (!selectedPiece) {
+                console.warn('⚠️ Сначала выберите фишку (кликните на неё)');
+                updateGameMessage('Выберите фишку для отправки в тюрьму');
+                return;
+            }
+
+            const playerNum = parseInt(selectedPiece.dataset.player);
+            const jailCoords = {
+                1: 'N6',  // Красный
+                2: 'J14', // Желтый
+                3: 'B10', // Зеленый
+                4: 'F2'   // Фиолетовый
+            };
+
+            const jailCoord = jailCoords[playerNum];
+            const currentPos = getCurrentPosition(selectedPiece);
+
+            // Удаляем фишку с текущей позиции
+            if (gameBoard[currentPos]) {
+                if (Array.isArray(gameBoard[currentPos])) {
+                    const index = gameBoard[currentPos].indexOf(selectedPiece);
+                    if (index > -1) gameBoard[currentPos].splice(index, 1);
+                    if (gameBoard[currentPos].length === 0) delete gameBoard[currentPos];
+                } else {
+                    delete gameBoard[currentPos];
+                }
+            }
+
+            // Размещаем фишку в тюрьме
+            if (!gameBoard[jailCoord]) {
+                gameBoard[jailCoord] = [];
+            }
+            if (!Array.isArray(gameBoard[jailCoord])) {
+                gameBoard[jailCoord] = [gameBoard[jailCoord]];
+            }
+            gameBoard[jailCoord].push(selectedPiece);
+
+            // Обновляем визуальную позицию
+            const pos = coordToPosition(jailCoord);
+            selectedPiece.style.left = pos.x + 'px';
+            selectedPiece.style.top = pos.y + 'px';
+
+            console.log(`🚪 Фишка игрока ${playerNum} (${playerColors[playerNum - 1]}) отправлена в тюрьму ${jailCoord}`);
+            updateGameMessage(`Фишка ${playerColors[playerNum - 1]} отправлена в тюрьму ${jailCoord}`);
+
+            // Снимаем выделение
+            updateSelectedPiece(null);
+        }
+
+        // Генерация случайных значений кубиков
+        function randomDice() {
+            const dice1 = Math.floor(Math.random() * 6) + 1;
+            const dice2 = Math.floor(Math.random() * 6) + 1;
+            setDice(dice1, dice2);
+        }
+
+        // Сброс использованных кубиков
+        function clearDiceUsed() {
+            diceUsed = [false, false];
+            updatePlayerDiceStates();
+            console.log('🔄 Сброшены использованные кубики');
+            updateGameMessage('Использованные кубики сброшены');
+        }
+
+        // Лог текущего состояния игры
+        function logGameState() {
+            console.log('📊 СОСТОЯНИЕ ИГРЫ:');
+            console.log(`Текущий игрок: ${currentPlayer} (${playerColors[currentPlayer - 1]})`);
+            console.log(`Фаза игры: ${gamePhase}`);
+            console.log(`Кубики: ${lastDiceRoll[0]}, ${lastDiceRoll[1]}`);
+            console.log(`Использованные кубики: [${diceUsed[0] ? 'X' : 'O'}, ${diceUsed[1] ? 'X' : 'O'}]`);
+            console.log(`Выбранная фишка:`, selectedPiece);
+
+            // Подсчет фишек по игрокам
+            const pieceCounts = {1: 0, 2: 0, 3: 0, 4: 0};
+            document.querySelectorAll('.piece').forEach(piece => {
+                const player = parseInt(piece.dataset.player);
+                pieceCounts[player]++;
+            });
+            console.log('Количество фишек:', pieceCounts);
+        }
+
+        // Глобальные функции для консоли
+        window.debugMode = toggleDebugMode;
+        window.setDice = setDice;
+        window.randomDice = randomDice;
+        window.logGameState = logGameState;
+
+        // Автоматическая активация debug режима при добавлении параметра в URL
+        if (window.location.search.includes('debug=1')) {
+            setTimeout(toggleDebugMode, 1000);
+        }
+
     </script>
+
+    <!-- DEBUG PANEL -->
+    <div id="debug-panel" class="debug-panel" style="display: none;">
+        <div class="debug-header">
+            <h3>🔧 DEBUG MODE</h3>
+            <button class="debug-close" onclick="toggleDebugMode()">✕</button>
+        </div>
+
+        <div class="debug-content">
+            <!-- Управление кубиками -->
+            <div class="debug-section">
+                <h4>Кубики</h4>
+                <div class="debug-dice-controls">
+                    <div class="debug-dice-input">
+                        <label>Кубик 1:</label>
+                        <select id="debug-dice1">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+                    </div>
+                    <div class="debug-dice-input">
+                        <label>Кубик 2:</label>
+                        <select id="debug-dice2">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+                    </div>
+                    <button class="debug-btn" onclick="setDebugDice()">Установить</button>
+                </div>
+            </div>
+
+            <!-- Быстрые пресеты -->
+            <div class="debug-section">
+                <h4>Быстрые пресеты</h4>
+                <div class="debug-presets">
+                    <button class="debug-preset-btn" onclick="setDice(6,6)">6,6</button>
+                    <button class="debug-preset-btn" onclick="setDice(1,1)">1,1</button>
+                    <button class="debug-preset-btn" onclick="setDice(1,6)">1,6</button>
+                    <button class="debug-preset-btn" onclick="setDice(6,3)">6,3</button>
+                    <button class="debug-preset-btn" onclick="setDice(3,4)">3,4</button>
+                    <button class="debug-preset-btn" onclick="setDice(2,5)">2,5</button>
+                </div>
+            </div>
+
+            <!-- Утилиты -->
+            <div class="debug-section">
+                <h4>Утилиты</h4>
+                <div class="debug-utils">
+                    <button class="debug-btn" onclick="sendSelectedToJail()">Фишку в тюрьму</button>
+                    <button class="debug-btn" onclick="randomDice()">Случайные кубики</button>
+                    <button class="debug-btn" onclick="clearDiceUsed()">Сбросить использованные</button>
+                    <button class="debug-btn" onclick="logGameState()">Лог состояния</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
