@@ -1529,7 +1529,6 @@
 
         // Состояние анимации кубиков для синхронизации
         let playersOrder = [];
-        let lastMoveAnalysis = ''; // Хранение последнего анализа ходов
         let gameMessages = []; // История игровых сообщений (максимум 2)
         let skippedTurns = []; // История пропущенных ходов {player, reason, timestamp}
         let playerDiceValues = {1: [0, 0], 2: [0, 0], 3: [0, 0], 4: [0, 0]};
@@ -1546,6 +1545,7 @@
         let selectedPiece = null;
         let cachedValidMoves = []; // Кеш возможных ходов для выделенной фишки
         let pieceCombinationsTable = []; // Таблица комбинаций координат фишек
+        let validMovesTable = []; // Глобальная таблица с лучшими доступными ходами
         
         // Стартовые поля для выхода
         const ENTRY_CELLS = {
@@ -2754,7 +2754,7 @@
                     consecutiveDoubles++;
 
                     const skipMessage = remainingDice.length > 0 ?
-                        `Остались неиспользованные кубики: ${remainingDice.join(', ')}, но дубль дает право на повторный бросок!` :
+                        `Осталось сходить на ${remainingDice.join(', ')}, а затем дубль даст право на повторный бросок!` :
                         `Дубль дает право на повторный бросок!`;
 
                     updateGameMessage(`Дубль ${dice1}:${dice2}!\n\n${skipMessage} (${consecutiveDoubles}/3)`);
@@ -2785,8 +2785,7 @@
                     }, 1000);
                 } else {
                     // Есть возможные ходы - показываем обычное сообщение
-                    const updatedAnalysis = analyzePossibleMoves(dice1, dice2);
-                    const message = `Можете сделать еще ход. Остались кубики: ${remainingDice.join(', ')}\n\n${updatedAnalysis}`;
+                    const message = `Можете сделать еще ход. Осталось сходить на ${remainingDice.join(', ')}`;
 
                     updateGameMessage(message);
                 }
@@ -3127,16 +3126,14 @@
             if (gamePhase === 'determining-order') {
                 handleOrderDetermination(sum);
             } else if (gamePhase === 'playing') {
+                // Сначала строим таблицу комбинаций для корректной работы checkNoValidMoves()
+                logPieceCombinations();
+                // Затем обрабатываем игровой процесс
                 handleGamePlay(dice1, dice2);
             }
-            
+
             // Автосохранение после броска кубиков
             autoSaveGame();
-
-            // Выводим таблицу комбинаций координат фишек
-            if (gamePhase === 'playing') {
-                logPieceCombinations();
-            }
         }
 
         function getPieceProgressPosition(coord, playerNum) {
@@ -4117,14 +4114,18 @@
 			  }
 			  movesWithFormula2 = uniqueFormula2;
 
+			  // Обновляем глобальную таблицу валидных ходов по приоритету
 			  if (movesWithFormula3.length > 0) {
-			  console.log('🎯 ДОПУСТИМЫЕ ХОДЫ (formulaResult = 3):', movesWithFormula3);
+				  validMovesTable = [...movesWithFormula3]; // Приоритет 1: formulaResult = 3
+				  console.log('🎯 ДОПУСТИМЫЕ ХОДЫ (formulaResult = 3):', movesWithFormula3);
 			  } else if (movesWithFormula2.length > 0) {
-			  console.log('🎯 ДОПУСТИМЫЕ ХОДЫ (formulaResult = 2):', movesWithFormula2);
+				  validMovesTable = [...movesWithFormula2]; // Приоритет 2: formulaResult = 2
+				  console.log('🎯 ДОПУСТИМЫЕ ХОДЫ (formulaResult = 2):', movesWithFormula2);
 			  } else {
-			  console.log('❌ Допустимых ходов не обнаружено');
+				  validMovesTable = []; // Нет доступных ходов
+				  console.log('❌ Допустимых ходов не обнаружено');
 			  }
-			  
+
 		}
 
         function handleOrderDetermination(sum) {
@@ -4246,8 +4247,7 @@
 
                 if (noValidMoves) {
                     // Дубль, но нет валидных ходов
-                    const moveAnalysis = analyzePossibleMoves(dice1, dice2);
-                    const fullMessage = message + '\n\n' + moveAnalysis + '\n\nНет валидных ходов, но дубль дает право на повторный бросок.';
+                    const fullMessage = message + '\n\nНет валидных ходов, но дубль дает право на повторный бросок.';
                     updateGameMessage(fullMessage);
 
                     // Активируем кнопку броска для повторного броска
@@ -4263,9 +4263,7 @@
                     return;
                 } else {
                     // Дубль и есть валидные ходы
-                    const moveAnalysis = analyzePossibleMoves(dice1, dice2);
-                    const fullMessage = message + '\n\n' + moveAnalysis;
-                    updateGameMessage(fullMessage);
+                    updateGameMessage(message);
 
                     document.getElementById('roll-dice-btn').disabled = false;
 
@@ -4319,12 +4317,8 @@
                 return; // Прерываем выполнение функции
             }
 
-            // Есть валидные ходы - показываем анализ
-            const moveAnalysis = analyzePossibleMoves(dice1, dice2);
-            lastMoveAnalysis = moveAnalysis; // Сохраняем для использования в других местах
-            const fullMessage = message + '\n\n' + moveAnalysis;
-
-            updateGameMessage(fullMessage);
+            // Есть валидные ходы - показываем сообщение
+            updateGameMessage(message);
 
             // Включить кнопку для следующего броска
             document.getElementById('roll-dice-btn').disabled = false;
@@ -5702,118 +5696,6 @@
             return true; // Путь свободен
         }
 
-        // Функция для анализа возможных ходов всех фишек текущего игрока
-        function analyzePossibleMoves(dice1, dice2) {
-            // Проверяем, не является ли последний бросок розыгрышем очередности
-            if (diceLog.length > 0 && diceLog[0].isFirstMoveWinner) {
-                return "Розыгрыш очередности завершен. Бросьте кубики для начала хода.";
-            }
-
-            const currentPlayerPieces = pieces[currentPlayer];
-            if (!currentPlayerPieces || currentPlayerPieces.length === 0) {
-                return "Нет фишек для анализа";
-            }
-
-            const analysis = [];
-            const playerColor = playerColors[currentPlayer - 1];
-
-            currentPlayerPieces.forEach((pieceInfo, index) => {
-                const piece = pieceInfo.element;
-                const piecePosition = getCurrentPosition(piece);
-
-                // Проверяем специальные условия
-                const isInJail = JAIL_COORDS.includes(piecePosition);
-                const isInStartZone = Object.values(START_ZONES).flat().includes(piecePosition);
-
-                // Для фишек в тюрьме нужна 6 для выхода
-                if (isInJail) {
-                    const hasSix = (dice1 === 6 && !diceUsed[0]) || (dice2 === 6 && !diceUsed[1]);
-                    if (hasSix) {
-                        const otherDice = dice1 === 6 ? dice2 : dice1;
-                        if (otherDice > 0) {
-                            // Проверяем препятствия для выхода из тюрьмы
-                            const allPossibleMoves = calculatePossibleMoves(piece);
-                            const jailExitMoves = allPossibleMoves.filter(move => move.steps === otherDice);
-                            const validJailMoves = filterMovesWithObstacles(jailExitMoves, piece, otherDice, otherDice);
-
-                            if (validJailMoves.length > 0) {
-                                analysis.push(`${playerColor} ${index + 1} выход из тюрьмы на ${otherDice} ходов`);
-                            } else {
-                                analysis.push(`${playerColor} ${index + 1} заблокирована в тюрьме (путь заблокирован)`);
-                            }
-                        } else {
-                            analysis.push(`${playerColor} ${index + 1} выход из тюрьмы`);
-                        }
-                    } else {
-                        analysis.push(`${playerColor} ${index + 1} заблокирована в тюрьме (нужна 6)`);
-                    }
-                    return;
-                }
-
-                // Для фишек в START_ZONES нужна 1 для выхода
-                if (isInStartZone) {
-                    const hasOne = (dice1 === 1 && !diceUsed[0]) || (dice2 === 1 && !diceUsed[1]);
-                    if (!hasOne) {
-                        analysis.push(`${playerColor} ${index + 1} заблокирована в стартовой зоне (нужна 1)`);
-                        return;
-                    }
-                }
-
-                const possibleMoves = calculatePossibleMoves(piece, 12, dice1, dice2);
-
-                // Фильтруем ходы по доступным кубикам
-                const availableDiceValues = [];
-                if (!diceUsed[0] && dice1 > 0) availableDiceValues.push(dice1);
-                if (!diceUsed[1] && dice2 > 0) availableDiceValues.push(dice2);
-                if (!diceUsed[0] && !diceUsed[1] && dice1 > 0 && dice2 > 0) {
-                    availableDiceValues.push(dice1 + dice2);
-                }
-
-                const diceFilteredMoves = possibleMoves.filter(move => availableDiceValues.includes(move.steps));
-
-                // Применяем фильтрацию препятствий - ключевое изменение!
-                const validMoves = filterMovesWithObstacles(diceFilteredMoves, piece, dice1, dice2);
-
-                // Добавляем телепортные ходы если есть
-                const teleportMoves = calculateTeleportMoves(piece, dice1, dice2);
-                const allValidMoves = [...validMoves, ...teleportMoves];
-
-                if (allValidMoves.length > 0) {
-                    const steps = [...new Set(allValidMoves.map(move => move.steps))].sort((a, b) => a - b);
-                    const teleportSteps = teleportMoves.map(move => `Т${move.steps}`);
-                    const regularSteps = validMoves.map(move => move.steps);
-
-                    const allStepsDisplay = [];
-                    if (regularSteps.length > 0) {
-                        allStepsDisplay.push(...[...new Set(regularSteps)].sort((a, b) => a - b));
-                    }
-                    if (teleportSteps.length > 0) {
-                        allStepsDisplay.push(...teleportSteps);
-                    }
-
-                    analysis.push(`${playerColor} ${index + 1} на ${allStepsDisplay.join(', ')} ходов`);
-                } else {
-                    analysis.push(`${playerColor} ${index + 1} заблокирована (путь заблокирован)`);
-                }
-            });
-
-            if (analysis.length === 0) {
-                return `${playerColor} фишки не могут ходить`;
-            }
-
-            // Подсчитываем заблокированные фишки для более информативного сообщения
-            const blockedCount = analysis.filter(line =>
-                line.includes('заблокирована') || line.includes('не может ходить')
-            ).length;
-
-            const totalPieces = currentPlayerPieces.length;
-
-            if (blockedCount === totalPieces) {
-                return `Все ${totalPieces} фишек ${playerColor.toLowerCase()} игрока заблокированы:\n` + analysis.join('\n');
-            }
-
-            return analysis.join('\n');
-        }
 
         // Функция для проверки наличия возможных ходов у игрока
         function checkNoValidMoves(dice1, dice2) {
@@ -5822,74 +5704,8 @@
                 return false; // Розыгрыш очередности - не автопропуск, игрок должен бросить кубики
             }
 
-            const currentPlayerPieces = pieces[currentPlayer];
-            if (!currentPlayerPieces || currentPlayerPieces.length === 0) {
-                return true; // Нет фишек = нет ходов
-            }
-
-            // Проверяем каждую фишку на наличие возможных ходов
-            for (const pieceInfo of currentPlayerPieces) {
-                const piece = pieceInfo.element;
-                const piecePosition = getCurrentPosition(piece);
-
-                // Проверяем специальные условия
-                const isInJail = JAIL_COORDS.includes(piecePosition);
-                const isInStartZone = Object.values(START_ZONES).flat().includes(piecePosition);
-
-                // Для фишек в тюрьме нужна 6 для выхода
-                if (isInJail) {
-                    const hasSix = (dice1 === 6 && !diceUsed[0]) || (dice2 === 6 && !diceUsed[1]);
-                    if (hasSix) {
-                        // Проверяем препятствия для выхода из тюрьмы
-                        const otherDice = dice1 === 6 ? dice2 : dice1;
-                        if (otherDice > 0) {
-                            const allPossibleMoves = calculatePossibleMoves(piece);
-                            const jailExitMoves = allPossibleMoves.filter(move => move.steps === otherDice);
-                            const validJailMoves = filterMovesWithObstacles(jailExitMoves, piece, otherDice, otherDice);
-                            if (validJailMoves.length > 0) {
-                                return false; // Есть возможный ход из тюрьмы
-                            }
-                        } else {
-                            return false; // Выход из тюрьмы без движения
-                        }
-                    }
-                    continue; // Фишка заблокирована в тюрьме, проверяем следующую
-                }
-
-                // Для фишек в START_ZONES нужна 1 для выхода
-                if (isInStartZone) {
-                    const hasOne = (dice1 === 1 && !diceUsed[0]) || (dice2 === 1 && !diceUsed[1]);
-                    if (!hasOne) {
-                        continue; // Фишка заблокирована в стартовой зоне, проверяем следующую
-                    }
-                }
-
-                // Проверяем наличие возможных ходов для фишки
-                const possibleMoves = calculatePossibleMoves(piece, 12, dice1, dice2);
-
-                // Фильтруем ходы по доступным кубикам
-                const availableDiceValues = [];
-                if (!diceUsed[0] && dice1 > 0) availableDiceValues.push(dice1);
-                if (!diceUsed[1] && dice2 > 0) availableDiceValues.push(dice2);
-                if (!diceUsed[0] && !diceUsed[1] && dice1 > 0 && dice2 > 0) {
-                    availableDiceValues.push(dice1 + dice2);
-                }
-
-                const diceFilteredMoves = possibleMoves.filter(move => availableDiceValues.includes(move.steps));
-
-                // КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Применяем фильтрацию препятствий!
-                const validMoves = filterMovesWithObstacles(diceFilteredMoves, piece, dice1, dice2);
-
-                // Также проверяем телепортные ходы
-                const teleportMoves = calculateTeleportMoves(piece, dice1, dice2);
-                const allValidMoves = [...validMoves, ...teleportMoves];
-
-                if (allValidMoves.length > 0) {
-                    return false; // Найден хотя бы один возможный ход
-                }
-            }
-
-            return true; // Ни одна фишка не может ходить
+            // Простая проверка через глобальную таблицу валидных ходов
+            return validMovesTable.length === 0;
         }
 
         // Функция для отображения подсказок ходов
@@ -6370,7 +6186,6 @@
                 playerCount: playerCount,
                 piecesData: piecesData,
                 playerDiceValues: playerDiceValues,
-                lastMoveAnalysis: lastMoveAnalysis,
                 gameMessages: gameMessages,
                 skippedTurns: skippedTurns,
                 piecesTeleportHistory: piecesTeleportHistory,
@@ -6394,7 +6209,6 @@
             diceUsed = gameState.diceUsed || [false, false];
             consecutiveDoubles = gameState.consecutiveDoubles || 0;
             playersOrder = gameState.playersOrder || [];
-            lastMoveAnalysis = gameState.lastMoveAnalysis || '';
             gameMessages = gameState.gameMessages || [];
             skippedTurns = gameState.skippedTurns || [];
             piecesTeleportHistory = gameState.piecesTeleportHistory || {};
@@ -6659,8 +6473,11 @@
                             nextPlayerBtn.disabled = true;
                         }
                     }
-                    
-                    alert('Игра успешно загружена!');
+
+                    // Сообщаем о успешной загрузке
+                    const currentPlayerColor = playerColors[currentPlayer - 1];
+                    updateGameMessage(`Сессия загружена. Игрок в команде. Ход игрока: ${currentPlayerColor}`);
+
                 } catch (deserializeError) {
                     console.error('Ошибка при десериализации:', deserializeError);
                     alert('Ошибка при восстановлении игры. Продолжаем с новой игрой.');
@@ -6719,9 +6536,7 @@
 
         // Копирование в буфер обмена
         function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert('ID скопирован в буфер обмена!');
-            });
+            navigator.clipboard.writeText(text);
         }
 
 
