@@ -1,0 +1,52 @@
+tag.js?id=103866554:12 While navigator.cookieEnabled does return true for this file:// URL, this is done for web compatability reasons. Cookies will not actually be stored for file:// URLs. If you want this to change please leave feedback on crbug.com/378604901.
+(анонимная) @ tag.js?id=103866554:12
+index.html:1855 ⚡ СОСТОЯНИЕ: Игрок 1 - доступны: 0, 0
+index.html:1855 ⚡ СОСТОЯНИЕ: Игрок 2 - доступны: 3, 6
+index.html:6241 ❌ Канал закрыт. Возможно, Realtime не включен для таблицы saved_games
+(анонимная) @ index.html:6241
+index.html:6980 🔧 DEBUG MODE активирован
+index.html:1855 ⚡ СОСТОЯНИЕ: Игрок 2 - доступны: 1, 1
+index.html:7010 🎲 УСТАНОВЛЕНЫ КУБИКИ: 1 и 1 для игрока 2 (Желтый)
+index.html:3587 🐛 DEBUG canMakeMoveFromToGameBoard: A15→E12, steps=1, player=2
+index.html:3614 ✅ Фишка найдена на A15
+index.html:3665 🐛 DEBUG calculateMovesFromGameBoardPosition: A15, steps=1, player=2, position: {type: 'start', coord: 'A15'}
+index.html:3707 📋 Итоговые ходы для A15: []
+index.html:3635 🎯 Все ходы A15: []
+index.html:3636 ✅ Валидные ходы после фильтрации: []
+index.html:3642 🎭 Есть ли ход до E12: false
+index.html:3587 🐛 DEBUG canMakeMoveFromToGameBoard: A15→E12, steps=1, player=2
+index.html:3614 ✅ Фишка найдена на A15
+index.html:3665 🐛 DEBUG calculateMovesFromGameBoardPosition: A15, steps=1, player=2, position: {type: 'start', coord: 'A15'}
+index.html:3707 📋 Итоговые ходы для A15: []
+index.html:3635 🎯 Все ходы A15: []
+index.html:3636 ✅ Валидные ходы после фильтрации: []
+index.html:3642 🎭 Есть ли ход до E12: false
+index.html:3523 🐛 DEBUG: simulateFirstMoveAndCheckSecond A7→B7 + A15→E12
+index.html:3569 🔍 Проверяем второй ход A15→E12 после симуляции A7→B7
+index.html:3587 🐛 DEBUG canMakeMoveFromToGameBoard: A15→E12, steps=1, player=2
+index.html:3614 ✅ Фишка найдена на A15
+index.html:3665 🐛 DEBUG calculateMovesFromGameBoardPosition: A15, steps=1, player=2, position: {type: 'start', coord: 'A15'}
+index.html:3707 📋 Итоговые ходы для A15: []
+index.html:3635 🎯 Все ходы A15: []
+index.html:3636 ✅ Валидные ходы после фильтрации: []
+index.html:3642 🎭 Есть ли ход до E12: false
+index.html:3573 📊 Результат второго хода: 0
+index.html:3587 🐛 DEBUG canMakeMoveFromToGameBoard: A15→E12, steps=1, player=2
+index.html:3614 ✅ Фишка найдена на A15
+index.html:3665 🐛 DEBUG calculateMovesFromGameBoardPosition: A15, steps=1, player=2, position: {type: 'start', coord: 'A15'}
+index.html:3707 📋 Итоговые ходы для A15: []
+index.html:3635 🎯 Все ходы A15: []
+index.html:3636 ✅ Валидные ходы после фильтрации: []
+index.html:3642 🎭 Есть ли ход до E12: false
+index.html:3523 🐛 DEBUG: simulateFirstMoveAndCheckSecond A7→B7 + A15→E12
+index.html:3569 🔍 Проверяем второй ход A15→E12 после симуляции A7→B7
+index.html:3587 🐛 DEBUG canMakeMoveFromToGameBoard: A15→E12, steps=1, player=2
+index.html:3614 ✅ Фишка найдена на A15
+index.html:3665 🐛 DEBUG calculateMovesFromGameBoardPosition: A15, steps=1, player=2, position: {type: 'start', coord: 'A15'}
+index.html:3707 📋 Итоговые ходы для A15: []
+index.html:3635 🎯 Все ходы A15: []
+index.html:3636 ✅ Валидные ходы после фильтрации: []
+index.html:3642 🎭 Есть ли ход до E12: false
+index.html:3573 📊 Результат второго хода: 0
+index.html:4113 🔍 COMBINATIONS: Полная таблица: (42) [Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9)]
+index.html:4119 🎯 ДОПУСТИМЫЕ ХОДЫ (formulaResult = 3): (10) [Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9)]
