@@ -7322,8 +7322,8 @@
                 console.log(`🤖 [Компьютер ${playerNum}] Бросает кубики`);
                 rollPlayerDice(playerNum);
 
-                // Ожидание обновления validMovesTable
-                await delay(500);
+                // Ожидание обновления validMovesTable (анимация 1500ms + обработка)
+                await delay(2000);
 
                 // Проверка доступных ходов
                 if (!validMovesTable || validMovesTable.length === 0) {
