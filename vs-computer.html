@@ -3052,11 +3052,8 @@
                         <span>Игрок ${i} (${playerColors[i-1]})</span>
                     </div>
                     <div class="player-type-toggle">
-                        <input type="radio" id="player${i}-human" name="player${i}-type" value="human" ${i === 1 ? 'checked' : ''}>
-                        <label for="player${i}-human">👤 Человек</label>
-
-                        <input type="radio" id="player${i}-computer" name="player${i}-type" value="computer" ${i > 1 ? 'checked' : ''}>
-                        <label for="player${i}-computer">🤖 Компьютер</label>
+                        <input type="radio" id="player${i}-human" name="player${i}-type" value="human" ${i === 1 ? 'checked' : ''}><label for="player${i}-human">👤 Человек</label>
+                        <input type="radio" id="player${i}-computer" name="player${i}-type" value="computer" ${i > 1 ? 'checked' : ''}><label for="player${i}-computer">🤖 Компьютер</label>
                     </div>
                 `;
                 container.appendChild(item);
@@ -3073,21 +3070,26 @@
         }
 
         function startGame() {
+            console.log('🎮 startGame() вызвана');
+
             // Собираем типы игроков
-            const playerCount = parseInt(document.getElementById('players').value);
+            let playerCount = parseInt(document.getElementById('players').value);
+            console.log('👥 Количество игроков:', playerCount);
+
             const types = [];
             for (let i = 1; i <= playerCount; i++) {
-                const type = document.querySelector(`input[name="player${i}-type"]:checked`).value;
+                const radioButton = document.querySelector(`input[name="player${i}-type"]:checked`);
+                if (!radioButton) {
+                    console.error(`❌ Не найдена радио-кнопка для игрока ${i}`);
+                    return;
+                }
+                const type = radioButton.value;
                 types.push({ playerNum: i, type: type });
+                console.log(`  Игрок ${i}: ${type}`);
             }
-            initPlayerTypes(types);
 
-            const playersElement = document.getElementById('players');
-            if (playersElement && playersElement.value) {
-                playerCount = parseInt(playersElement.value);
-            } else {
-                playerCount = 2; // Значение по умолчанию
-            }
+            initPlayerTypes(types);
+            console.log('✅ Типы игроков инициализированы');
 
             document.getElementById('setup-panel').style.display = 'none';
             document.getElementById('game-layout').style.display = 'flex';
