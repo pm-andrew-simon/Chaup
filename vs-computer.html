@@ -7328,8 +7328,34 @@
                 // Проверка доступных ходов
                 if (!validMovesTable || validMovesTable.length === 0) {
                     console.log(`🤖 [Компьютер ${playerNum}] Нет доступных ходов`);
-                    updateGameMessage(`🤖 Компьютер ${playerColors[playerNum-1]} не может сделать ход`);
-                    return;
+
+                    // Проверка на дубль - дать дополнительный бросок
+                    const dice1 = lastDiceRoll[0];
+                    const dice2 = lastDiceRoll[1];
+                    const isDoubleRoll = isDouble(dice1, dice2);
+
+                    if (isDoubleRoll && consecutiveDoubles < 3) {
+                        consecutiveDoubles++;
+                        console.log(`🤖 [Компьютер ${playerNum}] Дубль ${dice1}:${dice2}! Бросок ${consecutiveDoubles}/3`);
+                        updateGameMessage(`🤖 Компьютер ${playerColors[playerNum-1]}: Дубль ${dice1}:${dice2}! Бросает еще раз (${consecutiveDoubles}/3)`);
+
+                        // Рекурсивный вызов для дополнительного броска
+                        await delay(1000);
+                        isComputerMoving = false; // Снять блокировку перед рекурсией
+                        await performComputerMove(playerNum);
+                        return;
+                    } else {
+                        // Дубль исчерпан или не дубль - передаем ход
+                        if (isDoubleRoll && consecutiveDoubles >= 3) {
+                            updateGameMessage(`🤖 Компьютер ${playerColors[playerNum-1]}: Лимит дублей (3). Ход передан`);
+                        } else {
+                            updateGameMessage(`🤖 Компьютер ${playerColors[playerNum-1]} не может сделать ход. Ход передан`);
+                        }
+                        consecutiveDoubles = 0;
+                        await delay(1000);
+                        nextPlayer();
+                        return;
+                    }
                 }
 
                 // Выбор лучшего хода
@@ -7367,6 +7393,37 @@
                 }
 
                 console.log(`🤖 [Компьютер ${playerNum}] Ход завершен`);
+
+                // Проверка завершения хода через checkTurnCompletion (обработает дубли)
+                // НО для компьютера нужна своя логика, т.к. checkTurnCompletion активирует UI для человека
+                await delay(500);
+
+                // Проверяем дубль для дополнительного броска
+                const dice1 = lastDiceRoll[0];
+                const dice2 = lastDiceRoll[1];
+                const isDoubleRoll = isDouble(dice1, dice2);
+
+                if (isDoubleRoll && consecutiveDoubles < 3) {
+                    consecutiveDoubles++;
+                    console.log(`🤖 [Компьютер ${playerNum}] Дубль ${dice1}:${dice2}! Бросок ${consecutiveDoubles}/3`);
+                    updateGameMessage(`🤖 Компьютер ${playerColors[playerNum-1]}: Дубль ${dice1}:${dice2}! Бросает еще раз (${consecutiveDoubles}/3)`);
+
+                    // Рекурсивный вызов для дополнительного броска
+                    await delay(1000);
+                    isComputerMoving = false; // Снять блокировку перед рекурсией
+                    await performComputerMove(playerNum);
+                    return;
+                } else {
+                    // Дубль исчерпан или не дубль - передаем ход
+                    if (isDoubleRoll && consecutiveDoubles >= 3) {
+                        updateGameMessage(`🤖 Компьютер ${playerColors[playerNum-1]}: Лимит дублей (3). Ход передан`);
+                    } else {
+                        updateGameMessage(`🤖 Компьютер ${playerColors[playerNum-1]}: Ход завершен`);
+                    }
+                    consecutiveDoubles = 0;
+                    await delay(1000);
+                    nextPlayer();
+                }
 
             } catch (error) {
                 console.error(`🤖 [Компьютер ${playerNum}] Критическая ошибка:`, error);
