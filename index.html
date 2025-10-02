@@ -3406,8 +3406,8 @@
                     }
                 }
 
-                // Шаг 5: Проверка препятствий - прямая проверка возможности хода
-                const canMoveA = canMakeMoveFromTo(overrideCoord, finalCoordA, dice2, playerNum);
+                // Шаг 5: Проверка препятствий - используем gameBoard версию с реальной координатой
+                const canMoveA = canMakeMoveFromToGameBoard(startCoord, finalCoordA, dice2, playerNum, dice1, dice2);
 
                 // Сравнение кубиков для варианта A
                 const diceComparisonA = dice1 > dice2 ? 1 : 0;
@@ -3464,8 +3464,8 @@
                     }
                 }
 
-                // Шаг 5: Проверка препятствий - прямая проверка возможности хода
-                const canMoveB = canMakeMoveFromTo(overrideCoord, finalCoordB, dice1, playerNum);
+                // Шаг 5: Проверка препятствий - используем gameBoard версию с реальной координатой
+                const canMoveB = canMakeMoveFromToGameBoard(startCoord, finalCoordB, dice1, playerNum, dice1, dice2);
 
                 // Сравнение кубиков для варианта B
                 const diceComparisonB = dice2 > dice1 ? 1 : 0;
@@ -3492,7 +3492,7 @@
                 });
 
                 // Промежуточная координата = стартовая (фишка остается в тюрьме после "выхода")
-                moves.push([startCoord, startCoord, 0, startCoord, finalCoordB, canMoveB, diceComparisonB, formulaResultB]);
+                moves.push([startCoord, startCoord, startCoord, finalCoordB, 1, canMoveB, diceComparisonB, formulaResultB]);
             } else {
                 // Невозможный вариант B (dice2 ≠ 6)
                 moves.push([startCoord, null, null, null, 0, 0, dice2 > dice1 ? 1 : 0, 0]);
@@ -6013,23 +6013,28 @@
         // Инициализация Supabase клиента
         function initSupabase() {
             if (typeof supabase !== 'undefined') {
-                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                    realtime: {
-                        params: {
-                            eventsPerSecond: 10
+                try {
+                    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                        realtime: {
+                            params: {
+                                eventsPerSecond: 10
+                            }
                         }
-                    }
-                });
-                
-                // Проверяем доступность Realtime
-                setTimeout(() => {
-                    if (supabaseClient.realtime) {
-                    } else {
-                        console.warn('⚠️ Realtime недоступен');
-                    }
-                }, 1000);
+                    });
+
+                    // Проверяем доступность Realtime
+                    setTimeout(() => {
+                        if (supabaseClient.realtime) {
+                        } else {
+                            console.warn('⚠️ Realtime недоступен');
+                        }
+                    }, 1000);
+                } catch (error) {
+                    console.error('❌ Ошибка создания Supabase клиента:', error);
+                    supabaseClient = null;
+                }
             } else {
-                console.error('Supabase библиотека не загружена');
+                console.error('❌ Supabase библиотека не загружена');
             }
         }
 
