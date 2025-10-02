@@ -1546,7 +1546,9 @@
         let cachedValidMoves = []; // Кеш возможных ходов для выделенной фишки
         let pieceCombinationsTable = []; // Таблица комбинаций координат фишек
         let validMovesTable = []; // Глобальная таблица с лучшими доступными ходами
-        
+        let expectedMovesCount = 0; // Сколько ходов ожидается (1 или 2)
+        let performedMovesCount = 0; // Сколько ходов уже сделано
+
         // Стартовые поля для выхода
         const ENTRY_CELLS = {
             1: 'I1',  // красный
@@ -2647,6 +2649,10 @@
                 setTimeout(() => {
                     updateGameMessage('Ход выполнен!');
 
+                    // Увеличиваем счетчик выполненных ходов
+                    performedMovesCount++;
+                    console.log(`🎯 Выполнено ходов: ${performedMovesCount}/${expectedMovesCount}`);
+
                     // Проверяем, завершен ли ход
                     checkTurnCompletion();
                 }, 500);
@@ -2700,6 +2706,30 @@
         }
 
         function checkTurnCompletion() {
+            // Проверяем, выполнено ли ожидаемое количество ходов
+            if (performedMovesCount >= expectedMovesCount && expectedMovesCount > 0) {
+                console.log('✅ Все доступные ходы выполнены');
+
+                const dice1 = lastDiceRoll[0];
+                const dice2 = lastDiceRoll[1];
+                const isDoubleRoll = isDouble(dice1, dice2);
+
+                if (isDoubleRoll && consecutiveDoubles < 3) {
+                    consecutiveDoubles++;
+                    updateGameMessage(`Дубль ${dice1}:${dice2}! Бросайте кубики еще раз (${consecutiveDoubles}/3)`);
+                    setTimeout(() => enableDiceRollForCurrentPlayer(), 1000);
+                } else {
+                    if (isDoubleRoll && consecutiveDoubles >= 3) {
+                        updateGameMessage('Достигнут лимит дублей (3 подряд). Ход передается!');
+                    } else {
+                        updateGameMessage('Все доступные ходы выполнены. Ход передан!');
+                    }
+                    consecutiveDoubles = 0;
+                    setTimeout(() => nextPlayer(), 1000);
+                }
+                return; // Выходим из функции
+            }
+
             const allDiceUsed = diceUsed[0] && diceUsed[1];
 
             // Проверяем завершение хода: все кубики использованы ИЛИ совершен комбо-ход из стартовой зоны
@@ -4249,14 +4279,21 @@
 			  // Обновляем глобальную таблицу валидных ходов по приоритету
 			  if (movesWithFormula3.length > 0) {
 				  validMovesTable = [...movesWithFormula3]; // Приоритет 1: formulaResult = 3
+				  expectedMovesCount = 2; // formulaResult=3 означает 2 хода
+				  performedMovesCount = 0; // Сбрасываем счетчик
 				  console.log('🎯 ДОПУСТИМЫЕ ХОДЫ (formulaResult = 3):', movesWithFormula3);
 			  } else if (movesWithFormula2.length > 0) {
 				  validMovesTable = [...movesWithFormula2]; // Приоритет 2: formulaResult = 2
+				  expectedMovesCount = 1; // formulaResult=2 означает 1 ход
+				  performedMovesCount = 0; // Сбрасываем счетчик
 				  console.log('🎯 ДОПУСТИМЫЕ ХОДЫ (formulaResult = 2):', movesWithFormula2);
 			  } else {
 				  validMovesTable = []; // Нет доступных ходов
+				  expectedMovesCount = 0;
+				  performedMovesCount = 0;
 				  console.log('❌ Допустимых ходов не обнаружено');
 			  }
+			  console.log('🎯 Ожидается ходов:', expectedMovesCount);
 
 		}
 
@@ -4519,6 +4556,9 @@
                 // Сброс флага комбо-хода из стартовой зоны при смене игрока
                 isStartZoneComboMove = false;
 
+                // Сброс счетчиков ходов
+                expectedMovesCount = 0;
+                performedMovesCount = 0;
 
                 // Автосохранение после смены игрока
                 autoSaveGame();
@@ -4582,15 +4622,8 @@
             }
 
             try {
-                // Получаем текущие значения кубиков
-                let dice1 = lastDiceRoll[0];
-                let dice2 = lastDiceRoll[1];
-
-
                 // Проверяем, бросал ли текущий игрок кубики в этом ходу через журнал бросков
-                // Используем массив diceLog напрямую вместо парсинга DOM
                 let currentPlayerHasRolled = false;
-
 
                 // Проверяем последнюю запись в журнале (она добавляется в начало массива через unshift)
                 if (diceLog.length > 0) {
@@ -4601,81 +4634,28 @@
                     } else if (lastEntry.player === currentPlayer) {
                         // Последняя запись принадлежит текущему игроку и это настоящий игровой ход
                         currentPlayerHasRolled = true;
-                    } else {
                     }
-                } else {
                 }
 
                 if (!currentPlayerHasRolled) {
                     await rollPlayerDice();
                     // Ждем небольшую паузу для завершения анимации
                     await new Promise(resolve => setTimeout(resolve, 1500));
-                    // Обновляем значения после броска
-                    dice1 = lastDiceRoll[0];
-                    dice2 = lastDiceRoll[1];
-                } else {
                 }
 
-
-                // Получаем всех фишек текущего игрока
-                const currentPlayerPieces = Array.from(document.querySelectorAll(`.piece.player${currentPlayer}`));
-
-                // Находим фишки с возможными ходами (как в showMoveHints)
-                const piecesWithMoves = [];
-                for (const piece of currentPlayerPieces) {
-                    // Получаем доступные значения кубиков
-                    const availableMoves = new Set();
-                    if (!diceUsed[0] && dice1 > 0) availableMoves.add(dice1);
-                    if (!diceUsed[1] && dice2 > 0) availableMoves.add(dice2);
-                    if (!diceUsed[0] && !diceUsed[1] && dice1 > 0 && dice2 > 0) {
-                        availableMoves.add(dice1 + dice2); // Комбинированный ход
-                    }
-
-                    // Специальная проверка для фишек в START_ZONES: нужна 1 для выхода (как в showMoveHints)
-                    const currentPiecePosition = getPiecePosition(piece);
-                    if (currentPiecePosition.type === 'start') {
-                        const hasOne = availableMoves.has(1);
-                        if (!hasOne) {
-                            continue; // Пропускаем эту фишку
-                        }
-                    }
-
-                    // Рассчитываем все возможные ходы
-                    const allPossibleMoves = calculatePossibleMoves(piece, 12, dice1, dice2);
-
-                    // Фильтруем по значениям кубиков
-                    const diceFilteredMoves = allPossibleMoves.filter(move => availableMoves.has(move.steps));
-
-                    // Применяем фильтрацию препятствий
-                    const validMoves = filterMovesWithObstacles(diceFilteredMoves, piece, dice1, dice2);
-
-                    // Добавляем телепортные ходы
-                    const teleportMoves = calculateTeleportMoves(piece, dice1, dice2);
-
-                    // Объединяем все валидные ходы
-                    const finalMoves = [...validMoves, ...teleportMoves];
-
-                    if (finalMoves && finalMoves.length > 0) {
-                        piecesWithMoves.push({
-                            piece: piece,
-                            moves: finalMoves
-                        });
-                    }
-                }
-
+                // Проверяем наличие доступных ходов через validMovesTable
+                const hasAvailableMoves = validMovesTable && validMovesTable.length > 0;
 
                 // ПРИОРИТЕТ ДУБЛЕЙ: Проверяем дубли даже при отсутствии ходов
-                dice1 = lastDiceRoll[0];
-                dice2 = lastDiceRoll[1];
-                const isDoubleRoll = isDouble(dice1, dice2);
+                const isDoubleRoll = isDouble(lastDiceRoll[0], lastDiceRoll[1]);
 
-                if (piecesWithMoves.length === 0) {
+                if (!hasAvailableMoves) {
 
                     // Если это дубль и не превышен лимит - даем повторный бросок
                     if (isDoubleRoll && consecutiveDoubles < 3) {
                         consecutiveDoubles++;
 
-                        updateGameMessage(`Дубль ${dice1}:${dice2}! Нет ходов, но продолжаем случайный ход (${consecutiveDoubles}/3)`);
+                        updateGameMessage(`Дубль ${lastDiceRoll[0]}:${lastDiceRoll[1]}! Нет ходов, но продолжаем случайный ход (${consecutiveDoubles}/3)`);
 
                         // Сбрасываем кубики для нового броска
                         diceUsed = [false, false];
@@ -4724,13 +4704,9 @@
                     if (loopIterations > maxLoopIterations) {
                         break;
                     }
-                    // Обновляем значения кубиков (могли измениться после предыдущего хода)
-                    dice1 = lastDiceRoll[0];
-                    dice2 = lastDiceRoll[1];
-
 
                     // Проверяем, остались ли доступные кубики
-                    const hasAvailableDice = (!diceUsed[0] && dice1 > 0) || (!diceUsed[1] && dice2 > 0);
+                    const hasAvailableDice = (!diceUsed[0] && lastDiceRoll[0] > 0) || (!diceUsed[1] && lastDiceRoll[1] > 0);
                     if (!hasAvailableDice) {
                         break;
                     }
@@ -4824,12 +4800,11 @@
                 // Проверяем дубли для продолжения случайных ходов (используем ранее объявленную isDoubleRoll)
                 const allDiceUsed = diceUsed[0] && diceUsed[1];
 
-
                 if (isDoubleRoll && consecutiveDoubles < 3 && (allDiceUsed || isStartZoneComboMove)) {
                     // Дубль выпал и мы можем продолжить
                     consecutiveDoubles++;
 
-                    updateGameMessage(`Дубль ${dice1}:${dice2}! Продолжаем случайный ход (${consecutiveDoubles}/3)`);
+                    updateGameMessage(`Дубль ${lastDiceRoll[0]}:${lastDiceRoll[1]}! Продолжаем случайный ход (${consecutiveDoubles}/3)`);
 
                     // Сбрасываем кубики для нового броска
                     diceUsed = [false, false];
