@@ -7189,10 +7189,210 @@
             updatePlayerTypeSelectors();
         });
 
-    </script>
+        // ============================================================================
+        // AI PLAYER INTEGRATION
+        // ============================================================================
 
-    <!-- AI Player Script -->
-    <script src="ai-player.js"></script>
+        let isComputerMoving = false;
+        let aiSpeed = { diceRoll: 1000, moveExecution: 800, betweenMoves: 600 };
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function getPlayerType(playerNum) {
+            return playerTypes[playerNum] || 'human';
+        }
+
+        function isComputerPlayer(playerNum) {
+            return getPlayerType(playerNum) === 'computer';
+        }
+
+        function selectBestMove(validMoves) {
+            if (!validMoves || validMoves.length === 0) {
+                return null;
+            }
+
+            // Группируем ходы по formulaResult
+            const movesByPriority = validMoves.reduce((acc, move) => {
+                const formulaResult = move[move.length - 1];
+                if (!acc[formulaResult]) acc[formulaResult] = [];
+                acc[formulaResult].push(move);
+                return acc;
+            }, {});
+
+            // Выбираем группу с наивысшим приоритетом
+            let bestMoves = movesByPriority[3] || movesByPriority[2] || movesByPriority[1] || [];
+
+            if (bestMoves.length === 0) {
+                return null;
+            }
+
+            // Случайный выбор из лучших
+            const randomIndex = Math.floor(Math.random() * bestMoves.length);
+            const selectedMove = bestMoves[randomIndex];
+
+            console.log(`🤖 ИИ выбрал ход из ${bestMoves.length} доступных (formulaResult = ${selectedMove[selectedMove.length - 1]}):`, selectedMove);
+
+            return selectedMove;
+        }
+
+        function analyzeMoveSequence(move) {
+            const [coord1, coord2, target1, target2, canMove1, canMove2, diceComparison, formulaResult] = move;
+            const moves = [];
+
+            if (formulaResult === 3) {
+                // Два хода
+                if (canMove1) moves.push({ from: coord1, to: target1 });
+                if (canMove2) moves.push({ from: coord2, to: target2 });
+            } else if (formulaResult === 2 || formulaResult === 1) {
+                // Один ход
+                if (canMove1) {
+                    moves.push({ from: coord1, to: target1 });
+                } else if (canMove2) {
+                    moves.push({ from: coord2, to: target2 });
+                }
+            }
+
+            return moves;
+        }
+
+        function findPieceAtCoord(coord, playerNum) {
+            if (!gameBoard[coord]) return null;
+
+            const piecesAtCoord = Array.isArray(gameBoard[coord]) ? gameBoard[coord] : [gameBoard[coord]];
+
+            for (const pieceId of piecesAtCoord) {
+                const piece = document.getElementById(pieceId);
+                if (piece && piece.dataset.player == playerNum) {
+                    return piece;
+                }
+            }
+
+            return null;
+        }
+
+        async function executeMoveWithAnimation(fromCoord, toCoord, playerNum) {
+            console.log(`🤖 [Компьютер ${playerNum}] Выполняет ход: ${fromCoord} → ${toCoord}`);
+
+            try {
+                const piece = findPieceAtCoord(fromCoord, playerNum);
+
+                if (!piece) {
+                    console.error(`🤖 Фишка не найдена на ${fromCoord} для игрока ${playerNum}`);
+                    return false;
+                }
+
+                const moveResult = performMove(piece, toCoord);
+
+                if (moveResult) {
+                    await delay(aiSpeed.moveExecution);
+                    return true;
+                }
+
+                return false;
+            } catch (error) {
+                console.error('🤖 Ошибка при выполнении хода:', error);
+                return false;
+            }
+        }
+
+        async function performComputerMove(playerNum) {
+            if (isComputerMoving) {
+                console.warn('⚠️ Компьютер уже делает ход, пропускаем вызов');
+                return;
+            }
+
+            isComputerMoving = true;
+
+            try {
+                console.log(`🤖 [Компьютер ${playerNum}] Начинает ход`);
+
+                updateGameMessage(`🤖 Компьютер ${playerColors[playerNum-1]} думает...`);
+
+                // Задержка перед броском
+                await delay(aiSpeed.diceRoll);
+
+                // Бросок кубиков
+                console.log(`🤖 [Компьютер ${playerNum}] Бросает кубики`);
+                rollPlayerDice(playerNum);
+
+                // Ожидание обновления validMovesTable
+                await delay(500);
+
+                // Проверка доступных ходов
+                if (!validMovesTable || validMovesTable.length === 0) {
+                    console.log(`🤖 [Компьютер ${playerNum}] Нет доступных ходов`);
+                    updateGameMessage(`🤖 Компьютер ${playerColors[playerNum-1]} не может сделать ход`);
+                    return;
+                }
+
+                // Выбор лучшего хода
+                const selectedMove = selectBestMove(validMovesTable);
+
+                if (!selectedMove) {
+                    console.log(`🤖 [Компьютер ${playerNum}] Не удалось выбрать ход`);
+                    return;
+                }
+
+                // Анализ последовательности ходов
+                const moveSequence = analyzeMoveSequence(selectedMove);
+
+                if (moveSequence.length === 0) {
+                    console.log(`🤖 [Компьютер ${playerNum}] Пустая последовательность ходов`);
+                    return;
+                }
+
+                // Выполнение ходов
+                for (let i = 0; i < moveSequence.length; i++) {
+                    const { from, to } = moveSequence[i];
+
+                    updateGameMessage(`🤖 Компьютер ${playerColors[playerNum-1]} делает ход ${i + 1}/${moveSequence.length}`);
+
+                    const success = await executeMoveWithAnimation(from, to, playerNum);
+
+                    if (!success) {
+                        console.error(`🤖 [Компьютер ${playerNum}] Ход ${i + 1} не выполнен`);
+                        break;
+                    }
+
+                    if (i < moveSequence.length - 1) {
+                        await delay(aiSpeed.betweenMoves);
+                    }
+                }
+
+                console.log(`🤖 [Компьютер ${playerNum}] Ход завершен`);
+
+            } catch (error) {
+                console.error(`🤖 [Компьютер ${playerNum}] Критическая ошибка:`, error);
+            } finally {
+                isComputerMoving = false;
+            }
+        }
+
+        function onPlayerChanged(newPlayerNum) {
+            const playerType = getPlayerType(newPlayerNum);
+
+            if (playerType === 'computer') {
+                console.log(`🤖 Новый игрок - компьютер (${newPlayerNum}), запускаем ход`);
+
+                // Блокировка UI для компьютера
+                document.getElementById('roll-dice-btn').disabled = true;
+                document.getElementById('random-move-btn').disabled = true;
+
+                // Задержка перед запуском хода компьютера
+                setTimeout(() => {
+                    if (!isComputerMoving && gamePhase === 'playing') {
+                        performComputerMove(newPlayerNum);
+                    }
+                }, 800);
+            } else if (playerType === 'human') {
+                console.log(`👤 Новый игрок - человек (${newPlayerNum})`);
+                // UI уже активирован в nextPlayer()
+            }
+        }
+
+    </script>
 
     <!-- DEBUG PANEL -->
     <div id="debug-panel" class="debug-panel" style="display: none;">
