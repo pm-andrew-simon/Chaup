@@ -3128,11 +3128,11 @@
             
             // Обработчик изменения размера экрана
             window.addEventListener('resize', handleResize);
-            
-            // Создание и сохранение начального состояния игры
-            setTimeout(() => {
-                initializeAutoSave();
-            }, 100); // Небольшая задержка для инициализации Supabase
+
+            // Supabase auto-save отключен в режиме vs-computer
+            // setTimeout(() => {
+            //     initializeAutoSave();
+            // }, 100);
         }
 
         function createDiceFace(value) {
@@ -6166,6 +6166,10 @@
             }
         }
 
+        // Supabase functions disabled in vs-computer mode
+        // These are replaced by stub functions earlier in the code
+
+        /*
         // Автоматическое сохранение состояния игры
         async function autoSaveGame() {
             if (!currentGameId || isRestoringState) {
@@ -6173,10 +6177,10 @@
             }
             const gameState = serializeGameState();
             const updatedAt = new Date().toISOString();
-            
+
             try {
                 await updateGameState(currentGameId, gameState, updatedAt);
-                
+
                 // Включить кнопку "Передать ход" после успешного автосохранения
                 const nextPlayerBtn = document.getElementById('next-player-btn');
                 if (nextPlayerBtn && gamePhase === 'playing') {
@@ -6197,7 +6201,7 @@
 
         // Инициализация автосохранения при старте игры
         async function initializeAutoSave() {
-            
+
             // Ждем инициализации Supabase клиента
             if (!supabaseClient) {
                 await new Promise(resolve => {
@@ -6242,6 +6246,7 @@
                 currentGameId = null;
             }
         }
+        */
 
         // Подписка на изменения игры в реальном времени
         function subscribeToGameChanges(gameId) {
