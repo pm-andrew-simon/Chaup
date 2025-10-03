@@ -7262,20 +7262,8 @@
             return moves;
         }
 
-        function findPieceAtCoord(coord, playerNum) {
-            if (!gameBoard[coord]) return null;
-
-            const piecesAtCoord = Array.isArray(gameBoard[coord]) ? gameBoard[coord] : [gameBoard[coord]];
-
-            for (const pieceId of piecesAtCoord) {
-                const piece = document.getElementById(pieceId);
-                if (piece && piece.dataset.player == playerNum) {
-                    return piece;
-                }
-            }
-
-            return null;
-        }
+        // Используем оригинальную findPieceAtCoord из строки 2982
+        // Она уже определена выше и работает с DOM элементами в gameBoard
 
         async function executeMoveWithAnimation(fromCoord, toCoord, playerNum) {
             console.log(`🤖 [Компьютер ${playerNum}] Выполняет ход: ${fromCoord} → ${toCoord}`);
