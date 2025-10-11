@@ -1,298 +1,52 @@
 tag.js?id=103866554:12 While navigator.cookieEnabled does return true for this file:// URL, this is done for web compatability reasons. Cookies will not actually be stored for file:// URLs. If you want this to change please leave feedback on crbug.com/378604901.
 (анонимная) @ tag.js?id=103866554:12
-G @ tag.js?id=103866554:11
-J @ tag.js?id=103866554:12
-(анонимная) @ tag.js?id=103866554:4
-(анонимная) @ tag.js?id=103866554:11
-(анонимная) @ tag.js?id=103866554:60
-(анонимная) @ tag.js?id=103866554:60
-(анонимная) @ tag.js?id=103866554:89
-N @ tag.js?id=103866554:16
-T @ tag.js?id=103866554:89
-(анонимная) @ tag.js?id=103866554:41
-Rd @ tag.js?id=103866554:40
-pa @ tag.js?id=103866554:4
-(анонимная) @ tag.js?id=103866554:4
-(анонимная) @ tag.js?id=103866554:41
-gd @ tag.js?id=103866554:33
-Td @ tag.js?id=103866554:41
-(анонимная) @ tag.js?id=103866554:58
-(анонимная) @ tag.js?id=103866554:58
-(анонимная) @ tag.js?id=103866554:105
-(анонимная) @ tag.js?id=103866554:108
-(анонимная) @ tag.js?id=103866554:60
-(анонимная) @ tag.js?id=103866554:60
-(анонимная) @ tag.js?id=103866554:164
-f @ tag.js?id=103866554:613
-(анонимная) @ tag.js?id=103866554:614
-(анонимная) @ tag.js?id=103866554:60
-py @ tag.js?id=103866554:614
-(анонимная) @ tag.js?id=103866554:611
-(анонимная) @ tag.js?id=103866554:579
-(анонимная) @ tag.js?id=103866554:4
-Se @ tag.js?id=103866554:54
-(анонимная) @ tag.js?id=103866554:4
-N @ tag.js?id=103866554:16
-(анонимная) @ tag.js?id=103866554:4
-pa @ tag.js?id=103866554:4
-G @ tag.js?id=103866554:11
-(анонимная) @ tag.js?id=103866554:11
-N @ tag.js?id=103866554:16
-Xi @ tag.js?id=103866554:128
-(анонимная) @ tag.js?id=103866554:615
-(анонимная) @ tag.js?id=103866554:615
-(анонимная) @ tag.js?id=103866554:616
-index.html:1424 [Violation] 'click' handler took 9908ms
-index.html:1856 ⚡ СОСТОЯНИЕ: Игрок 1 - доступны: 0, 0
-index.html:1856 ⚡ СОСТОЯНИЕ: Игрок 2 - доступны: 6, использованы: 5 (использован)
-index.html:6151 ❌ Канал закрыт. Возможно, Realtime не включен для таблицы saved_games
-(анонимная) @ index.html:6151
-(анонимная) @ supabase-js@2:7
-(анонимная) @ supabase-js@2:7
-_trigger @ supabase-js@2:7
-t @ supabase-js@2:7
-(анонимная) @ supabase-js@2:7
-(анонимная) @ supabase-js@2:7
-_matchReceive @ supabase-js@2:7
-(анонимная) @ supabase-js@2:7
-(анонимная) @ supabase-js@2:7
-_trigger @ supabase-js@2:7
-trigger @ supabase-js@2:7
-(анонимная) @ supabase-js@2:7
-unsubscribe @ supabase-js@2:7
-removeChannel @ supabase-js@2:7
-removeChannel @ supabase-js@2:7
-subscribeToGameChanges @ index.html:6116
-loadGameData @ index.html:6571
-await in loadGameData
-(анонимная) @ index.html:6521
-setTimeout
-loadGame @ index.html:6516
-onclick @ index.html:1424
-index.html:6916 🔧 DEBUG MODE активирован
-index.html:1856 ⚡ СОСТОЯНИЕ: Игрок 2 - доступны: 2, 2
-index.html:6946 🎲 УСТАНОВЛЕНЫ КУБИКИ: 2 и 2 для игрока 2 (Желтый)
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H13→H11, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (3): (3) ['H12(1)', 'H11(2)', 'H10(3)']0: "H12(1)"1: "H11(2)"2: "H10(3)"length: 3[[Prototype]]: Array(0)
-index.html:3919 📋 Ходы с 2 шагами (1): ['H11']0: "H11"length: 1[[Prototype]]: Array(0)
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H11: false
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: I15→H14, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (6): (6) ['H15(1)', 'H14(2)', 'H13(3)', 'H12(4)', 'H11(5)', 'H10(6)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H14']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (1): ['H14']
-index.html:3927 🎯 Есть ли ход до H14: true
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3897 🔍 DEBUG canMakeMoveFromTo: H11→null, steps=2, player=2 - toCoord is null
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: I15→H14, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (6): (6) ['H15(1)', 'H14(2)', 'H13(3)', 'H12(4)', 'H11(5)', 'H10(6)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H14']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (1): ['H14']
-index.html:3927 🎯 Есть ли ход до H14: true
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H12→H10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (2): (2) ['H11(1)', 'H10(2)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H10: false
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H13→H11, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (3): (3) ['H12(1)', 'H11(2)', 'H10(3)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H11']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H11: false
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H13→H11, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (3): (3) ['H12(1)', 'H11(2)', 'H10(3)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H11']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H11: false
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3897 🔍 DEBUG canMakeMoveFromTo: H11→null, steps=2, player=2 - toCoord is null
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H13→H11, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (3): (3) ['H12(1)', 'H11(2)', 'H10(3)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H11']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H11: false
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H12→H10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (2): (2) ['H11(1)', 'H10(2)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H10: false
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: I15→H14, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (6): (6) ['H15(1)', 'H14(2)', 'H13(3)', 'H12(4)', 'H11(5)', 'H10(6)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H14']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (1): ['H14']
-index.html:3927 🎯 Есть ли ход до H14: true
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H13→H11, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (3): (3) ['H12(1)', 'H11(2)', 'H10(3)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H11']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H11: false
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3897 🔍 DEBUG canMakeMoveFromTo: H11→null, steps=2, player=2 - toCoord is null
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: G12→G10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (12): (12) ['G11(1)', 'G10(2)', 'G9(3)', 'F9(4)', 'E10(5)', 'D9(6)', 'C9(7)', 'B10(8)', 'A9(9)', 'A8(10)', 'A7(11)', 'B7(12)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['G10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до G10: false
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H12→H10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (2): (2) ['H11(1)', 'H10(2)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H10: false
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3897 🔍 DEBUG canMakeMoveFromTo: H11→null, steps=2, player=2 - toCoord is null
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3897 🔍 DEBUG canMakeMoveFromTo: H11→null, steps=2, player=2 - toCoord is null
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3897 🔍 DEBUG canMakeMoveFromTo: H11→null, steps=2, player=2 - toCoord is null
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3897 🔍 DEBUG canMakeMoveFromTo: H11→null, steps=2, player=2 - toCoord is null
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3897 🔍 DEBUG canMakeMoveFromTo: H11→null, steps=2, player=2 - toCoord is null
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: I15→H14, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (6): (6) ['H15(1)', 'H14(2)', 'H13(3)', 'H12(4)', 'H11(5)', 'H10(6)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H14']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (1): ['H14']
-index.html:3927 🎯 Есть ли ход до H14: true
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H13→H11, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (3): (3) ['H12(1)', 'H11(2)', 'H10(3)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H11']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H11: false
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: G12→G10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (12): (12) ['G11(1)', 'G10(2)', 'G9(3)', 'F9(4)', 'E10(5)', 'D9(6)', 'C9(7)', 'B10(8)', 'A9(9)', 'A8(10)', 'A7(11)', 'B7(12)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['G10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до G10: false
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3897 🔍 DEBUG canMakeMoveFromTo: H11→null, steps=2, player=2 - toCoord is null
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H12→H10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (2): (2) ['H11(1)', 'H10(2)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H10: false
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H12→H10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (2): (2) ['H11(1)', 'H10(2)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H10: false
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H12→H10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (2): (2) ['H11(1)', 'H10(2)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H10: false
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H12→H10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (2): (2) ['H11(1)', 'H10(2)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H10: false
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3897 🔍 DEBUG canMakeMoveFromTo: H11→null, steps=2, player=2 - toCoord is null
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H12→H10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (2): (2) ['H11(1)', 'H10(2)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H10: false
-index.html:3451 🔧 DEBUG calculateSequentialMoves: startCoord=I15, dice1=2, dice2=2, player=2
-index.html:3462 📍 Вариант A: I15 →(2)→ H14 →(2)→ H12
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: I15→H14, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (6): (6) ['H15(1)', 'H14(2)', 'H13(3)', 'H12(4)', 'H11(5)', 'H10(6)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H14']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (1): ['H14']
-index.html:3927 🎯 Есть ли ход до H14: true
-index.html:3466 🎯 Первый ход A: I15→H14 canMove=1
-index.html:3473 🎯 Второй ход A: H14→H12 canMove=0
-index.html:3489 📊 Результат варианта A: [I15, H14, H14, H12, 1, 0, 0, 2]
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: I15→H14, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (6): (6) ['H15(1)', 'H14(2)', 'H13(3)', 'H12(4)', 'H11(5)', 'H10(6)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H14']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (1): ['H14']
-index.html:3927 🎯 Есть ли ход до H14: true
-index.html:3451 🔧 DEBUG calculateSequentialMoves: startCoord=H13, dice1=2, dice2=2, player=2
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3462 📍 Вариант A: H13 →(2)→ H11 →(2)→ null
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H13→H11, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (3): (3) ['H12(1)', 'H11(2)', 'H10(3)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H11']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H11: false
-index.html:3466 🎯 Первый ход A: H13→H11 canMove=0
-index.html:3473 🎯 Второй ход A: H11→null canMove=0
-index.html:3489 📊 Результат варианта A: [H13, H11, H11, null, 0, 0, 0, 0]
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H13→H11, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (3): (3) ['H12(1)', 'H11(2)', 'H10(3)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H11']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H11: false
-index.html:3451 🔧 DEBUG calculateSequentialMoves: startCoord=J14, dice1=2, dice2=2, player=2
-index.html:3451 🔧 DEBUG calculateSequentialMoves: startCoord=H11, dice1=2, dice2=2, player=2
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3462 📍 Вариант A: H11 →(2)→ null →(2)→ null
-index.html:3897 🔍 DEBUG canMakeMoveFromTo: H11→null, steps=2, player=2 - toCoord is null
-index.html:3466 🎯 Первый ход A: H11→null canMove=0
-index.html:3473 🎯 Второй ход A: null→null canMove=0
-index.html:3489 📊 Результат варианта A: [H11, null, null, null, 0, 0, 0, 0]
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3897 🔍 DEBUG canMakeMoveFromTo: H11→null, steps=2, player=2 - toCoord is null
-index.html:3451 🔧 DEBUG calculateSequentialMoves: startCoord=G12, dice1=2, dice2=2, player=2
-index.html:3462 📍 Вариант A: G12 →(2)→ G10 →(2)→ F9
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: G12→G10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (12): (12) ['G11(1)', 'G10(2)', 'G9(3)', 'F9(4)', 'E10(5)', 'D9(6)', 'C9(7)', 'B10(8)', 'A9(9)', 'A8(10)', 'A7(11)', 'B7(12)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['G10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до G10: false
-index.html:3466 🎯 Первый ход A: G12→G10 canMove=0
-index.html:3473 🎯 Второй ход A: G10→F9 canMove=0
-index.html:3489 📊 Результат варианта A: [G12, G10, G10, F9, 0, 0, 0, 0]
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: G12→G10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (12): (12) ['G11(1)', 'G10(2)', 'G9(3)', 'F9(4)', 'E10(5)', 'D9(6)', 'C9(7)', 'B10(8)', 'A9(9)', 'A8(10)', 'A7(11)', 'B7(12)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['G10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до G10: false
-index.html:3451 🔧 DEBUG calculateSequentialMoves: startCoord=H12, dice1=2, dice2=2, player=2
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3462 📍 Вариант A: H12 →(2)→ H10 →(2)→ null
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H12→H10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (2): (2) ['H11(1)', 'H10(2)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H10: false
-index.html:3466 🎯 Первый ход A: H12→H10 canMove=0
-index.html:3473 🎯 Второй ход A: H10→null canMove=0
-index.html:3489 📊 Результат варианта A: [H12, H10, H10, null, 0, 0, 0, 0]
-index.html:3271 ❌ Ход за пределы поля (финиш)
-index.html:3910 🔍 DEBUG canMakeMoveFromTo: H12→H10, steps=2, player=2
-index.html:3911 🎲 Используемые кубики: lastDiceRoll[0]=2, lastDiceRoll[1]=2 (переданный steps=2)
-index.html:3915 📋 Все возможные ходы (2): (2) ['H11(1)', 'H10(2)']
-index.html:3919 📋 Ходы с 2 шагами (1): ['H10']
-index.html:3923 ✅ Валидные ходы после фильтрации препятствий (0): []
-index.html:3927 🎯 Есть ли ход до H10: false
-index.html:4179 🔍 COMBINATIONS: Полная таблица: (42) [Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8), Array(8)]
-index.html:4214 🎯 ДОПУСТИМЫЕ ХОДЫ (formulaResult = 2): (3) [Array(8), Array(8), Array(8)]0: (8) ['I15', 'J14', 'H14', null, 1, 0, 0, 2]1: (8) ['I15', 'G12', 'H14', 'G10', 1, 0, 0, 2]2: (8) ['I15', 'H14', 'H14', 'H12', 1, 0, 0, 2]length: 3[[Prototype]]: Array(0)
+index.html:1855 ⚡ СОСТОЯНИЕ: Игрок 1 - доступны: 0, 0
+index.html:1855 ⚡ СОСТОЯНИЕ: Игрок 2 - доступны: 3, 6
+index.html:6241 ❌ Канал закрыт. Возможно, Realtime не включен для таблицы saved_games
+(анонимная) @ index.html:6241
+index.html:6980 🔧 DEBUG MODE активирован
+index.html:1855 ⚡ СОСТОЯНИЕ: Игрок 2 - доступны: 1, 1
+index.html:7010 🎲 УСТАНОВЛЕНЫ КУБИКИ: 1 и 1 для игрока 2 (Желтый)
+index.html:3587 🐛 DEBUG canMakeMoveFromToGameBoard: A15→E12, steps=1, player=2
+index.html:3614 ✅ Фишка найдена на A15
+index.html:3665 🐛 DEBUG calculateMovesFromGameBoardPosition: A15, steps=1, player=2, position: {type: 'start', coord: 'A15'}
+index.html:3707 📋 Итоговые ходы для A15: []
+index.html:3635 🎯 Все ходы A15: []
+index.html:3636 ✅ Валидные ходы после фильтрации: []
+index.html:3642 🎭 Есть ли ход до E12: false
+index.html:3587 🐛 DEBUG canMakeMoveFromToGameBoard: A15→E12, steps=1, player=2
+index.html:3614 ✅ Фишка найдена на A15
+index.html:3665 🐛 DEBUG calculateMovesFromGameBoardPosition: A15, steps=1, player=2, position: {type: 'start', coord: 'A15'}
+index.html:3707 📋 Итоговые ходы для A15: []
+index.html:3635 🎯 Все ходы A15: []
+index.html:3636 ✅ Валидные ходы после фильтрации: []
+index.html:3642 🎭 Есть ли ход до E12: false
+index.html:3523 🐛 DEBUG: simulateFirstMoveAndCheckSecond A7→B7 + A15→E12
+index.html:3569 🔍 Проверяем второй ход A15→E12 после симуляции A7→B7
+index.html:3587 🐛 DEBUG canMakeMoveFromToGameBoard: A15→E12, steps=1, player=2
+index.html:3614 ✅ Фишка найдена на A15
+index.html:3665 🐛 DEBUG calculateMovesFromGameBoardPosition: A15, steps=1, player=2, position: {type: 'start', coord: 'A15'}
+index.html:3707 📋 Итоговые ходы для A15: []
+index.html:3635 🎯 Все ходы A15: []
+index.html:3636 ✅ Валидные ходы после фильтрации: []
+index.html:3642 🎭 Есть ли ход до E12: false
+index.html:3573 📊 Результат второго хода: 0
+index.html:3587 🐛 DEBUG canMakeMoveFromToGameBoard: A15→E12, steps=1, player=2
+index.html:3614 ✅ Фишка найдена на A15
+index.html:3665 🐛 DEBUG calculateMovesFromGameBoardPosition: A15, steps=1, player=2, position: {type: 'start', coord: 'A15'}
+index.html:3707 📋 Итоговые ходы для A15: []
+index.html:3635 🎯 Все ходы A15: []
+index.html:3636 ✅ Валидные ходы после фильтрации: []
+index.html:3642 🎭 Есть ли ход до E12: false
+index.html:3523 🐛 DEBUG: simulateFirstMoveAndCheckSecond A7→B7 + A15→E12
+index.html:3569 🔍 Проверяем второй ход A15→E12 после симуляции A7→B7
+index.html:3587 🐛 DEBUG canMakeMoveFromToGameBoard: A15→E12, steps=1, player=2
+index.html:3614 ✅ Фишка найдена на A15
+index.html:3665 🐛 DEBUG calculateMovesFromGameBoardPosition: A15, steps=1, player=2, position: {type: 'start', coord: 'A15'}
+index.html:3707 📋 Итоговые ходы для A15: []
+index.html:3635 🎯 Все ходы A15: []
+index.html:3636 ✅ Валидные ходы после фильтрации: []
+index.html:3642 🎭 Есть ли ход до E12: false
+index.html:3573 📊 Результат второго хода: 0
+index.html:4113 🔍 COMBINATIONS: Полная таблица: (42) [Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9)]
+index.html:4119 🎯 ДОПУСТИМЫЕ ХОДЫ (formulaResult = 3): (10) [Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9), Array(9)]

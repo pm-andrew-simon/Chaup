@@ -4,28 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a web application implementing Chaupar, a traditional Indian board game. The application now features a modular architecture with separate pages for different game modes.
+This is a web application implementing Chaupar, a traditional Indian board game. The game logic is contained within `index.html` with embedded CSS and JavaScript, supported by additional informational pages.
 
 **Live site:** https://chaupar.ru (configured via `CNAME` file)
 
 **Site Structure:**
-- `index.html`: Landing page for mode selection (Multiplayer vs Computer)
-- `multiplayer.html`: Online multiplayer game with Supabase sync
-- `vs-computer.html`: Single-player game against AI opponents
+- `index.html`: Main game interface with full game logic
 - `rules.html`: Game rules and instructions
-- `situations.html`: Common game scenarios and explanations
+- `situations.html`: Common game scenarios and explanations  
 - `contacts.html`: Contact information and support
 - `news.html`: Project news and updates
 
-**JavaScript Modules:** (for reference - currently embedded in HTML)
-- `game-core.js`: Core game logic (constants, state, move calculation)
-- `game-ui.js`: UI components (board rendering, event handlers, animations)
-- `multiplayer.js`: Supabase integration for real-time multiplayer
-- `ai-player.js`: Computer opponent logic and decision-making
-
 ## Architecture
 
-The application uses a modular architecture with game logic separated into reusable components. Each game mode (multiplayer/vs-computer) includes the appropriate modules inline.
+The application is built as a vanilla HTML/CSS/JavaScript single-file game with no external dependencies or build process.
 
 ### Core Components
 
@@ -86,21 +78,7 @@ The application uses a modular architecture with game logic separated into reusa
 
 ## Development Notes
 
-**No Build Process:** This is a static site - edit HTML files directly and deploy.
-
-**Game Modes:**
-1. **Multiplayer Mode** (`multiplayer.html`):
-   - Real-time synchronization via Supabase
-   - Game ID sharing for joining sessions
-   - Automatic state persistence
-   - Up to 4 human players online
-
-2. **VS Computer Mode** (`vs-computer.html`):
-   - Local gameplay against AI
-   - Player type selection (Human/Computer) for each position
-   - AI uses `validMovesTable` with priority-based decision making
-   - Three AI speed settings: slow, fast, instant
-   - No Supabase dependency
+**No Build Process:** This is a static site - edit `index.html` directly and deploy.
 
 **Environment Configuration:**
 - Supabase credentials are stored in `.env` file (not committed to git)
@@ -161,8 +139,8 @@ start index.html
 ## Git Workflow
 
 Since this is a GitHub Pages deployment:
-1. Edit files directly (`multiplayer.html` or `vs-computer.html` for game modes, other `.html` for content)
-2. Commit and push to `main` branch
+1. Edit files directly (`index.html` for game logic, other `.html` for content)
+2. Commit and push to `main` branch  
 3. Changes automatically deploy to https://chaupar.ru
 
 The repository uses standard Git operations - no special build or deployment scripts required.
@@ -174,14 +152,6 @@ Shared navigation component across all pages (`<nav class="navigation">`) with c
 - Responsive mobile-first layout
 - Current page highlighting with `.current` class
 - All pages share the same base CSS structure and color scheme
-- Navigation links:
-  - 🎮 Играть (index.html) - Mode selection
-  - 🌐 Мультиплеер (multiplayer.html) - Online multiplayer
-  - 🤖 Игра с компьютером (vs-computer.html) - vs AI mode
-  - 📋 Правила (rules.html)
-  - 🎯 Игровые ситуации (situations.html)
-  - 📰 Новости (news.html)
-  - 📧 Контакты (contacts.html)
 
 ## Important Implementation Details
 
@@ -199,22 +169,15 @@ Shared navigation component across all pages (`<nav class="navigation">`) with c
 - `currentGameId`: Auto-generated game session ID for Supabase sync
 
 **File Organization:**
-- `index.html`: Landing page with mode selection (~200 lines)
-- `multiplayer.html`: Full game implementation with Supabase (~7200 lines)
-- `vs-computer.html`: Full game implementation with AI (~7400 lines)
-- JavaScript modules (reference only, embedded inline):
-  - `game-core.js`: Game logic (~1300 lines)
-  - `game-ui.js`: UI components (~800 lines)
-  - `multiplayer.js`: Supabase integration (~500 lines)
-  - `ai-player.js`: AI player logic (~300 lines)
-- Additional pages: `rules.html`, `situations.html`, `news.html`, `contacts.html`
+- All game logic, CSS, and HTML in single `index.html` file (~3400 lines)
+- Additional pages are standalone HTML files sharing navigation CSS
 - SVG assets for game UI: `teleport.svg`, `arrow.svg`, `jail.svg`, `temle.svg`
-- Dependencies: Supabase CDN (only in multiplayer.html)
+- No external JavaScript files or dependencies except Supabase CDN
 - Environment variables stored in `.env` file for Supabase configuration
 
 **SEO Configuration:**
 - `CNAME`: Points to chaupar.ru domain
-- `sitemap.xml`: Includes index.html, multiplayer.html, vs-computer.html, and info pages
+- `sitemap.xml`: Structured site map for search engines
 - `robots.txt`: Allows indexing with restrictions on dynamic paths
 
 ## Environment & Security
@@ -247,13 +210,6 @@ Shared navigation component across all pages (`<nav class="navigation">`) with c
 - Use diagnostic logging to trace: dice detection → move validation → timer setup → execution
 
 **State Management:**
-- Game state changes trigger Supabase sync (multiplayer.html only), which can cause `restoreGameState()` loops
+- Game state changes trigger Supabase sync, which can cause `restoreGameState()` loops
 - Use `isRestoringState` flag to prevent cycles during multiplayer sync
 - Always call `updatePlayerDiceStates()` after state restoration to activate correct player's dice
-
-**AI Player Integration (vs-computer.html):**
-- `playerTypes` array stores player configuration: `[{playerNum: 1, type: 'human'}, {playerNum: 2, type: 'computer'}, ...]`
-- `onPlayerChanged(playerNum)` callback triggers AI turn execution
-- `isComputerMoving` flag prevents concurrent AI move execution
-- AI uses existing `validMovesTable` and `performRandomMove()` logic with priority-based selection
-- Computer players automatically execute moves with configurable delays (slow/fast/instant modes)
