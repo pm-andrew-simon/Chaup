@@ -2431,9 +2431,6 @@
                         handlePieceClick(piece);
                     });
 
-                    // Добавляем всплывающую подсказку
-                    addPieceTooltip(piece);
-
                     board.appendChild(piece);
                     pieces[player].push({element: piece, position: coord});
                     
@@ -6696,9 +6693,6 @@
                                 handlePieceClick(piece);
                             });
 
-                            // Добавляем всплывающую подсказку
-                            addPieceTooltip(piece);
-
                             // Используем ту же функцию что и для локальных ходов
                             movePiece(piece, pieceData.position);
 
@@ -7185,36 +7179,6 @@
             }
         }
 
-        // Функция для генерации текста подсказки фишки
-        function getPieceTooltipText(piece) {
-            const player = parseInt(piece.dataset.player);
-            const pieceId = piece.dataset.id;
-
-            // Извлекаем номер фишки из ID (например, p1_3 -> 3)
-            const pieceNumber = parseInt(pieceId.split('_')[1]) + 1; // +1 потому что индексация с 0
-
-            // Названия цветов для каждого игрока
-            const colorNames = {
-                1: 'Красная',
-                2: 'Желтая',
-                3: 'Зеленая',
-                4: 'Фиолетовая'
-            };
-
-            return `${colorNames[player]} ${pieceNumber}`;
-        }
-
-        // Функция для добавления подсказок к фишке
-        function addPieceTooltip(piece) {
-            piece.addEventListener('mouseenter', function(e) {
-                const tooltipText = getPieceTooltipText(piece);
-                showTooltip(e, tooltipText);
-            });
-
-            piece.addEventListener('mouseleave', function() {
-                hideTooltip();
-            });
-        }
 
         // ================================
         // DEBUG FUNCTIONS
