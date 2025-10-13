@@ -3534,6 +3534,7 @@
 
         function calculateSequentialMoves(startCoord, dice1, dice2, playerNum) {
             const moves = [];
+			console.log('startCoord ' + startCoord + ', dice1 ' + dice1 + ', dice2 ' + dice2 + ', playerNum ' + playerNum);
 
             // Специальная логика для фишек в тюрьме
             if (JAIL_COORDS.includes(startCoord)) {
@@ -3541,17 +3542,85 @@
             }
 
             // Вариант A: dice1 → dice2
+            console.log('📍 ВАРИАНТ А: Начало расчёта', { startCoord, dice1, dice2, playerNum });
             const intermediateCoordA = calculateTargetCoordinate(startCoord, dice1, playerNum);
-            const finalCoordA = calculateTargetCoordinate(intermediateCoordA, dice2, playerNum);
+            console.log('📍 Промежуточная координата:', { intermediateCoordA });
+
+            // Если промежуточная точка - тюрьма, заменяем на override-координату для расчёта финальной позиции
+            let coordForFinalCalcA = intermediateCoordA;
+            if (intermediateCoordA && JAIL_COORDS.includes(intermediateCoordA)) {
+                coordForFinalCalcA = MOVE_CALCULATION_OVERRIDES[intermediateCoordA];
+                console.log('📍 Промежуточная - тюрьма, override:', { intermediateCoordA, coordForFinalCalcA });
+            }
+
+            const finalCoordA = calculateTargetCoordinate(coordForFinalCalcA, dice2, playerNum);
+            console.log('📍 Финальная координата:', { finalCoordA });
 
             // Проверяем возможность первого хода
-            const canMove1A = canMakeMoveFromTo(startCoord, intermediateCoordA, dice1, playerNum);
+            let canMove1A = canMakeMoveFromTo(startCoord, coordForFinalCalcA, dice1, playerNum);
 
             // Проверяем возможность второго хода через симуляцию
-            const canMove2A = simulateFirstMoveAndCheckSecond(
+            let canMove2A = simulateFirstMoveAndCheckSecond(
                 startCoord, intermediateCoordA, canMove1A,
                 intermediateCoordA, finalCoordA, dice1, dice2, playerNum
             );
+			console.log('Вычисление canMove2A из simulateFirstMoveAndCheckSecond : startCoord' + startCoord + ', intermediateCoordA: ' + intermediateCoordA + ', canMove1A: ' + canMove1A +', finalCoordA: ' + finalCoordA +', dice1: ' + dice1 +', dice2: ' + dice2 +', playerNum: ' + playerNum);
+
+            // СПЕЦИАЛЬНАЯ ПРОВЕРКА: проход через занятую тюрьму/храм
+            console.log('🔍 СПЕЦ.ПРОВЕРКА ВАРИАНТ А: Проверка условий', {
+                canMove1A,
+                intermediateCoordA,
+                finalCoordA,
+                condition: canMove1A === 0 && intermediateCoordA !== null && finalCoordA !== null
+            });
+
+            if (canMove1A === 0 && intermediateCoordA !== null && finalCoordA !== null) {
+                // Проверяем, является ли промежуточная точка тюрьмой или храмом
+                const isJailOrTemple = JAIL_COORDS.includes(intermediateCoordA) || TEMPLE_COORDS.includes(intermediateCoordA);
+                console.log('🔍 Промежуточная точка тюрьма/храм?', { intermediateCoordA, isJailOrTemple });
+
+                if (isJailOrTemple) {
+                    // Проверяем, занята ли промежуточная точка ЛЮБОЙ фишкой
+                    const piecesAtIntermediate = gameBoard[intermediateCoordA];
+                    let isOccupied = false;
+
+                    if (Array.isArray(piecesAtIntermediate)) {
+                        isOccupied = piecesAtIntermediate.length > 0;
+                        console.log('🔍 Фишки на промежуточной (массив):', piecesAtIntermediate.map(p => ({
+                            player: parseInt(p.dataset.player),
+                            isOurs: parseInt(p.dataset.player) === playerNum
+                        })));
+                    } else if (piecesAtIntermediate) {
+                        isOccupied = true;
+                        console.log('🔍 Фишка на промежуточной (одна):', {
+                            player: parseInt(piecesAtIntermediate.dataset.player),
+                            isOurs: parseInt(piecesAtIntermediate.dataset.player) === playerNum
+                        });
+                    }
+                    console.log('🔍 Промежуточная занята любой фишкой?', { isOccupied });
+
+                    if (isOccupied) {
+                        // Проверяем возможность полного хода до конечной точки (сумма кубиков)
+                        console.log('🔍 Проверяем полный ход:', {
+                            from: startCoord,
+                            to: finalCoordA,
+                            steps: dice1 + dice2,
+                            playerNum
+                        });
+                        const canMoveToFinal = canMakeMoveFromTo(startCoord, finalCoordA, dice1 + dice2, playerNum);
+                        console.log('🔍 Результат проверки полного хода:', { canMoveToFinal });
+
+                        if (canMoveToFinal === 1) {
+                            // Ход через занятую тюрьму/храм возможен
+                            canMove1A = 1;
+                            canMove2A = 1;
+                            console.log('🔓 СПЕЦ.СЛУЧАЙ: Проход через занятую тюрьму/храм разрешён', {
+                                startCoord, intermediateCoordA, finalCoordA, dice1, dice2
+                            });
+                        }
+                    }
+                }
+            }
 
             // Сравнение кубиков для варианта A
             const diceComparisonA = dice1 > dice2 ? 1 : 0;
@@ -3561,25 +3630,70 @@
             let formulaResultA;
             if (isDuplicateA && (canMove1A + canMove2A) === 1) {
                 formulaResultA = 2; // Для дублей с одним доступным ходом - приоритет 2
+				console.log('Один доступный ход: canMove1A: ' + canMove1A + ', canMove2A: ' + canMove2A + ', formulaResultA: ' + formulaResultA);
+            } else if (canMove1A === 1 && canMove2A === 1) {
+                // Оба хода возможны - максимальный приоритет
+                formulaResultA = 3;
+				console.log('Оба хода доступны: canMove1A: ' + canMove1A + ', canMove2A: ' + canMove2A + ', formulaResultA: ' + formulaResultA);
             } else {
                 // Формула для варианта A
-                formulaResultA = canMove1A + canMove2A + canMove1A * diceComparisonA + (1 - diceComparisonA) * canMove2A;
+				formulaResultA = canMove1A + canMove2A + canMove1A * diceComparisonA + (1 - diceComparisonA) * canMove2A;
+				console.log('canMove1A: ' + canMove1A + ', canMove2A: ' + canMove2A + ', formulaResultA: ' + formulaResultA);
             }
 
             moves.push([startCoord, intermediateCoordA, intermediateCoordA, finalCoordA, canMove1A, canMove2A, diceComparisonA, formulaResultA]);
 
             // Вариант B: dice2 → dice1
             const intermediateCoordB = calculateTargetCoordinate(startCoord, dice2, playerNum);
-            const finalCoordB = calculateTargetCoordinate(intermediateCoordB, dice1, playerNum);
+
+            // Если промежуточная точка - тюрьма, заменяем на override-координату для расчёта финальной позиции
+            let coordForFinalCalcB = intermediateCoordB;
+            if (intermediateCoordB && JAIL_COORDS.includes(intermediateCoordB)) {
+                coordForFinalCalcB = MOVE_CALCULATION_OVERRIDES[intermediateCoordB];
+            }
+
+            const finalCoordB = calculateTargetCoordinate(coordForFinalCalcB, dice1, playerNum);
 
             // Проверяем возможность первого хода
-            const canMove1B = canMakeMoveFromTo(startCoord, intermediateCoordB, dice2, playerNum);
+            let canMove1B = canMakeMoveFromTo(startCoord, intermediateCoordB, dice2, playerNum);
 
             // Проверяем возможность второго хода через симуляцию
-            const canMove2B = simulateFirstMoveAndCheckSecond(
+            let canMove2B = simulateFirstMoveAndCheckSecond(
                 startCoord, intermediateCoordB, canMove1B,
                 intermediateCoordB, finalCoordB, dice2, dice1, playerNum
             );
+
+            // СПЕЦИАЛЬНАЯ ПРОВЕРКА: проход через занятую тюрьму/храм
+            if (canMove1B === 0 && intermediateCoordB !== null && finalCoordB !== null) {
+                // Проверяем, является ли промежуточная точка тюрьмой или храмом
+                const isJailOrTemple = JAIL_COORDS.includes(intermediateCoordB) || TEMPLE_COORDS.includes(intermediateCoordB);
+
+                if (isJailOrTemple) {
+                    // Проверяем, занята ли промежуточная точка ЛЮБОЙ фишкой
+                    const piecesAtIntermediate = gameBoard[intermediateCoordB];
+                    let isOccupied = false;
+
+                    if (Array.isArray(piecesAtIntermediate)) {
+                        isOccupied = piecesAtIntermediate.length > 0;
+                    } else if (piecesAtIntermediate) {
+                        isOccupied = true;
+                    }
+
+                    if (isOccupied) {
+                        // Проверяем возможность полного хода до конечной точки (сумма кубиков)
+                        const canMoveToFinal = canMakeMoveFromTo(startCoord, finalCoordB, dice2 + dice1, playerNum);
+
+                        if (canMoveToFinal === 1) {
+                            // Ход через занятую тюрьму/храм возможен
+                            canMove1B = 1;
+                            canMove2B = 1;
+                            console.log('🔓 СПЕЦ.СЛУЧАЙ: Проход через занятую тюрьму/храм разрешён (вариант B)', {
+                                startCoord, intermediateCoordB, finalCoordB, dice2, dice1
+                            });
+                        }
+                    }
+                }
+            }
 
             // Сравнение кубиков для варианта B (обратное)
             const diceComparisonB = dice2 > dice1 ? 1 : 0;
@@ -3589,6 +3703,9 @@
             let formulaResultB;
             if (isDuplicateB && (canMove1B + canMove2B) === 1) {
                 formulaResultB = 2; // Для дублей с одним доступным ходом - приоритет 2
+            } else if (canMove1B === 1 && canMove2B === 1) {
+                // Оба хода возможны - максимальный приоритет
+                formulaResultB = 3;
             } else {
                 // Формула для варианта B
                 formulaResultB = canMove1B + canMove2B + canMove1B * diceComparisonB + (1 - diceComparisonB) * canMove2B;
@@ -4733,46 +4850,93 @@
                         if (piece && targetCoord1) {
                             moveCount++;
 
-                            // Выделяем фишку и показываем подсветку возможных ходов
-                            selectPiece(piece);
-                            showMoveHints(piece);
+                            // Проверяем случай последовательного хода через занятую тюрьму/храм
+                            const isSequentialMove = (targetCoord1 === coord2);
+                            const intermediateIsJailOrTemple = JAIL_COORDS.includes(targetCoord1) || TEMPLE_COORDS.includes(targetCoord1);
+                            let intermediateIsOccupied = false;
 
-                            // Пауза 1.5 секунды с подсвеченными ходами
-                            await new Promise(resolve => setTimeout(resolve, 1500));
-
-                            // Очищаем подсветку и выделение, затем выполняем ход
-                            clearMoveHints();
-                            selectPiece(null);
-
-                            // Заполняем кеш для выполнения хода
-                            cachedValidMoves = calculateAndCacheValidMoves(piece);
-
-                            performMove(piece, targetCoord1);
-
-                            // Дополнительная пауза для завершения асинхронных операций в performMove
-                            await new Promise(resolve => setTimeout(resolve, 1500));
-
-                            // Если есть второй ход и он возможен согласно таблице
-                            if (targetCoord2 && coord2 && canMove2 && gamePhase === 'playing') {
-                                // Находим фишку на coord2 для второго хода
-                                const secondPiece = findPieceAtCoord(coord2, currentPlayer);
-                                if (secondPiece) {
-                                    console.log('🎯 Выполняю второй ход из таблицы:', coord2, '→', targetCoord2);
-
-                                    moveCount++;
-
-                                    // Повторяем визуализацию для второго хода
-                                    selectPiece(secondPiece);
-                                    showMoveHints(secondPiece);
-                                    await new Promise(resolve => setTimeout(resolve, 1500));
-                                    clearMoveHints();
-                                    selectPiece(null);
-
-                                    cachedValidMoves = calculateAndCacheValidMoves(secondPiece);
-                                    performMove(secondPiece, targetCoord2);
-                                    await new Promise(resolve => setTimeout(resolve, 1500));
+                            if (intermediateIsJailOrTemple && gameBoard[targetCoord1]) {
+                                if (Array.isArray(gameBoard[targetCoord1])) {
+                                    intermediateIsOccupied = gameBoard[targetCoord1].length > 0;
                                 } else {
-                                    console.warn('⚠️ Фишка для второго хода не найдена на', coord2);
+                                    intermediateIsOccupied = true;
+                                }
+                            }
+
+                            // Определяем, нужно ли делать прямой прыжок через занятую тюрьму/храм
+                            const shouldJumpDirectly = isSequentialMove && intermediateIsJailOrTemple && intermediateIsOccupied && targetCoord2;
+
+                            if (shouldJumpDirectly) {
+                                console.log('🚀 ПРЯМОЙ ПРЫЖОК через занятую тюрьму/храм:', {
+                                    from: coord1,
+                                    throughOccupied: targetCoord1,
+                                    directlyTo: targetCoord2
+                                });
+
+                                // Выделяем фишку и показываем подсветку возможных ходов
+                                selectPiece(piece);
+                                showMoveHints(piece);
+
+                                // Пауза 1.5 секунды с подсвеченными ходами
+                                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                                // Очищаем подсветку и выделение, затем выполняем прямой ход
+                                clearMoveHints();
+                                selectPiece(null);
+
+                                // Заполняем кеш для выполнения хода
+                                cachedValidMoves = calculateAndCacheValidMoves(piece);
+
+                                // Прямой ход к финальной координате, минуя промежуточную
+                                performMove(piece, targetCoord2);
+
+                                // Дополнительная пауза для завершения асинхронных операций в performMove
+                                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                            } else {
+                                // ОБЫЧНАЯ ЛОГИКА: выполняем ход(ы) последовательно
+
+                                // Выделяем фишку и показываем подсветку возможных ходов
+                                selectPiece(piece);
+                                showMoveHints(piece);
+
+                                // Пауза 1.5 секунды с подсвеченными ходами
+                                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                                // Очищаем подсветку и выделение, затем выполняем ход
+                                clearMoveHints();
+                                selectPiece(null);
+
+                                // Заполняем кеш для выполнения хода
+                                cachedValidMoves = calculateAndCacheValidMoves(piece);
+
+                                performMove(piece, targetCoord1);
+
+                                // Дополнительная пауза для завершения асинхронных операций в performMove
+                                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                                // Если есть второй ход и он возможен согласно таблице
+                                if (targetCoord2 && coord2 && canMove2 && gamePhase === 'playing') {
+                                    // Находим фишку на coord2 для второго хода
+                                    const secondPiece = findPieceAtCoord(coord2, currentPlayer);
+                                    if (secondPiece) {
+                                        console.log('🎯 Выполняю второй ход из таблицы:', coord2, '→', targetCoord2);
+
+                                        moveCount++;
+
+                                        // Повторяем визуализацию для второго хода
+                                        selectPiece(secondPiece);
+                                        showMoveHints(secondPiece);
+                                        await new Promise(resolve => setTimeout(resolve, 1500));
+                                        clearMoveHints();
+                                        selectPiece(null);
+
+                                        cachedValidMoves = calculateAndCacheValidMoves(secondPiece);
+                                        performMove(secondPiece, targetCoord2);
+                                        await new Promise(resolve => setTimeout(resolve, 1500));
+                                    } else {
+                                        console.warn('⚠️ Фишка для второго хода не найдена на', coord2);
+                                    }
                                 }
                             }
 
@@ -6963,6 +7127,9 @@
 
             // Выводим в консоль
             console.log(`🎲 УСТАНОВЛЕНЫ КУБИКИ: ${dice1} и ${dice2} для игрока ${currentPlayer} (${playerColors[currentPlayer - 1]})`);
+
+            // Добавляем запись в журнал бросков
+            addDiceLogEntry(dice1, dice2, currentPlayer);
 
             // Очищаем кеш ходов для пересчета
             cachedValidMoves = [];
