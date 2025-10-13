@@ -1635,7 +1635,7 @@
         let gameBoard = {};
         let playerCount = 2;
         let pieces = {};
-        let playerNames = {1: '✍Красный', 2: 'Желтый✍', 3: 'Зеленый', 4: 'Фиолетовый'};
+        let playerNames = {1: '✍Красный', 2: 'Желтый✍', 3: '✍Зеленый', 4: '✍Фиолетовый'};
         // Переменная draggedPiece больше не нужна - используем только click-to-select
 
         // Supabase configuration
@@ -5341,6 +5341,11 @@
 
         // Показывает подсказки на основе кешированных ходов
         function showCachedMoveHints() {
+            // Не показываем подсказки во время определения очередности
+            if (gamePhase === 'determining-order') {
+                return;
+            }
+
             clearMoveHints(); // Очищаем предыдущие подсказки
 
             cachedValidMoves.forEach(move => {
@@ -6092,94 +6097,18 @@
 
         // Функция для отображения подсказок ходов
         function showMoveHints(piece) {
+            // Не показываем подсказки во время определения очередности
+            if (gamePhase === 'determining-order') {
+                return;
+            }
+
             clearMoveHints(); // Очищаем предыдущие подсказки
 
-            // Проверяем, не является ли последний бросок розыгрышем очередности
-            if (diceLog.length > 0 && diceLog[0].isFirstMoveWinner) {
-                return; // Не показываем никаких ходов
-            }
+            // Используем существующую функцию расчёта вместо дублирования логики
+            const validMoves = calculateAndCacheValidMoves(piece);
 
-            // Получаем значения кубиков с учетом использованных
-            const dice1 = diceUsed[0] ? 0 : lastDiceRoll[0];
-            const dice2 = diceUsed[1] ? 0 : lastDiceRoll[1];
-
-            // Проверяем, находится ли фишка в тюрьме
-            const piecePosition = getCurrentPosition(piece);
-            const isInJail = JAIL_COORDS.includes(piecePosition);
-
-            // Специальная логика для фишек в тюрьме
-            if (isInJail && dice1 !== 0 && dice2 !== 0) {
-
-                // Проверяем, есть ли 6 на кубиках
-                const hasSix = dice1 === 6 || dice2 === 6;
-
-                if (!hasSix) {
-                    return; // Не показываем никаких ходов
-                }
-
-                // Если есть 6, показываем ходы только на второе значение кубика
-                const exitDiceValue = dice1 === 6 ? dice2 : dice1;
-
-                // Рассчитываем возможные ходы только на второе значение
-                const allPossibleMoves = calculatePossibleMoves(piece);
-                const jailExitMoves = allPossibleMoves.filter(move => move.steps === exitDiceValue);
-
-                // Применяем фильтрацию препятствий
-                const validMoves = filterMovesWithObstacles(jailExitMoves, piece, exitDiceValue, exitDiceValue);
-
-                validMoves.forEach(move => {
-                    showSingleMoveHint(move);
-                });
-                return;
-            }
-
-            // Если кубики не брошены, показываем все возможные ходы (как раньше)
-            if (dice1 === 0 && dice2 === 0) {
-                const possibleMoves = calculatePossibleMoves(piece);
-                possibleMoves.forEach(move => {
-                    showSingleMoveHint(move);
-                });
-                return;
-            }
-
-            // Определяем доступные количества ходов на основе неиспользованных кубиков
-            const availableMoves = new Set();
-
-            // Добавляем только неиспользованные кубики (исключаем 0)
-            if (!diceUsed[0] && dice1 > 0) availableMoves.add(dice1);  // Первый кубик
-            if (!diceUsed[1] && dice2 > 0) availableMoves.add(dice2);  // Второй кубик
-
-            // Сумма доступна только если оба кубика не использованы
-            if (!diceUsed[0] && !diceUsed[1] && dice1 > 0 && dice2 > 0) {
-                availableMoves.add(dice1 + dice2);
-            }
-
-
-            // Специальная проверка для фишек в START_ZONES: нужна 1 для выхода
-            const currentPiecePosition = getPiecePosition(piece);
-            if (currentPiecePosition.type === 'start') {
-                const hasOne = availableMoves.has(1);
-                if (!hasOne) {
-                    return; // Не показываем никаких ходов
-                }
-            }
-
-            // Рассчитываем все возможные ходы для фишки
-            const allPossibleMoves = calculatePossibleMoves(piece, 12, dice1, dice2);
-
-            // Фильтруем только те ходы, которые соответствуют значениям кубиков
-            const diceFilteredMoves = allPossibleMoves.filter(move => availableMoves.has(move.steps));
-
-            // Применяем фильтрацию препятствий
-            const validMoves = filterMovesWithObstacles(diceFilteredMoves, piece, dice1, dice2);
-
-            // Добавляем телепортные ходы если фишка находится в своем телепорте
-            const teleportMoves = calculateTeleportMoves(piece, dice1, dice2);
-
-            // Объединяем обычные и телепортные ходы
-            const allMoves = [...validMoves, ...teleportMoves];
-
-            allMoves.forEach(move => {
+            // Показываем каждый ход
+            validMoves.forEach(move => {
                 showSingleMoveHint(move);
             });
         }
