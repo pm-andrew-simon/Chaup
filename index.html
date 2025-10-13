@@ -616,9 +616,6 @@
             color: #9333ea;
         }
 
-        .game-board.scalable {
-            transition: transform 0.1s ease-out;
-        }
 
         .cell.highlight {
             background: rgba(255, 235, 59, 0.8);
@@ -1553,7 +1550,7 @@
 
                 <!-- Игровое поле -->
                 <div class="game-board-container">
-                    <div id="game-board" class="game-board scalable"></div>
+                    <div id="game-board" class="game-board"></div>
                 </div>
 
                 <!-- Нижние имена: Player-2 слева, Player-3 справа -->
@@ -1638,7 +1635,7 @@
         let gameBoard = {};
         let playerCount = 2;
         let pieces = {};
-        let playerNames = {1: 'Красный', 2: 'Желтый', 3: 'Зеленый', 4: 'Фиолетовый'};
+        let playerNames = {1: '✍Красный', 2: 'Желтый✍', 3: 'Зеленый', 4: 'Фиолетовый'};
         // Переменная draggedPiece больше не нужна - используем только click-to-select
 
         // Supabase configuration
@@ -1671,11 +1668,8 @@
         let orderResults = []; // Результаты определения очередности
         let playersToRoll = []; // Игроки, которые должны бросать кубики
         let firstMoveWinner = null; // Игрок, который ходит первым
-        
-        // Переменные для масштабирования и выбора фишек
-        let boardScale = 1;
-        let boardTranslateX = 0;
-        let boardTranslateY = 0;
+
+        // Переменные для выбора фишек
         let selectedPiece = null;
         let cachedValidMoves = []; // Кеш возможных ходов для выделенной фишки
         let pieceCombinationsTable = []; // Таблица комбинаций координат фишек
@@ -5219,59 +5213,7 @@
         }
 
         function initializeEventHandlers() {
-            const board = document.getElementById('game-board');
-            const container = board.parentElement;
-            
-            // Переменные для pinch-to-zoom
-            let initialDistance = 0;
-            let initialScale = 1;
-            let isGesturing = false;
-            
-            // Обработка touch событий для масштабирования
-            container.addEventListener('touchstart', function(e) {
-                if (e.touches.length === 2) {
-                    e.preventDefault();
-                    isGesturing = true;
-                    initialDistance = getDistance(e.touches[0], e.touches[1]);
-                    initialScale = boardScale;
-                }
-            }, {passive: false});
-            
-            container.addEventListener('touchmove', function(e) {
-                if (e.touches.length === 2 && isGesturing) {
-                    e.preventDefault();
-                    const distance = getDistance(e.touches[0], e.touches[1]);
-                    const scale = Math.max(0.5, Math.min(3, (distance / initialDistance) * initialScale));
-                    setBoardScale(scale);
-                }
-            }, {passive: false});
-            
-            container.addEventListener('touchend', function(e) {
-                if (e.touches.length < 2) {
-                    isGesturing = false;
-                }
-            });
-            
-            // Обработка wheel событий для масштабирования на десктопе
-            container.addEventListener('wheel', function(e) {
-                if (e.ctrlKey) {
-                    e.preventDefault();
-                    const delta = e.deltaY > 0 ? 0.9 : 1.1;
-                    setBoardScale(boardScale * delta);
-                }
-            }, {passive: false});
-        }
-
-        function getDistance(touch1, touch2) {
-            const dx = touch1.clientX - touch2.clientX;
-            const dy = touch1.clientY - touch2.clientY;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-
-        function setBoardScale(scale) {
-            boardScale = Math.max(0.5, Math.min(3, scale));
-            const board = document.getElementById('game-board');
-            board.style.transform = `scale(${boardScale}) translate(${boardTranslateX}px, ${boardTranslateY}px)`;
+            // Функция оставлена для совместимости, обработчики событий масштабирования удалены
         }
 
         function selectPiece(piece) {
