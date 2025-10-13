@@ -359,8 +359,8 @@
         }
 
         .piece {
-            width: calc(min(90vw, 600px) * 30 / 600);
-            height: calc(min(90vw, 600px) * 30 / 600);
+            width: calc(min(90vw, 600px) * 35 / 600);
+            height: calc(min(90vw, 600px) * 35 / 600);
             border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.8);
             cursor: move;
@@ -530,6 +530,92 @@
             touch-action: none;
         }
 
+        /* Контейнер для игрового поля с именами игроков */
+        .board-with-names {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Контейнеры для верхних и нижних имён */
+        .player-names-top,
+        .player-names-bottom {
+            display: flex;
+            justify-content: space-between;
+            width: min(90vw, 600px);
+            gap: 20px;
+        }
+
+        /* Фиксированное выравнивание: Player-4 всегда слева, Player-1 всегда справа */
+        .player-names-top {
+            position: relative;
+        }
+
+        #player-name-4 {
+            margin-right: auto;
+        }
+
+        #player-name-1 {
+            margin-left: auto;
+        }
+
+        /* Фиксированное выравнивание: Player-2 всегда слева, Player-3 всегда справа */
+        .player-names-bottom {
+            position: relative;
+        }
+
+        #player-name-2 {
+            margin-right: auto;
+        }
+
+        #player-name-3 {
+            margin-left: auto;
+        }
+
+        /* Стили для блоков с именами игроков */
+        .player-name-box {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid;
+            min-width: 120px;
+            outline: none;
+            cursor: text;
+            transition: all 0.3s ease;
+        }
+
+        .player-name-box:focus {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Цвета рамок для каждого игрока */
+        .player-name-box.player-1 {
+            border-color: #ef4444;
+            color: #dc2626;
+        }
+
+        .player-name-box.player-2 {
+            border-color: #eab308;
+            color: #ca8a04;
+        }
+
+        .player-name-box.player-3 {
+            border-color: #22c55e;
+            color: #16a34a;
+        }
+
+        .player-name-box.player-4 {
+            border-color: #a855f7;
+            color: #9333ea;
+        }
+
         .game-board.scalable {
             transition: transform 0.1s ease-out;
         }
@@ -598,8 +684,8 @@
             }
 
             .piece {
-                width: calc(100vw / 15 * 30 / 35);
-                height: calc(100vw / 15 * 30 / 35);
+                width: calc(100vw / 15 * 35 / 35);
+                height: calc(100vw / 15 * 35 / 35);
                 top: calc(100vw / 15 * 2 / 35);
                 left: calc(100vw / 15 * 2 / 35);
             }
@@ -1097,6 +1183,38 @@
                 touch-action: pan-y;
             }
 
+            /* Адаптивные стили для блоков с именами на мобильных */
+            .player-names-top,
+            .player-names-bottom {
+                width: 100vw;
+                padding: 0 10px;
+                box-sizing: border-box;
+                gap: 10px;
+            }
+
+            .player-name-box {
+                font-size: 14px;
+                padding: 8px 12px;
+                min-width: 100px;
+            }
+
+            /* Сохраняем выравнивание на мобильных */
+            #player-name-4 {
+                margin-right: auto;
+            }
+
+            #player-name-1 {
+                margin-left: auto;
+            }
+
+            #player-name-2 {
+                margin-right: auto;
+            }
+
+            #player-name-3 {
+                margin-left: auto;
+            }
+
             .game-board {
                 width: calc(100vw - 10px);
                 height: 100%;
@@ -1426,8 +1544,23 @@
         </div>
 
         <div class="game-layout" style="display: none;" id="game-layout">
-            <div class="game-board-container">
-                <div id="game-board" class="game-board scalable"></div>
+            <div class="board-with-names">
+                <!-- Верхние имена: Player-4 слева, Player-1 справа -->
+                <div class="player-names-top">
+                    <input type="text" id="player-name-4" class="player-name-box player-4" value="Фиолетовый" maxlength="20">
+                    <input type="text" id="player-name-1" class="player-name-box player-1" value="Красный" maxlength="20">
+                </div>
+
+                <!-- Игровое поле -->
+                <div class="game-board-container">
+                    <div id="game-board" class="game-board scalable"></div>
+                </div>
+
+                <!-- Нижние имена: Player-2 слева, Player-3 справа -->
+                <div class="player-names-bottom">
+                    <input type="text" id="player-name-2" class="player-name-box player-2" value="Желтый" maxlength="20">
+                    <input type="text" id="player-name-3" class="player-name-box player-3" value="Зеленый" maxlength="20">
+                </div>
             </div>
             
             <div class="dice-panel">
@@ -1505,6 +1638,7 @@
         let gameBoard = {};
         let playerCount = 2;
         let pieces = {};
+        let playerNames = {1: 'Красный', 2: 'Желтый', 3: 'Зеленый', 4: 'Фиолетовый'};
         // Переменная draggedPiece больше не нужна - используем только click-to-select
 
         // Supabase configuration
@@ -2960,6 +3094,40 @@
             return basePos;
         }
 
+        // Функция для инициализации блоков с именами игроков
+        function initializePlayerNames() {
+            // Синхронизируем playerColors с playerNames при инициализации
+            for (let i = 1; i <= 4; i++) {
+                playerColors[i-1] = playerNames[i];
+            }
+
+            // Показываем/скрываем блоки в зависимости от количества игроков
+            for (let i = 1; i <= 4; i++) {
+                const nameBox = document.getElementById(`player-name-${i}`);
+                if (nameBox) {
+                    if (i <= playerCount) {
+                        nameBox.style.display = 'block';
+                        nameBox.value = playerNames[i];
+                    } else {
+                        nameBox.style.display = 'none';
+                    }
+                }
+            }
+
+            // Добавляем обработчики событий для обновления имён
+            for (let i = 1; i <= 4; i++) {
+                const nameBox = document.getElementById(`player-name-${i}`);
+                if (nameBox) {
+                    nameBox.addEventListener('input', function(e) {
+                        const newName = e.target.value || playerColors[i-1];
+                        playerNames[i] = newName;
+                        playerColors[i-1] = newName; // Синхронизируем с playerColors
+                        console.log(`Имя игрока ${i} изменено на: ${playerNames[i]}`);
+                    });
+                }
+            }
+        }
+
         function startGame() {
             
             // Отписываемся от предыдущего канала при начале новой игры
@@ -3007,9 +3175,12 @@
             // Обновляем состояние кубиков игроков (активируем кубики первого игрока)
             updatePlayerDiceStates();
 
+            // Инициализируем блоки с именами игроков
+            initializePlayerNames();
+
             // Инициализировать обработчики событий
             initializeEventHandlers();
-            
+
             // Обработчик изменения размера экрана
             window.addEventListener('resize', handleResize);
             
@@ -6459,6 +6630,7 @@
                 } : null,
                 cachedValidMoves: selectedPiece ? cachedValidMoves : [],
                 playerCount: playerCount,
+                playerNames: playerNames,
                 piecesData: piecesData,
                 playerDiceValues: playerDiceValues,
                 gameMessages: gameMessages,
@@ -6525,6 +6697,23 @@
             }
             playerCount = gameState.playerCount || 2;
             playerDiceValues = gameState.playerDiceValues || {1: [0, 0], 2: [0, 0], 3: [0, 0], 4: [0, 0]};
+            playerNames = gameState.playerNames || {1: 'Красный', 2: 'Желтый', 3: 'Зеленый', 4: 'Фиолетовый'};
+
+            // Синхронизируем playerColors с playerNames при загрузке
+            for (let i = 1; i <= 4; i++) {
+                if (playerNames[i]) {
+                    playerColors[i-1] = playerNames[i];
+                }
+            }
+
+            // Обновляем поля с именами игроков
+            for (let i = 1; i <= 4; i++) {
+                const nameBox = document.getElementById(`player-name-${i}`);
+                if (nameBox) {
+                    nameBox.value = playerNames[i];
+                    nameBox.style.display = (i <= playerCount) ? 'block' : 'none';
+                }
+            }
 
 
             // Очищаем текущие фишки с доски
