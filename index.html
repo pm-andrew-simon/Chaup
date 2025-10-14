@@ -1794,7 +1794,7 @@
                 'F9', 'E9', 'D9', 'C9', 'B9', 'A9',
                 'A8',
                 // Дом (финишная прямая)
-                'B8', 'C8', 'D8', 'E8', 'F8', 'G8'
+                'B8', 'C8', 'D8', 'E8', 'F8'
             ]
         };
 
@@ -1958,36 +1958,9 @@
             rollPlayerDice();
         }
 
-        // Функция для обновления состояния кубиков игроков
+        // Функция для обновления состояния кубиков игроков (только визуал)
         function updatePlayerDiceStates() {
-            // Отображаем текущее состояние кубиков в консоли для активного игрока
-            if (currentPlayer >= 1 && currentPlayer <= 4) {
-                const dice1 = lastDiceRoll[0];
-                const dice2 = lastDiceRoll[1];
-                const usedInfo = [];
-                const availableInfo = [];
-
-                if (diceUsed[0]) {
-                    usedInfo.push(`${dice1} (использован)`);
-                } else {
-                    availableInfo.push(`${dice1}`);
-                }
-
-                if (diceUsed[1]) {
-                    usedInfo.push(`${dice2} (использован)`);
-                } else {
-                    availableInfo.push(`${dice2}`);
-                }
-
-                const statusParts = [];
-                if (availableInfo.length > 0) statusParts.push(`доступны: ${availableInfo.join(', ')}`);
-                if (usedInfo.length > 0) statusParts.push(`использованы: ${usedInfo.join(', ')}`);
-
-                if (statusParts.length > 0) {
-                    console.log(`⚡ СОСТОЯНИЕ: Игрок ${currentPlayer} - ${statusParts.join(', ')}`);
-                }
-            }
-
+            // Обновляем визуальное состояние кубиков для всех игроков
             for (let player = 1; player <= 4; player++) {
                 const dice1 = document.getElementById(`player-dice-${player}-1`);
                 const dice2 = document.getElementById(`player-dice-${player}-2`);
@@ -2822,7 +2795,7 @@
             }
 
             // Показываем кубики игрока для повторного броска
-            showPlayerDice(currentPlayer);
+            //showPlayerDice(currentPlayer);
 
         }
 
@@ -3164,9 +3137,6 @@
 
             // Инициализируем блоки с именами игроков
             initializePlayerNames();
-
-            // Инициализировать обработчики событий
-            //initializeEventHandlers();
 
             // Обработчик изменения размера экрана
             window.addEventListener('resize', handleResize);
@@ -5894,9 +5864,7 @@
         // Функция для проверки препятствий на пути телепортного хода
         function checkTeleportPathObstacles(fromCoord, toCoord, playerNum, steps, availableDice) {
             const path = PLAYER_PATHS[playerNum];
-			console.log('Проверка препятствий ф-ей checkTeleportPathObstacles');
-
-
+			
             // Находим индексы начальной и конечной точек
             const fromIndex = path.indexOf(fromCoord);
             let toIndex = path.indexOf(toCoord);
