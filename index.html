@@ -1655,8 +1655,9 @@
         let diceUsed = [false, false]; // Отслеживание использованных кубиков [dice1, dice2]
         let consecutiveDoubles = 0; // Счетчик последовательных дублей для текущего игрока
         let isStartZoneComboMove = false; // Флаг для комбо-хода из стартовой зоны
-        let piecesTeleportHistory = {}; // Хранит номер хода, когда фишка попала в телепорт
+        let piecesTeleportHistory = {}; // Хранит номер броска кубиков, когда фишка попала в телепорт
         let currentTurnNumber = 0; // Счетчик ходов игры
+        let diceRollNumber = 0; // Счетчик всех бросков кубиков (включая дубли)
 
         // Состояние анимации кубиков для синхронизации
         let playersOrder = [];
@@ -3019,7 +3020,7 @@
             if (targetCoord === playerTeleport) {
                 // Фишка попала в свой телепорт - записываем только при первом попадании
                 if (piecesTeleportHistory[pieceId] === undefined) {
-                    piecesTeleportHistory[pieceId] = currentTurnNumber;
+                    piecesTeleportHistory[pieceId] = diceRollNumber;
                 } else {
                 }
             } else if (piecesTeleportHistory[pieceId] !== undefined) {
@@ -3256,6 +3257,9 @@
                 lastDiceRoll = [value1, value2];
                 diceUsed = [false, false]; // Сброс использованных кубиков при новом броске
                 isStartZoneComboMove = false; // Сброс флага комбо-хода из стартовой зоны
+
+                // Увеличиваем счетчик бросков кубиков (включая дубли)
+                diceRollNumber++;
 
                 // Отображаем значения кубиков в консоли
                 console.log(`🎲 КУБИКИ: Игрок ${currentPlayer} (${playerColors[currentPlayer - 1]}) выбросил: ${value1} и ${value2}`);
@@ -5617,12 +5621,12 @@
 
             if (position.type === 'board' && position.coord === playerTeleport) {
 
-                // Проверяем, находится ли фишка в телепорте с предыдущего хода
+                // Проверяем, находится ли фишка в телепорте с предыдущего броска
                 const pieceId = piece.dataset.id;
-                const teleportEntryTurn = piecesTeleportHistory[pieceId];
+                const teleportEntryRoll = piecesTeleportHistory[pieceId];
 
 
-                if (teleportEntryTurn === undefined || teleportEntryTurn >= currentTurnNumber) {
+                if (teleportEntryRoll === undefined || teleportEntryRoll >= diceRollNumber) {
                     return teleportMoves; // Возвращаем пустой массив
                 }
 
@@ -6505,6 +6509,7 @@
                 skippedTurns: skippedTurns,
                 piecesTeleportHistory: piecesTeleportHistory,
                 currentTurnNumber: currentTurnNumber,
+                diceRollNumber: diceRollNumber,
                 timestamp: new Date().toISOString()
             };
 
@@ -6528,6 +6533,7 @@
             skippedTurns = gameState.skippedTurns || [];
             piecesTeleportHistory = gameState.piecesTeleportHistory || {};
             currentTurnNumber = gameState.currentTurnNumber || 0;
+            diceRollNumber = gameState.diceRollNumber || 0;
             diceLog = gameState.diceLog || [];
 
             // Восстанавливаем кеш ходов из состояния игры
@@ -7145,6 +7151,9 @@
             lastDiceRoll = [dice1, dice2];
             playerDiceValues[currentPlayer] = [dice1, dice2];
             diceUsed = [false, false];
+
+            // Увеличиваем счетчик бросков (как при настоящем броске)
+            diceRollNumber++;
 
             // Обновляем визуал кубиков
             updatePlayerDiceStates();
