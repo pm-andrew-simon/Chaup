@@ -638,6 +638,11 @@
         .ai-toggle-btn {
             width: 35px;
             height: 35px;
+            min-width: 35px;
+            max-width: 35px;
+            min-height: 35px;
+            max-height: 35px;
+            flex-shrink: 0;
             border: 2px solid #ccc;
             border-radius: 5px;
             background: white;
@@ -645,6 +650,9 @@
             font-size: 18px;
             padding: 0;
             transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .ai-toggle-btn:hover {
