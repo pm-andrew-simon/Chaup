@@ -2314,13 +2314,14 @@
             </svg>`;
 
             const teleportConfig = [
-                { coord: 'I7', color: '#ff4444' }, // Красный
-                { coord: 'I9', color: '#228B22' }, // Темно-зеленый  
-                { coord: 'G9', color: '#FFD700' }, // Ярко-желтый
-                { coord: 'G7', color: '#8A2BE2' }  // Ярко-фиолетовый
+                { coord: 'I7', color: '#ff4444', player: 1 }, // Красный
+                { coord: 'G9', color: '#FFD700', player: 2 }, // Желтый
+                { coord: 'I9', color: '#228B22', player: 3 }, // Зеленый
+                { coord: 'G7', color: '#8A2BE2', player: 4 }  // Фиолетовый
             ];
 
-            teleportConfig.forEach(config => {
+            // Отображаем телепорты только для активных игроков
+            teleportConfig.filter(config => config.player <= playerCount).forEach(config => {
                 let cell = board.querySelector(`[data-coord="${config.coord}"]`);
                 if (!cell) {
                     cell = document.createElement('div');
@@ -2398,7 +2399,7 @@
                     <rect class="home-rect" id="svg_13" height="12" width="178.22264" y="213.09539" x="23.38823" stroke="null" fill="#000000"/>
                     <rect class="home-rect" id="svg_14" height="95.29598" width="12" y="121.58432" x="47.67534" fill="#000000"/>
                     <rect class="home-rect" stroke="null" id="svg_15" height="12" width="53.48195" y="121.78866" x="49.52235" fill="#000000"/>
-                    <rect class="home-rect" stroke="null" id="svg_17" height="56.98814" width="14.99915" y="3.67401" x="163.3073" fill="#000000"/>
+                    <!-- <rect class="home-rect" stroke="null" id="svg_17" height="56.98814" width="14.99915" y="3.67401" x="163.3073" fill="#000000"/> -->
                     <rect class="home-rect" transform="rotate(135 173.161 48.9787)" id="svg_18" height="35.8423" width="9" y="31.05753" x="168.66093" stroke="null" fill="none"/>
                     <rect class="home-rect" id="svg_19" height="50" width="12" y="111.50541" x="131.87666" stroke="null" fill="#000000"/>
                     <rect class="home-rect" id="svg_29" height="50" width="12" y="111.01097" x="170.18025" stroke="null" fill="#000000"/>
@@ -2410,15 +2411,16 @@
 
             // Конфигурация домов с координатами финишных зон и цветами, соответствующими телепортам
             const homeConfig = [
-                { coords: ['H2', 'H3', 'H4', 'H5', 'H6'], color: '#ff4444', player: 1 },      // Красный
-                { coords: ['H14', 'H13', 'H12', 'H11', 'H10'], color: '#FFD700', player: 2 }, // Желтый
-                { coords: ['N8', 'M8', 'L8', 'K8', 'J8'], color: '#228B22', player: 3 },      // Зеленый
-                { coords: ['B8', 'C8', 'D8', 'E8', 'F8'], color: '#8A2BE2', player: 4 }       // Фиолетовый
+                { coords: ['H2', 'H3', 'H4', 'H5', 'H6'], color: '#fcacac', player: 1 },      // Красный
+                { coords: ['H14', 'H13', 'H12', 'H11', 'H10'], color: '#ffd93d', player: 2 }, // Желтый
+                { coords: ['N8', 'M8', 'L8', 'K8', 'J8'], color: '#6bcf7f', player: 3 },      // Зеленый
+                { coords: ['B8', 'C8', 'D8', 'E8', 'F8'], color: '#c4b3f5', player: 4 }       // Фиолетовый
             ];
 
             const playerNames = ['Красного', 'Желтого', 'Зеленого', 'Фиолетового'];
 
-            homeConfig.forEach(config => {
+            // Отображаем дома только для активных игроков
+            homeConfig.filter(config => config.player <= playerCount).forEach(config => {
                 config.coords.forEach(coord => {
                     let cell = board.querySelector(`[data-coord="${coord}"]`);
 
