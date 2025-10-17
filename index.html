@@ -3240,6 +3240,12 @@
                         nameBox.style.display = 'none';
                     }
                 }
+
+                // Управляем видимостью кнопок AI
+                const aiToggle = document.getElementById(`ai-toggle-${i}`);
+                if (aiToggle) {
+                    aiToggle.style.display = (i <= playerCount) ? 'inline-block' : 'none';
+                }
             }
 
             // Добавляем обработчики событий для обновления имён
@@ -6691,12 +6697,18 @@
                 }
             }
 
-            // Обновляем поля с именами игроков
+            // Обновляем поля с именами игроков и кнопки AI
             for (let i = 1; i <= 4; i++) {
                 const nameBox = document.getElementById(`player-name-${i}`);
                 if (nameBox) {
                     nameBox.value = playerNames[i];
                     nameBox.style.display = (i <= playerCount) ? 'block' : 'none';
+                }
+
+                // Управляем видимостью кнопок AI
+                const aiToggle = document.getElementById(`ai-toggle-${i}`);
+                if (aiToggle) {
+                    aiToggle.style.display = (i <= playerCount) ? 'inline-block' : 'none';
                 }
             }
 
@@ -7376,6 +7388,14 @@
         // Автоматическая активация debug режима при добавлении параметра в URL
         if (window.location.search.includes('debug=1')) {
             setTimeout(toggleDebugMode, 1000);
+        }
+
+        // Инициализация видимости кнопок AI при загрузке страницы (скрываем все до начала игры)
+        for (let i = 1; i <= 4; i++) {
+            const aiToggle = document.getElementById(`ai-toggle-${i}`);
+            if (aiToggle) {
+                aiToggle.style.display = 'none';
+            }
         }
 
     </script>
