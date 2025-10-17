@@ -3189,6 +3189,9 @@
 
             if (!dice1 || !dice2) return;
 
+            // Снять выделение с фишки при броске кубиков
+            updateSelectedPiece(null, true);
+
             // Отключить кнопки во время процесса
             const rollBtn = document.getElementById('roll-dice-btn');
             if (rollBtn) rollBtn.disabled = true;
