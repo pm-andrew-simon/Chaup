@@ -6789,6 +6789,26 @@
             // Воссоздаем кубики игроков
             createPlayerDice();
 
+            // Пересоздаем иконки телепортов и домов с учетом playerCount
+            // Сначала удаляем старые иконки
+            const board = document.getElementById('game-board');
+            if (board) {
+                // Удаляем все элементы с иконками телепортов (внутри cell, содержащие SVG с .teleport-path)
+                board.querySelectorAll('.cell').forEach(cell => {
+                    const teleportIcon = cell.querySelector('.teleport-path');
+                    if (teleportIcon && teleportIcon.closest('div')) {
+                        teleportIcon.closest('div').remove();
+                    }
+                });
+
+                // Удаляем все элементы с иконками домов (содержащие .home-icon)
+                board.querySelectorAll('.home-icon').forEach(icon => icon.remove());
+            }
+
+            // Создаем иконки заново с правильным playerCount
+            createTeleportIcons();
+            createHomeIcons();
+
             // Обновляем UI для gameMessages после восстановления
             if (gameMessages.length > 0) {
                 const displayMessage = [...gameMessages].reverse().join('\n\n───────────────\n\n');
