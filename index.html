@@ -1923,7 +1923,8 @@
             // Удаляем существующие кубики игроков
             document.querySelectorAll('.player-dice').forEach(dice => dice.remove());
 
-            for (let player = 1; player <= 4; player++) {
+            // Создаем кубики только для активных игроков
+            for (let player = 1; player <= playerCount; player++) {
                 const area = DICE_AREAS[player];
                 const areaPos = calculateDiceAreaPosition(area);
 
