@@ -502,7 +502,8 @@
             width: 80%;
             height: 80%;
             z-index: 5;
-            pointer-events: none;
+            pointer-events: auto;
+            cursor: help;
         }
 
         .home-icon svg {
@@ -2399,7 +2400,7 @@
                     <rect class="home-rect" id="svg_13" height="12" width="178.22264" y="213.09539" x="23.38823" stroke="null" fill="#000000"/>
                     <rect class="home-rect" id="svg_14" height="95.29598" width="12" y="121.58432" x="47.67534" fill="#000000"/>
                     <rect class="home-rect" stroke="null" id="svg_15" height="12" width="53.48195" y="121.78866" x="49.52235" fill="#000000"/>
-                    <!-- <rect class="home-rect" stroke="null" id="svg_17" height="56.98814" width="14.99915" y="3.67401" x="163.3073" fill="#000000"/> -->
+                    <rect class="home-rect" stroke="null" id="svg_17" height="56.98814" width="14.99915" y="3.67401" x="163.3073" fill="#000000"/>
                     <rect class="home-rect" transform="rotate(135 173.161 48.9787)" id="svg_18" height="35.8423" width="9" y="31.05753" x="168.66093" stroke="null" fill="none"/>
                     <rect class="home-rect" id="svg_19" height="50" width="12" y="111.50541" x="131.87666" stroke="null" fill="#000000"/>
                     <rect class="home-rect" id="svg_29" height="50" width="12" y="111.01097" x="170.18025" stroke="null" fill="#000000"/>
@@ -2455,8 +2456,20 @@
                             }
                         });
 
-                        // Добавляем title для accessibility
-                        homeElement.title = `Финишная зона ${playerNames[config.player - 1]} игрока`;
+                        // Добавляем подсказку
+                        const tooltipText = 'Дом — финальные клетки вашего пути. Заведите сюда все свои фишки, чтобы победить. Войти можно только в дом своего цвета.';
+                        homeElement.title = tooltipText;
+
+                        // Добавляем обработчики для всплывающих подсказок
+                        homeElement.addEventListener('mouseenter', function(e) {
+                            if (selectedPiece === null) {
+                                showTooltip(e, tooltipText);
+                            }
+                        });
+
+                        homeElement.addEventListener('mouseleave', function() {
+                            hideTooltip();
+                        });
 
                         cell.appendChild(homeElement);
                     }
