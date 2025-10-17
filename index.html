@@ -634,6 +634,29 @@
             color: #9333ea;
         }
 
+        /* Стили для кнопок AI */
+        .ai-toggle-btn {
+            width: 35px;
+            height: 35px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        .ai-toggle-btn:hover {
+            transform: scale(1.1);
+            border-color: #999;
+        }
+
+        .ai-toggle-btn.active {
+            background: #6bcf7f;
+            border-color: #51cf66;
+            box-shadow: 0 0 10px rgba(107, 207, 127, 0.5);
+        }
 
         .cell.highlight {
             background: rgba(255, 235, 59, 0.8);
@@ -1562,8 +1585,14 @@
             <div class="board-with-names">
                 <!-- Верхние имена: Player-4 слева, Player-1 справа -->
                 <div class="player-names-top">
-                    <input type="text" id="player-name-4" class="player-name-box player-4" value="Фиолетовый" maxlength="20">
-                    <input type="text" id="player-name-1" class="player-name-box player-1" value="Красный" maxlength="20">
+                    <div style="display: flex; gap: 5px; align-items: center;">
+                        <input type="text" id="player-name-4" class="player-name-box player-4" value="Фиолетовый" maxlength="20">
+                        <button id="ai-toggle-4" class="ai-toggle-btn" onclick="toggleAI(4)">🤖</button>
+                    </div>
+                    <div style="display: flex; gap: 5px; align-items: center;">
+                        <input type="text" id="player-name-1" class="player-name-box player-1" value="Красный" maxlength="20">
+                        <button id="ai-toggle-1" class="ai-toggle-btn" onclick="toggleAI(1)">🤖</button>
+                    </div>
                 </div>
 
                 <!-- Игровое поле -->
@@ -1573,8 +1602,14 @@
 
                 <!-- Нижние имена: Player-2 слева, Player-3 справа -->
                 <div class="player-names-bottom">
-                    <input type="text" id="player-name-2" class="player-name-box player-2" value="Желтый" maxlength="20">
-                    <input type="text" id="player-name-3" class="player-name-box player-3" value="Зеленый" maxlength="20">
+                    <div style="display: flex; gap: 5px; align-items: center;">
+                        <input type="text" id="player-name-2" class="player-name-box player-2" value="Желтый" maxlength="20">
+                        <button id="ai-toggle-2" class="ai-toggle-btn" onclick="toggleAI(2)">🤖</button>
+                    </div>
+                    <div style="display: flex; gap: 5px; align-items: center;">
+                        <input type="text" id="player-name-3" class="player-name-box player-3" value="Зеленый" maxlength="20">
+                        <button id="ai-toggle-3" class="ai-toggle-btn" onclick="toggleAI(3)">🤖</button>
+                    </div>
                 </div>
             </div>
             
@@ -1654,6 +1689,7 @@
         let playerCount = 2;
         let pieces = {};
         let playerNames = {1: '✍Красный', 2: 'Желтый✍', 3: '✍Зеленый', 4: '✍Фиолетовый'};
+        let aiPlayers = []; // Массив номеров игроков, управляемых AI (например, [2, 3])
         // Переменная draggedPiece больше не нужна - используем только click-to-select
 
         // Supabase configuration
@@ -4862,14 +4898,29 @@
                 // Обновляем состояние кубиков игроков
                 updatePlayerDiceStates();
 
+                // Проверяем, является ли текущий игрок AI
+                if (aiPlayers.includes(currentPlayer)) {
+                    // Для AI игрока автоматически запускаем случайный ход через небольшую задержку
+                    setTimeout(() => {
+                        performRandomMove();
+                    }, 1000); // Задержка 1 секунда для визуализации смены хода
+                }
+
                 // Включаем кнопку "Бросить кубики"
                 document.getElementById('roll-dice-btn').disabled = false;
 
-                // Включаем кнопку "Сделать случайный ход"
+                // Управляем кнопкой "Сделать случайный ход" в зависимости от типа игрока
                 const randomMoveBtn = document.getElementById('random-move-btn');
                 if (randomMoveBtn) {
-                    randomMoveBtn.disabled = false;
-                    randomMoveBtn.textContent = 'Сделать случайный ход';
+                    if (aiPlayers.includes(currentPlayer)) {
+                        // Для AI игрока скрываем кнопку случайного хода
+                        randomMoveBtn.style.display = 'none';
+                    } else {
+                        // Для обычного игрока показываем и включаем кнопку
+                        randomMoveBtn.style.display = '';
+                        randomMoveBtn.disabled = false;
+                        randomMoveBtn.textContent = 'Сделать случайный ход';
+                    }
                 }
 
                 // Сброс счетчика бросков для нового игрока
@@ -4889,6 +4940,21 @@
                 autoSaveGame();
 
             } else {
+            }
+        }
+
+        function toggleAI(playerNum) {
+            const button = document.getElementById(`ai-toggle-${playerNum}`);
+            const index = aiPlayers.indexOf(playerNum);
+
+            if (index === -1) {
+                // Включаем AI для этого игрока
+                aiPlayers.push(playerNum);
+                button.classList.add('active');
+            } else {
+                // Выключаем AI для этого игрока
+                aiPlayers.splice(index, 1);
+                button.classList.remove('active');
             }
         }
 
