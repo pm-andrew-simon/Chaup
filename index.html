@@ -5318,11 +5318,21 @@
 
                 // Разблокируем restore только когда ВСЕ вызовы завершены (включая рекурсивные)
                 if (activeRandomMoveCount === 0) {
-                    // Задержка для обработки последнего автосохранения
-                    setTimeout(() => {
-                        isPerformingRandomMove = false;
-                        console.log('✅ Все случайные ходы завершены (включая дубли), разблокировка restoreGameState');
-                    }, 500);
+                    // Определяем следующего игрока
+                    const playerIndex = playersOrder.findIndex(p => p.player === currentPlayer);
+                    const nextIndex = (playerIndex + 1) % playersOrder.length;
+                    const nextPlayer = playersOrder[nextIndex].player;
+
+                    // Если следующий игрок тоже AI - НЕ сбрасываем флаг
+                    if (!aiPlayers.includes(nextPlayer)) {
+                        // Задержка для обработки последнего автосохранения
+                        setTimeout(() => {
+                            isPerformingRandomMove = false;
+                            console.log('✅ Следующий игрок НЕ AI, разблокировка restoreGameState');
+                        }, 500);
+                    } else {
+                        console.log('⏭️ Следующий игрок тоже AI, флаг isPerformingRandomMove остается активным');
+                    }
                 }
 
                 // Восстанавливаем состояние кнопки только при завершении основного вызова
