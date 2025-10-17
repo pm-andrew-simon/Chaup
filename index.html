@@ -1654,6 +1654,7 @@
         let lastDiceRoll = [0, 0];
         let diceUsed = [false, false]; // Отслеживание использованных кубиков [dice1, dice2]
         let consecutiveDoubles = 0; // Счетчик последовательных дублей для текущего игрока
+        let lastDoubleIncrementRoll = -1; // Номер броска, когда последний раз увеличивали consecutiveDoubles
         let isStartZoneComboMove = false; // Флаг для комбо-хода из стартовой зоны
         let piecesTeleportHistory = {}; // Хранит номер броска кубиков, когда фишка попала в телепорт
         let currentTurnNumber = 0; // Счетчик ходов игры
@@ -2526,6 +2527,7 @@
 
             const piecePlayer = parseInt(piece.dataset.player);
             const currentPos = getCurrentPosition(piece);
+			console.log ('Делаем ход с ' + currentPos + ' на ' + targetCoord);
 
             // Специальная логика для выхода из тюрьмы
             const isInJail = JAIL_COORDS.includes(currentPos);
@@ -2800,6 +2802,8 @@
         }
 
         function checkTurnCompletion() {
+            console.log(`🔍 checkTurnCompletion вызван: performedMovesCount=${performedMovesCount}, expectedMovesCount=${expectedMovesCount}, consecutiveDoubles=${consecutiveDoubles}`);
+
             // Проверяем, выполнено ли ожидаемое количество ходов
             if (performedMovesCount >= expectedMovesCount && expectedMovesCount > 0) {
                 console.log('✅ Все доступные ходы выполнены');
@@ -2809,7 +2813,12 @@
                 const isDoubleRoll = isDouble(dice1, dice2);
 
                 if (isDoubleRoll && consecutiveDoubles < 3) {
-                    consecutiveDoubles++;
+                    // Увеличиваем счетчик ТОЛЬКО если еще не увеличивали для этого броска
+                    if (lastDoubleIncrementRoll !== diceRollNumber) {
+                        consecutiveDoubles++;
+                        lastDoubleIncrementRoll = diceRollNumber;
+                        console.log(`➕ Увеличен consecutiveDoubles (Блок 1, бросок #${diceRollNumber}): ${consecutiveDoubles - 1} → ${consecutiveDoubles}`);
+                    }
                     updateGameMessage(`Дубль ${dice1}:${dice2}! Бросайте кубики еще раз (${consecutiveDoubles}/3)`);
                     setTimeout(() => enableDiceRollForCurrentPlayer(), 1000);
                 } else {
@@ -2837,8 +2846,12 @@
                 }
 
                 if (isDoubleRoll && consecutiveDoubles < 3) {
-                    // Увеличиваем счетчик дублей
-                    consecutiveDoubles++;
+                    // Увеличиваем счетчик ТОЛЬКО если еще не увеличивали для этого броска
+                    if (lastDoubleIncrementRoll !== diceRollNumber) {
+                        consecutiveDoubles++;
+                        lastDoubleIncrementRoll = diceRollNumber;
+                        console.log(`➕ Увеличен consecutiveDoubles (Блок 2, бросок #${diceRollNumber}): ${consecutiveDoubles - 1} → ${consecutiveDoubles}`);
+                    }
 
                     updateGameMessage(`Дубль ${dice1}:${dice2}! Бросайте кубики еще раз (${consecutiveDoubles}/3)`);
 
@@ -2874,8 +2887,12 @@
 
                 // ПРИОРИТЕТ ДУБЛЕЙ: Если это дубль, предоставляем дополнительный бросок даже при отсутствии ходов
                 if (isDoubleRoll && consecutiveDoubles < 3) {
-                    // Увеличиваем счетчик дублей
-                    consecutiveDoubles++;
+                    // Увеличиваем счетчик ТОЛЬКО если еще не увеличивали для этого броска
+                    if (lastDoubleIncrementRoll !== diceRollNumber) {
+                        consecutiveDoubles++;
+                        lastDoubleIncrementRoll = diceRollNumber;
+                        console.log(`➕ Увеличен consecutiveDoubles (Блок 3, бросок #${diceRollNumber}): ${consecutiveDoubles - 1} → ${consecutiveDoubles}`);
+                    }
 
                     const skipMessage = remainingDice.length > 0 ?
                         `Осталось сходить на ${remainingDice.join(', ')}, а затем дубль даст право на повторный бросок!` :
@@ -4799,10 +4816,12 @@
                 return;
             }
 
-            // Блокируем restore во время выполнения случайного хода (только при первом вызове)
-            if (!isRecursiveCall) {
-                isPerformingRandomMove = true;
-            }
+            // Увеличиваем счетчик активных вызовов
+            activeRandomMoveCount++;
+            console.log(`🔢 performRandomMove вызван, activeRandomMoveCount = ${activeRandomMoveCount}`);
+
+            // Устанавливаем флаг блокировки restore (при любом вызове)
+            isPerformingRandomMove = true;
 
             // Деактивируем кнопку во время выполнения (только при первом вызове)
             const randomMoveBtn = document.getElementById('random-move-btn');
@@ -4916,9 +4935,11 @@
                             coord1, coord2, targetCoord1, targetCoord2,
                             canMove1, canMove2, formulaResult
                         });
+						console.log ('currentPlayer' + currentPlayer);
 
                         // Находим фишку на coord1
                         const piece = findPieceAtCoord(coord1, currentPlayer);
+						console.log ('Результаты поиска фишки: coord1 : ' + coord1 + ', фишка: ' + piece.dataset.id);
 
                         if (piece && targetCoord1) {
                             moveCount++;
@@ -4936,49 +4957,54 @@
                                 }
                             }
 
-                            // Определяем, нужно ли делать прямой прыжок через занятую тюрьму/храм
-                            const shouldJumpDirectly = isSequentialMove && intermediateIsJailOrTemple && intermediateIsOccupied && targetCoord2;
+                            // Определяем, нужно ли делать прямой прыжок через тюрьму/храм
+                            const shouldJumpDirectly = isSequentialMove && intermediateIsJailOrTemple && targetCoord2;
 
                             if (shouldJumpDirectly) {
-                                console.log('🚀 ПРЯМОЙ ПРЫЖОК через занятую тюрьму/храм:', {
+                                console.log('🚀 ПРЯМОЙ ПРЫЖОК через тюрьму/храм:', {
                                     from: coord1,
                                     throughOccupied: targetCoord1,
                                     directlyTo: targetCoord2
                                 });
 
+                                // Увеличиваем moveCount, так как прямой прыжок считается как 2 хода
+                                moveCount += 2;
+
                                 // Выделяем фишку и показываем подсветку возможных ходов
-                                selectPiece(piece);
-                                showMoveHints(piece);
+                                updateSelectedPiece(piece, true);
 
                                 // Пауза 1.5 секунды с подсвеченными ходами
                                 await new Promise(resolve => setTimeout(resolve, 1500));
 
                                 // Очищаем подсветку и выделение, затем выполняем прямой ход
-                                clearMoveHints();
-                                selectPiece(null);
+                                updateSelectedPiece(null, true);
 
                                 // Заполняем кеш для выполнения хода
                                 cachedValidMoves = calculateAndCacheValidMoves(piece);
 
                                 // Прямой ход к финальной координате, минуя промежуточную
+                                // ВАЖНО: Это считается как использование ОБОИХ кубиков
                                 performMove(piece, targetCoord2);
 
                                 // Дополнительная пауза для завершения асинхронных операций в performMove
                                 await new Promise(resolve => setTimeout(resolve, 1500));
 
+                                // ВАЖНО: Прямой прыжок использует оба кубика, поэтому отмечаем оба как использованные
+                                diceUsed[0] = true;
+                                diceUsed[1] = true;
+                                console.log('✅ Прямой прыжок завершен, оба кубика использованы');
+
                             } else {
                                 // ОБЫЧНАЯ ЛОГИКА: выполняем ход(ы) последовательно
 
                                 // Выделяем фишку и показываем подсветку возможных ходов
-                                selectPiece(piece);
-                                showMoveHints(piece);
+                                updateSelectedPiece(piece, true);
 
                                 // Пауза 1.5 секунды с подсвеченными ходами
                                 await new Promise(resolve => setTimeout(resolve, 1500));
 
                                 // Очищаем подсветку и выделение, затем выполняем ход
-                                clearMoveHints();
-                                selectPiece(null);
+                                updateSelectedPiece(null, true);
 
                                 // Заполняем кеш для выполнения хода
                                 cachedValidMoves = calculateAndCacheValidMoves(piece);
@@ -4998,11 +5024,9 @@
                                         moveCount++;
 
                                         // Повторяем визуализацию для второго хода
-                                        selectPiece(secondPiece);
-                                        showMoveHints(secondPiece);
+                                        updateSelectedPiece(secondPiece, true);
                                         await new Promise(resolve => setTimeout(resolve, 1500));
-                                        clearMoveHints();
-                                        selectPiece(null);
+                                        updateSelectedPiece(null, true);
 
                                         cachedValidMoves = calculateAndCacheValidMoves(secondPiece);
                                         performMove(secondPiece, targetCoord2);
@@ -5015,6 +5039,12 @@
 
                             // Проверяем состояние после выполнения ходов из таблицы
                             if (gamePhase !== 'playing' || (diceUsed[0] && diceUsed[1])) {
+                                break;
+                            }
+
+                            // Проверяем, выполнено ли ожидаемое количество ходов
+                            if (performedMovesCount >= expectedMovesCount && expectedMovesCount > 0) {
+                                console.log('🛑 Все ожидаемые ходы выполнены, завершаем цикл');
                                 break;
                             }
 
@@ -5033,13 +5063,19 @@
 
                 }
 
+                // Ждем завершения checkTurnCompletion() для корректного обновления consecutiveDoubles
+                await new Promise(resolve => setTimeout(resolve, 600));
 
                 // Проверяем дубли для продолжения случайных ходов (используем ранее объявленную isDoubleRoll)
+                const allExpectedMovesCompleted = (performedMovesCount >= expectedMovesCount && expectedMovesCount > 0);
                 const allDiceUsed = diceUsed[0] && diceUsed[1];
 
-                if (isDoubleRoll && consecutiveDoubles < 3 && (allDiceUsed || isStartZoneComboMove)) {
+                console.log(`🎲 Проверка дубля после цикла: isDoubleRoll=${isDoubleRoll}, consecutiveDoubles=${consecutiveDoubles}, allDiceUsed=${allDiceUsed}, allExpectedMovesCompleted=${allExpectedMovesCompleted}`);
+
+                if (isDoubleRoll && consecutiveDoubles < 3 &&  (allExpectedMovesCompleted || allDiceUsed || isStartZoneComboMove)) {
+				
                     // Дубль выпал и мы можем продолжить
-                    consecutiveDoubles++;
+                    // consecutiveDoubles++;
 
                     updateGameMessage(`Дубль ${lastDiceRoll[0]}:${lastDiceRoll[1]}! Продолжаем случайный ход (${consecutiveDoubles}/3)`);
 
@@ -5074,20 +5110,26 @@
             } catch (error) {
                 document.getElementById('game-message').textContent = 'Ошибка при выполнении случайного хода';
             } finally {
-                // Очищаем подсветка и выделение на случай ошибки
-                clearMoveHints();
-                selectPiece(null);
+                // Очищаем подсветку и выделение на случай ошибки
+                updateSelectedPiece(null, true);
 
-                // Разблокируем restore и восстанавливаем кнопку только при завершении основного вызова
-                if (!isRecursiveCall) {
-                    isPerformingRandomMove = false;
+                // Уменьшаем счетчик активных вызовов
+                activeRandomMoveCount--;
+                console.log(`🔢 performRandomMove завершен, activeRandomMoveCount = ${activeRandomMoveCount}`);
 
-                    // Восстанавливаем состояние кнопки
-                    if (randomMoveBtn) {
-                        randomMoveBtn.disabled = false;
-                        randomMoveBtn.textContent = 'Сделать случайный ход';
-                    }
-                } else {
+                // Разблокируем restore только когда ВСЕ вызовы завершены (включая рекурсивные)
+                if (activeRandomMoveCount === 0) {
+                    // Задержка для обработки последнего автосохранения
+                    setTimeout(() => {
+                        isPerformingRandomMove = false;
+                        console.log('✅ Все случайные ходы завершены (включая дубли), разблокировка restoreGameState');
+                    }, 500);
+                }
+
+                // Восстанавливаем состояние кнопки только при завершении основного вызова
+                if (!isRecursiveCall && randomMoveBtn) {
+                    randomMoveBtn.disabled = false;
+                    randomMoveBtn.textContent = 'Сделать случайный ход';
                 }
             }
         }
@@ -5127,9 +5169,13 @@
         function selectPiece(piece) {
             // Убрать выделение с предыдущей фишки
             if (selectedPiece) {
-                selectedPiece.classList.remove('selected');
+				console.log ('Снимаем выделение фишки: ' + selectedPiece.dataset.id);
+                selectedPiece.classList.remove('selected');				
             }
-
+			
+			if (piece) {
+			console.log ('Выделена фишка: ' + piece.dataset.id);
+			}
             // Выделить новую фишку
             selectedPiece = piece;
             if (piece) {
@@ -5141,6 +5187,8 @@
         let isUpdatingSelection = false;
         // Флаг для блокировки restore во время выполнения случайного хода
         let isPerformingRandomMove = false;
+        // Счетчик активных вызовов performRandomMove (для отслеживания рекурсивных вызовов при дублях)
+        let activeRandomMoveCount = 0;
 
         function updateSelectedPiece(piece, syncToServer = true) {
             if (isUpdatingSelection) {
@@ -6126,6 +6174,7 @@
 
         // Автоматическое сохранение состояния игры
         async function autoSaveGame() {
+			console.log('Автосохранение');
             if (!currentGameId || isRestoringState) {
                 return;
             }
@@ -6272,6 +6321,12 @@
                 return;
             }
 
+            // Блокируем восстановление во время выполнения случайного хода
+            if (isPerformingRandomMove) {
+                console.log('🛑 Блокировка restoreGameState во время performRandomMove');
+                return;
+            }
+
             // Проверяем, отличается ли новое состояние от текущего
             const currentState = serializeGameState();
 
@@ -6335,6 +6390,7 @@
 
         // Сериализация состояния игры
         function serializeGameState() {
+			console.log ('Сериализация игры');
             // Сериализуем текущие позиции фишек
             const piecesData = {};
             for (let player = 1; player <= playerCount; player++) {
@@ -6389,6 +6445,8 @@
 
         // Десериализация состояния игры
         function deserializeGameState(gameState) {
+		
+			console.log ('Десериализация игры');
 
             currentPlayer = gameState.currentPlayer;
             gamePhase = gameState.gamePhase;
