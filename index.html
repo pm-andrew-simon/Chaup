@@ -4960,16 +4960,35 @@
 
         function toggleAI(playerNum) {
             const button = document.getElementById(`ai-toggle-${playerNum}`);
+            const nameInput = document.getElementById(`player-name-${playerNum}`);
             const index = aiPlayers.indexOf(playerNum);
+
+            // Имена AI для каждого игрока
+            const aiNames = {
+                1: '🤖 Crimson',
+                2: '🤖 Amber',
+                3: '🤖 Verdan',
+                4: '🤖 Violet'
+            };
+
+            // Дефолтные имена игроков
+            const defaultNames = {
+                1: 'Красный',
+                2: 'Желтый',
+                3: 'Зеленый',
+                4: 'Фиолетовый'
+            };
 
             if (index === -1) {
                 // Включаем AI для этого игрока
                 aiPlayers.push(playerNum);
                 button.classList.add('active');
+                nameInput.value = aiNames[playerNum];
             } else {
                 // Выключаем AI для этого игрока
                 aiPlayers.splice(index, 1);
                 button.classList.remove('active');
+                nameInput.value = defaultNames[playerNum];
             }
         }
 
