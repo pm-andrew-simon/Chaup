@@ -1722,6 +1722,7 @@
         let piecesTeleportHistory = {}; // Хранит номер броска кубиков, когда фишка попала в телепорт
         let currentTurnNumber = 0; // Счетчик ходов игры
         let diceRollNumber = 0; // Счетчик всех бросков кубиков (включая дубли)
+        let hasPendingMoves = false; // Флаг: есть ли незавершенные ходы после броска кубиков
 
         // Состояние анимации кубиков для синхронизации
         let playersOrder = [];
@@ -2016,6 +2017,12 @@
 
             if (gamePhase !== 'determining-order' && gamePhase !== 'playing') {
                 updateGameMessage('Бросок кубиков сейчас недоступен');
+                return;
+            }
+
+            // Запрещаем повторный бросок, если есть незавершенные ходы
+            if (hasPendingMoves) {
+                updateGameMessage('Завершите ход перед следующим броском кубиков');
                 return;
             }
 
@@ -2795,7 +2802,7 @@
             if (currentPiecePosition.type === 'start') {
                 const hasOne = availableMoves.has(1);
                 if (!hasOne) {
-                    updateGameMessage('Для выхода из стартовой зоны нужна 1 на кубиках!');
+                    updateGameMessage('Для выхода из стартовой зоны нужна минимум одна единица на кубиках!');
                     return;
                 }
             }
@@ -2937,6 +2944,9 @@
         function enableDiceRollForCurrentPlayer() {
             // Снимаем выделение с текущей фишки
             updateSelectedPiece(null);
+
+            // Сбрасываем флаг незавершенных ходов (дубль дает право на повторный бросок)
+            hasPendingMoves = false;
 
             // Активируем кнопку броска кубиков
             const rollBtn = document.getElementById('roll-dice-btn');
@@ -4795,7 +4805,8 @@
                     const fullMessage = message + '\n\nНет валидных ходов, но дубль дает право на повторный бросок.';
                     updateGameMessage(fullMessage);
 
-                    // Активируем кнопку броска для повторного броска
+                    // Разрешаем повторный бросок только когда нет валидных ходов
+                    hasPendingMoves = false;
                     document.getElementById('roll-dice-btn').disabled = false;
 
                     // Кнопка "Передать ход" остается активной для возможности пропустить ход
@@ -4807,10 +4818,11 @@
 
                     return;
                 } else {
-                    // Дубль и есть валидные ходы
+                    // Дубль и есть валидные ходы - НЕ разрешаем повторный бросок до выполнения хода
                     updateGameMessage(message);
 
-                    document.getElementById('roll-dice-btn').disabled = false;
+                    hasPendingMoves = true;
+                    document.getElementById('roll-dice-btn').disabled = true;
 
                     const nextPlayerBtn = document.getElementById('next-player-btn');
                     if (nextPlayerBtn) {
@@ -4865,8 +4877,11 @@
             // Есть валидные ходы - показываем сообщение
             updateGameMessage(message);
 
-            // Включить кнопку для следующего броска
-            document.getElementById('roll-dice-btn').disabled = false;
+            // Устанавливаем флаг незавершенных ходов
+            hasPendingMoves = true;
+
+            // НЕ включаем кнопку броска до завершения хода
+            document.getElementById('roll-dice-btn').disabled = true;
 
             // Кнопки управления активны сразу
             const nextPlayerBtn = document.getElementById('next-player-btn');
@@ -4950,6 +4965,13 @@
                 // Сброс счетчиков ходов
                 expectedMovesCount = 0;
                 performedMovesCount = 0;
+
+                // Сброс значений кубиков при смене игрока
+                lastDiceRoll = [0, 0];
+                diceUsed = [false, false];
+
+                // Сброс флага незавершенных ходов при смене игрока
+                hasPendingMoves = false;
 
                 // Автосохранение после смены игрока
                 autoSaveGame();
@@ -5533,6 +5555,11 @@
                 return;
             }
 
+            // Не показываем подсказки, если кубики еще не брошены
+            if (lastDiceRoll[0] === 0 && lastDiceRoll[1] === 0) {
+                return;
+            }
+
             clearMoveHints(); // Очищаем предыдущие подсказки
 
             cachedValidMoves.forEach(move => {
@@ -5545,6 +5572,12 @@
 
             const piecePlayer = parseInt(piece.dataset.player);
             const pieceCoord = getCurrentPosition(piece);
+
+            // Не позволяем выделять фишки, если кубики еще не брошены
+            if (gamePhase === 'playing' && lastDiceRoll[0] === 0 && lastDiceRoll[1] === 0) {
+                updateGameMessage('Сначала бросьте кубики!');
+                return;
+            }
 
             // Умная обработка кликов по чужим фишкам
             if (gamePhase === 'playing' && piecePlayer !== currentPlayer) {
@@ -6248,6 +6281,11 @@
         function showMoveHints(piece) {
             // Не показываем подсказки во время определения очередности
             if (gamePhase === 'determining-order') {
+                return;
+            }
+
+            // Не показываем подсказки, если кубики еще не брошены
+            if (lastDiceRoll[0] === 0 && lastDiceRoll[1] === 0) {
                 return;
             }
 
