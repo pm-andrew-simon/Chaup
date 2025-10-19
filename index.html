@@ -6509,6 +6509,8 @@
                     showGameId();
                     // Подписаться на изменения игры
                     subscribeToGameChanges(currentGameId);
+                    // Обновить URL с game-ID для удобного шаринга
+                    updateUrlWithGameId(currentGameId);
                 }
             } catch (error) {
                 console.error('Ошибка инициализации автосохранения:', error);
@@ -7032,6 +7034,9 @@
                     // Подписаться на изменения загруженной игры
                     subscribeToGameChanges(currentGameId);
 
+                    // Обновить URL с game-ID
+                    updateUrlWithGameId(currentGameId);
+
                     // Добавляем тестовую функцию для проверки автосохранения после загрузки
                     window.testAutoSaveAfterLoad = () => {
                         autoSaveGame();
@@ -7068,6 +7073,51 @@
                 console.error('Ошибка загрузки игры:', error);
                 alert('Ошибка при загрузке игры. Продолжаем с новой игрой.');
             }
+        }
+
+        // Проверка URL на наличие game-ID и автоматическая загрузка игры
+        async function checkUrlForGameId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const gameIdFromUrl = urlParams.get('game');
+
+            if (gameIdFromUrl && gameIdFromUrl.startsWith('CHPR-')) {
+                console.log('🔗 Обнаружен game-ID в URL:', gameIdFromUrl);
+
+                // Показываем сообщение о загрузке
+                updateGameMessage('Загрузка игры из URL...');
+
+                try {
+                    // Инициализируем стандартную новую игру
+                    playerCount = 2;
+                    startGame();
+
+                    // Загружаем данные игры из базы
+                    await loadGameData(gameIdFromUrl);
+
+                    console.log('✅ Игра успешно загружена из URL');
+                } catch (error) {
+                    console.error('❌ Ошибка загрузки игры из URL:', error);
+
+                    // Удаляем неверный параметр из URL
+                    const newUrl = window.location.pathname;
+                    window.history.replaceState({}, '', newUrl);
+
+                    updateGameMessage('Игра не найдена. Начните новую игру.');
+                }
+            }
+        }
+
+        // Обновление URL с game-ID
+        function updateUrlWithGameId(gameId) {
+            if (!gameId) return;
+
+            const url = new URL(window.location);
+            url.searchParams.set('game', gameId);
+
+            // Обновляем URL без перезагрузки страницы
+            window.history.pushState({}, '', url);
+
+            console.log('🔗 URL обновлен с game-ID:', gameId);
         }
 
         // Показать игровое поле для новой игры
@@ -7485,6 +7535,9 @@
         if (window.location.search.includes('debug=1')) {
             setTimeout(toggleDebugMode, 1000);
         }
+
+        // Проверка URL на наличие game-ID для автоматической загрузки игры
+        checkUrlForGameId();
 
         // Инициализация видимости кнопок AI при загрузке страницы (скрываем все до начала игры)
         for (let i = 1; i <= 4; i++) {
