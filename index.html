@@ -7258,6 +7258,11 @@
             // Инициализация debug режима
             initDebugMode();
 
+            // Проверка URL на наличие game-ID (после инициализации Supabase)
+            setTimeout(() => {
+                checkUrlForGameId();
+            }, 500);
+
         });
 
         // Инициализация debug режима
@@ -7535,9 +7540,6 @@
         if (window.location.search.includes('debug=1')) {
             setTimeout(toggleDebugMode, 1000);
         }
-
-        // Проверка URL на наличие game-ID для автоматической загрузки игры
-        checkUrlForGameId();
 
         // Инициализация видимости кнопок AI при загрузке страницы (скрываем все до начала игры)
         for (let i = 1; i <= 4; i++) {
