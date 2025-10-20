@@ -1728,7 +1728,7 @@
         let playersOrder = [];
         let gameMessages = []; // История игровых сообщений (максимум 2)
         let skippedTurns = []; // История пропущенных ходов {player, reason, timestamp}
-        let playerDiceValues = {1: [0, 0], 2: [0, 0], 3: [0, 0], 4: [0, 0]};
+        let playerDiceValues = {1: [1, 6], 2: [2, 5], 3: [3, 4], 4: [2, 5]};
         let playerColors = ['Красный', 'Желтый', 'Зеленый', 'Фиолетовый'];
         let diceLog = []; // Журнал всех бросков (максимум 10)
         let orderResults = []; // Результаты определения очередности
@@ -5045,7 +5045,7 @@
             const allPieces = document.querySelectorAll('.piece');
             allPieces.forEach(piece => {
                 piece.style.pointerEvents = enable ? 'auto' : 'none';
-                piece.style.opacity = enable ? '1' : '0.7';
+                piece.style.opacity = enable ? '1' : '0.5';
             });
         }
 
