@@ -5157,11 +5157,19 @@
                 aiPlayers.push(playerNum);
                 button.classList.add('active');
                 nameInput.value = aiNames[playerNum];
+
+                // Обновляем глобальные переменные для синхронизации
+                playerNames[playerNum] = aiNames[playerNum];
+                playerColors[playerNum - 1] = aiNames[playerNum];
             } else {
                 // Выключаем AI для этого игрока
                 aiPlayers.splice(index, 1);
                 button.classList.remove('active');
                 nameInput.value = defaultNames[playerNum];
+
+                // Обновляем глобальные переменные для синхронизации
+                playerNames[playerNum] = defaultNames[playerNum];
+                playerColors[playerNum - 1] = defaultNames[playerNum];
             }
         }
 
