@@ -1275,6 +1275,10 @@
         #next-player-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             margin: 5px;
+            padding: 8px 12px;
+            font-size: 18px;
+            min-width: auto;
+            width: auto;
         }
 
         #next-player-btn:hover:not(:disabled) {
@@ -1775,7 +1779,7 @@
 
                 <!-- 1. Кнопки управления ходом -->
                 <div class="next-player-section">
-                    <button id="next-player-btn" onclick="nextPlayer()" disabled>Далее</button>
+                    <button id="next-player-btn" onclick="nextPlayer()" disabled style="display: none;">⏭️</button>
                     <button id="random-move-btn" onclick="performRandomMove()" disabled>Сделать случайный ход</button>
                 </div>
 
@@ -3074,7 +3078,7 @@
             const randomMoveBtn = document.getElementById('random-move-btn');
             if (nextPlayerBtn) {
                 nextPlayerBtn.disabled = true;
-                nextPlayerBtn.textContent = '⏳ Сохранение...';
+                nextPlayerBtn.textContent = '⏭️';
             }
             if (randomMoveBtn) {
                 randomMoveBtn.disabled = true;
@@ -3108,7 +3112,7 @@
 
             if (nextPlayerBtn) {
                 nextPlayerBtn.disabled = false;
-                nextPlayerBtn.textContent = 'Далее';
+                nextPlayerBtn.textContent = '⏭️';
             }
             if (randomMoveBtn) {
                 randomMoveBtn.disabled = false;
@@ -3526,7 +3530,8 @@
             const nextPlayerBtn = document.getElementById('next-player-btn');
             if (nextPlayerBtn) {
                 nextPlayerBtn.disabled = true;
-                nextPlayerBtn.textContent = '🎲 Бросок кубиков...';
+                nextPlayerBtn.textContent = '⏭️';
+                nextPlayerBtn.style.display = 'none'; // Скрываем кнопку при броске кубиков
             }
 
             // Анимация броска (базовая длительность 1.5-2 секунды)
@@ -4964,7 +4969,8 @@
                     const nextPlayerBtn = document.getElementById('next-player-btn');
                     if (nextPlayerBtn) {
                         nextPlayerBtn.disabled = false;
-                        nextPlayerBtn.textContent = 'Передать ход';
+                        nextPlayerBtn.textContent = '⏭️';
+                        nextPlayerBtn.style.display = 'inline-block';
                     }
 
                     return;
@@ -4978,7 +4984,8 @@
                     const nextPlayerBtn = document.getElementById('next-player-btn');
                     if (nextPlayerBtn) {
                         nextPlayerBtn.disabled = false;
-                        nextPlayerBtn.textContent = 'Передать ход';
+                        nextPlayerBtn.textContent = '⏭️';
+                        nextPlayerBtn.style.display = 'inline-block';
                     }
                     return;
                 }
@@ -5039,7 +5046,8 @@
             const randomMoveBtn = document.getElementById('random-move-btn');
             if (nextPlayerBtn) {
                 nextPlayerBtn.disabled = false;
-                nextPlayerBtn.textContent = 'Передать ход';
+                nextPlayerBtn.textContent = '⏭️';
+                nextPlayerBtn.style.display = 'inline-block';
             }
             if (randomMoveBtn) {
                 randomMoveBtn.disabled = false;
@@ -5089,6 +5097,13 @@
 
                 // Включаем кнопку "Бросить кубики"
                 document.getElementById('roll-dice-btn').disabled = false;
+
+                // Скрываем кнопку "Передать ход" при смене игрока
+                const nextPlayerBtn = document.getElementById('next-player-btn');
+                if (nextPlayerBtn) {
+                    nextPlayerBtn.style.display = 'none';
+                    nextPlayerBtn.disabled = true;
+                }
 
                 // Управляем кнопкой "Сделать случайный ход" в зависимости от типа игрока
                 const randomMoveBtn = document.getElementById('random-move-btn');
@@ -6730,7 +6745,8 @@
                 const nextPlayerBtn = document.getElementById('next-player-btn');
                 if (nextPlayerBtn && gamePhase === 'playing') {
                     nextPlayerBtn.disabled = false;
-                    nextPlayerBtn.textContent = 'Передать ход';
+                    nextPlayerBtn.textContent = '⏭️';
+                    nextPlayerBtn.style.display = 'inline-block';
                 }
             } catch (error) {
                 // В случае ошибки все равно разблокировать кнопку через 3 секунды
@@ -6738,7 +6754,8 @@
                     const nextPlayerBtn = document.getElementById('next-player-btn');
                     if (nextPlayerBtn && gamePhase === 'playing') {
                         nextPlayerBtn.disabled = false;
-                        nextPlayerBtn.textContent = 'Передать ход';
+                        nextPlayerBtn.textContent = '⏭️';
+                        nextPlayerBtn.style.display = 'inline-block';
                     }
                 }, 3000);
             }
