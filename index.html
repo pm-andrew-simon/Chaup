@@ -246,9 +246,10 @@
             border: none;
             border-radius: 20px;
             padding: 20px;
-            margin-bottom: 20px;
+            margin: 0 auto 20px auto;
             text-align: center;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
         }
 
         .setup-panel h2 {
@@ -665,6 +666,118 @@
             background: #6bcf7f;
             border-color: #51cf66;
             box-shadow: 0 0 10px rgba(107, 207, 127, 0.5);
+        }
+
+        /* Стили для секции настройки AI в setup-панели */
+        .ai-setup-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .ai-setup-section h3 {
+            color: #4a5568;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .ai-players-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .ai-player-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .ai-player-row:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-1px);
+        }
+
+        .player-color-badge {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .player-1-badge {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        }
+
+        .player-2-badge {
+            background: linear-gradient(135deg, #ffd93d 0%, #f4c430 100%);
+        }
+
+        .player-3-badge {
+            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+        }
+
+        .player-4-badge {
+            background: linear-gradient(135deg, #b197fc 0%, #9775fa 100%);
+        }
+
+        .player-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #4a5568;
+            flex-grow: 1;
+        }
+
+        .player-name-input {
+            flex-grow: 1;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4a5568;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .player-name-input:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .player-name-input:hover {
+            border-color: #cbd5e0;
+        }
+
+        .player-name-input:disabled {
+            background: rgba(240, 240, 240, 0.7);
+            color: #718096;
+            cursor: not-allowed;
+        }
+
+        .ai-status-label {
+            font-size: 12px;
+            color: #718096;
+            font-weight: 500;
+            min-width: 75px;
+            text-align: right;
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 600px) {
+            .ai-players-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .cell.highlight {
@@ -1564,7 +1677,7 @@
                 <a href="contacts.html">📧 Контакты</a>
                 <div id="game-id-container" class="game-id-container">
                     <div class="game-id-field">
-                        <div class="game-id-tooltip">Скопируйте ID игры и поделитесь им с друзьями или продолжите игру позже с помощью "Загрузить игру"</div>
+                        <div class="game-id-tooltip">Поделитесь ссылкой с ID игры с друзьями и они смогут к вам присоединиться!</div>
                         <input type="text" id="game-id-input" readonly placeholder="ID игры появится здесь" onclick="copyGameId()">
                         <button id="copy-game-id-btn" onclick="copyGameId()">📋 Копировать</button>
                     </div>
@@ -1578,12 +1691,47 @@
             <h2>Настройка игры</h2>
             <div class="player-count">
                 <label for="players">Количество игроков:</label>
-                <select id="players">
+                <select id="players" onchange="updatePlayerRowsVisibility()">
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
                 </select>
             </div>
+
+            <!-- Секция настройки AI игроков -->
+            <div class="ai-setup-section">
+                <h3>Управление игроками</h3>
+                <div class="ai-players-grid">
+                    <!-- Игрок 1 (Красный) -->
+                    <div class="ai-player-row" id="setup-player-row-1">
+                        <span class="player-color-badge player-1-badge"></span>
+                        <input type="text" id="player-name-setup-1" class="player-name-input" value="Красный" maxlength="20" placeholder="Имя игрока 1">
+                        <button id="ai-toggle-setup-1" class="ai-toggle-btn" onclick="toggleAISetup(1)" title="Переключить Человек/Компьютер">🤖</button>
+                    </div>
+
+                    <!-- Игрок 2 (Желтый) -->
+                    <div class="ai-player-row" id="setup-player-row-2">
+                        <span class="player-color-badge player-2-badge"></span>
+                        <input type="text" id="player-name-setup-2" class="player-name-input" value="Желтый" maxlength="20" placeholder="Имя игрока 2">
+                        <button id="ai-toggle-setup-2" class="ai-toggle-btn" onclick="toggleAISetup(2)" title="Переключить Человек/Компьютер">🤖</button>
+                    </div>
+
+                    <!-- Игрок 3 (Зеленый) -->
+                    <div class="ai-player-row" id="setup-player-row-3">
+                        <span class="player-color-badge player-3-badge"></span>
+                        <input type="text" id="player-name-setup-3" class="player-name-input" value="Зеленый" maxlength="20" placeholder="Имя игрока 3">
+                        <button id="ai-toggle-setup-3" class="ai-toggle-btn" onclick="toggleAISetup(3)" title="Переключить Человек/Компьютер">🤖</button>
+                    </div>
+
+                    <!-- Игрок 4 (Фиолетовый) -->
+                    <div class="ai-player-row" id="setup-player-row-4">
+                        <span class="player-color-badge player-4-badge"></span>
+                        <input type="text" id="player-name-setup-4" class="player-name-input" value="Фиолетовый" maxlength="20" placeholder="Имя игрока 4">
+                        <button id="ai-toggle-setup-4" class="ai-toggle-btn" onclick="toggleAISetup(4)" title="Переключить Человек/Компьютер">🤖</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="game-buttons">
                 <button onclick="startGame()">Начать игру</button>
                 <button onclick="loadGame()">Загрузить игру</button>
@@ -3300,6 +3448,9 @@
             document.getElementById('game-layout').style.display = 'flex';
             document.getElementById('info-panel').style.display = 'block';
 
+            // Синхронизируем настройки AI из setup-панели с игровым полем
+            syncAISettings();
+
             createBoard();
             createPieces();
             createPlayerDice();
@@ -5014,6 +5165,122 @@
             }
         }
 
+        // Функция переключения AI в setup-панели (до начала игры)
+        function toggleAISetup(playerNum) {
+            const setupButton = document.getElementById(`ai-toggle-setup-${playerNum}`);
+            const setupNameInput = document.getElementById(`player-name-setup-${playerNum}`);
+            const index = aiPlayers.indexOf(playerNum);
+
+            // Имена AI для каждого игрока
+            const aiNames = {
+                1: '🤖 Crimson',
+                2: '🤖 Amber',
+                3: '🤖 Verdan',
+                4: '🤖 Violet'
+            };
+
+            // Дефолтные имена игроков
+            const defaultNames = {
+                1: 'Красный',
+                2: 'Желтый',
+                3: 'Зеленый',
+                4: 'Фиолетовый'
+            };
+
+            if (index === -1) {
+                // Включаем AI для этого игрока
+                aiPlayers.push(playerNum);
+                setupButton.classList.add('active');
+                if (setupNameInput) {
+                    setupNameInput.value = aiNames[playerNum];
+                    setupNameInput.disabled = true; // Блокируем редактирование для AI
+                }
+            } else {
+                // Выключаем AI для этого игрока
+                aiPlayers.splice(index, 1);
+                setupButton.classList.remove('active');
+                if (setupNameInput) {
+                    setupNameInput.value = defaultNames[playerNum];
+                    setupNameInput.disabled = false; // Разрешаем редактирование для человека
+                }
+            }
+
+            // Синхронизируем с кнопкой на игровом поле (если она существует)
+            const gameButton = document.getElementById(`ai-toggle-${playerNum}`);
+            if (gameButton) {
+                if (index === -1) {
+                    gameButton.classList.add('active');
+                } else {
+                    gameButton.classList.remove('active');
+                }
+            }
+        }
+
+        // Функция для управления видимостью настроек игроков в зависимости от выбранного количества
+        function updatePlayerRowsVisibility() {
+            const playerCount = parseInt(document.getElementById('players').value) || 2;
+
+            for (let i = 1; i <= 4; i++) {
+                const row = document.getElementById(`setup-player-row-${i}`);
+                if (row) {
+                    if (i <= playerCount) {
+                        row.style.display = 'flex';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        // Функция синхронизации настроек AI из setup-панели с игровым полем
+        function syncAISettings() {
+            // Имена AI для каждого игрока
+            const aiNames = {
+                1: '🤖 Crimson',
+                2: '🤖 Amber',
+                3: '🤖 Verdan',
+                4: '🤖 Violet'
+            };
+
+            // Синхронизируем все 4 игрока
+            for (let playerNum = 1; playerNum <= 4; playerNum++) {
+                const gameButton = document.getElementById(`ai-toggle-${playerNum}`);
+                const nameInput = document.getElementById(`player-name-${playerNum}`);
+                const setupNameInput = document.getElementById(`player-name-setup-${playerNum}`);
+                const isAI = aiPlayers.includes(playerNum);
+
+                // Определяем финальное имя игрока
+                let finalName;
+                if (isAI) {
+                    finalName = aiNames[playerNum];
+                } else {
+                    finalName = setupNameInput ? (setupNameInput.value || `Игрок ${playerNum}`) : `Игрок ${playerNum}`;
+                }
+
+                // Обновляем глобальную переменную playerNames
+                playerNames[playerNum] = finalName;
+
+                // Синхронизируем состояние AI кнопок
+                if (gameButton) {
+                    if (isAI) {
+                        gameButton.classList.add('active');
+                    } else {
+                        gameButton.classList.remove('active');
+                    }
+                }
+
+                // Синхронизируем имена игроков в полях ввода на игровом поле
+                if (nameInput) {
+                    nameInput.value = finalName;
+                }
+            }
+
+            // Обновляем playerColors для синхронизации
+            for (let i = 1; i <= 4; i++) {
+                playerColors[i-1] = playerNames[i];
+            }
+        }
+
         function updatePlayerDisplay() {
             const playerName = playerColors[currentPlayer - 1];
             document.getElementById('player-name').textContent = playerName;
@@ -5131,7 +5398,8 @@
                         return; // Выходим, продолжаем через рекурсивный вызов
                     } else {
                         // Нет дубля или превышен лимит - завершаем
-                        document.getElementById('game-message').textContent = 'Нет доступных ходов для случайного хода';
+						updateGameMessage(`Нет доступных ходов для случайного хода`);
+                        // document.getElementById('game-message').textContent = 'Нет доступных ходов для случайного хода';
 
                         // Если достигнут лимит дублей, вызываем checkTurnCompletion для корректной передачи хода
                         if (isDoubleRoll && consecutiveDoubles >= 3) {
@@ -6577,7 +6845,7 @@
 
             } catch (error) {
                 console.warn('⚠️ Ошибка при настройке Realtime:', error.message);
-                updateGameMessage('ℹ️ Мультиплеер недоступен. Игра работает локально.');
+                updateGameMessage('ℹ️ Ошибка Realtime. Мультиплеер недоступен. Игра работает локально.');
             }
         }
 
@@ -7191,7 +7459,7 @@
         function copyGameId() {
             const input = document.getElementById('game-id-input');
             if (input && input.value) {
-                copyToClipboard(input.value);
+                copyToClipboard('https://chaupar.ru/index.html?game=' + input.value);
                 
                 // Показать уведомление о копировании
                 const btn = document.getElementById('copy-game-id-btn');
@@ -7257,6 +7525,9 @@
 
             // Инициализация debug режима
             initDebugMode();
+
+            // Инициализация видимости настроек игроков
+            updatePlayerRowsVisibility();
 
             // Проверка URL на наличие game-ID (после инициализации Supabase)
             setTimeout(() => {
