@@ -1779,7 +1779,7 @@
 
                 <!-- 1. Кнопки управления ходом -->
                 <div class="next-player-section">
-                    <button id="next-player-btn" onclick="nextPlayer()" disabled style="display: none;">⏭️</button>
+                    <button id="next-player-btn" onclick="nextPlayer()" disabled>⏭️</button>
                     <button id="random-move-btn" onclick="performRandomMove()" disabled>Сделать случайный ход</button>
                 </div>
 
@@ -3531,7 +3531,6 @@
             if (nextPlayerBtn) {
                 nextPlayerBtn.disabled = true;
                 nextPlayerBtn.textContent = '⏭️';
-                nextPlayerBtn.style.display = 'none'; // Скрываем кнопку при броске кубиков
             }
 
             // Анимация броска (базовая длительность 1.5-2 секунды)
@@ -4970,7 +4969,6 @@
                     if (nextPlayerBtn) {
                         nextPlayerBtn.disabled = false;
                         nextPlayerBtn.textContent = '⏭️';
-                        nextPlayerBtn.style.display = 'inline-block';
                     }
 
                     return;
@@ -4985,7 +4983,6 @@
                     if (nextPlayerBtn) {
                         nextPlayerBtn.disabled = false;
                         nextPlayerBtn.textContent = '⏭️';
-                        nextPlayerBtn.style.display = 'inline-block';
                     }
                     return;
                 }
@@ -5047,7 +5044,6 @@
             if (nextPlayerBtn) {
                 nextPlayerBtn.disabled = false;
                 nextPlayerBtn.textContent = '⏭️';
-                nextPlayerBtn.style.display = 'inline-block';
             }
             if (randomMoveBtn) {
                 randomMoveBtn.disabled = false;
@@ -5098,10 +5094,9 @@
                 // Включаем кнопку "Бросить кубики"
                 document.getElementById('roll-dice-btn').disabled = false;
 
-                // Скрываем кнопку "Передать ход" при смене игрока
+                // Блокируем кнопку "Передать ход" при смене игрока
                 const nextPlayerBtn = document.getElementById('next-player-btn');
                 if (nextPlayerBtn) {
-                    nextPlayerBtn.style.display = 'none';
                     nextPlayerBtn.disabled = true;
                 }
 
@@ -5109,13 +5104,11 @@
                 const randomMoveBtn = document.getElementById('random-move-btn');
                 if (randomMoveBtn) {
                     if (aiPlayers.includes(currentPlayer)) {
-                        // Для AI игрока скрываем кнопку случайного хода
-                        randomMoveBtn.style.display = 'none';
+                        // Для AI игрока блокируем кнопку случайного хода
+                        randomMoveBtn.disabled = true;
                     } else {
-                        // Для обычного игрока показываем и включаем кнопку
-                        randomMoveBtn.style.display = '';
+                        // Для обычного игрока включаем кнопку
                         randomMoveBtn.disabled = false;
-                        randomMoveBtn.textContent = 'Сделать случайный ход';
                     }
                 }
 
@@ -5357,7 +5350,6 @@
             const randomMoveBtn = document.getElementById('random-move-btn');
             if (randomMoveBtn && !isRecursiveCall) {
                 randomMoveBtn.disabled = true;
-                randomMoveBtn.textContent = 'Выполняется...';
             }
 
             try {
@@ -5414,7 +5406,6 @@
                                 isPerformingRandomMove = false;
                                 if (randomMoveBtn) {
                                     randomMoveBtn.disabled = false;
-                                    randomMoveBtn.textContent = 'Сделать случайный ход';
                                 }
                             }
                         }, 1000);
@@ -5628,7 +5619,6 @@
                             isPerformingRandomMove = false;
                             if (randomMoveBtn) {
                                 randomMoveBtn.disabled = false;
-                                randomMoveBtn.textContent = 'Сделать случайный ход';
                             }
                         }
                     }, 1000);
@@ -5670,7 +5660,6 @@
                 // Восстанавливаем состояние кнопки только при завершении основного вызова
                 if (!isRecursiveCall && randomMoveBtn) {
                     randomMoveBtn.disabled = false;
-                    randomMoveBtn.textContent = 'Сделать случайный ход';
                 }
             }
         }
@@ -6746,7 +6735,6 @@
                 if (nextPlayerBtn && gamePhase === 'playing') {
                     nextPlayerBtn.disabled = false;
                     nextPlayerBtn.textContent = '⏭️';
-                    nextPlayerBtn.style.display = 'inline-block';
                 }
             } catch (error) {
                 // В случае ошибки все равно разблокировать кнопку через 3 секунды
@@ -6755,7 +6743,6 @@
                     if (nextPlayerBtn && gamePhase === 'playing') {
                         nextPlayerBtn.disabled = false;
                         nextPlayerBtn.textContent = '⏭️';
-                        nextPlayerBtn.style.display = 'inline-block';
                     }
                 }, 3000);
             }

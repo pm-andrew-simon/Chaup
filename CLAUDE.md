@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ IMPORTANT WORKFLOW RULES
+
+**DO NOT create git commits automatically!** Always ask the user first before committing changes. The user will explicitly request commits when ready.
+
 ## Project Overview
 
 This is a web application implementing Chaupar, a traditional Indian board game. The game logic is contained within `index.html` with embedded CSS and JavaScript, supported by additional informational pages.
