@@ -1,0 +1,4053 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="yandex-verification" content="436ec8060c4d8c21" />
+    <title>Обучение — Чаупар</title>
+    <meta name="description" content="Интерактивное обучение игре Чаупар. Изучите правила древней индийской настольной игры." />
+    <link type="image/x-icon" href="favicon.ico" rel="shortcut icon">
+    <link type="Image/x-icon" href="favicon.ico" rel="icon">
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=103866554', 'ym');
+
+        ym(103866554, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/103866554" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            color: #333;
+            overflow-x: auto;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+
+        /* Игровой макет */
+        .game-layout {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .navigation {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Единый стиль для всех элементов навигации */
+        .nav-links a,
+        .nav-links button,
+        .nav-button {
+            display: inline-block;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            color: #4a5568;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Эффект при наведении и активном состоянии */
+        .nav-links a:hover,
+        .nav-links button:hover,
+        .nav-button:hover,
+        .nav-links a.current {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Эффект при нажатии */
+        .nav-links a:active,
+        .nav-links button:active,
+        .nav-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Дополнительные эффекты для текущей страницы */
+        .nav-links a.current {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Специальные стили для игровых кнопок */
+        .nav-links a.current {
+            position: relative;
+        }
+
+        .nav-links a.current::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            border-radius: 1px;
+        }
+
+        /* Анимация появления подчеркивания */
+        .nav-links a.current::after {
+            animation: fadeInLine 0.6s ease-out;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: clamp(24px, 5vw, 36px);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin: 10px 0 20px 0;
+        }
+
+        .game-board {
+            position: relative;
+            width: min(90vw, 600px);
+            height: min(90vw, 600px);
+            background: linear-gradient(145deg, #a8e6cf 0%, #88d8a3 100%);
+            border: none;
+            border-radius: 20px;
+            margin: 20px auto;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .cell {
+            position: absolute;
+            width: calc(min(90vw, 600px) * 35 / 600);
+            height: calc(min(90vw, 600px) * 35 / 600);
+            border: 1.5px solid rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .start-zone {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1.5px solid rgba(0, 0, 0, 0.35);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .waiting-zone {
+            background: rgba(255, 255, 0, 0.3);
+            border: 1.5px solid rgba(255, 180, 0, 0.8);
+            box-shadow: inset 0 2px 4px rgba(255, 180, 0, 0.2);
+        }
+
+        .piece {
+            width: calc(min(90vw, 600px) * 35 / 600);
+            height: calc(min(90vw, 600px) * 35 / 600);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            cursor: move;
+            position: absolute;
+            top: calc(min(90vw, 600px) * 2 / 600);
+            left: calc(min(90vw, 600px) * 2 / 600);
+            z-index: 10;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .player1 {
+            background: linear-gradient(145deg, #ff6b6b, #ee5a52);
+        }
+        .player2 {
+            background: linear-gradient(145deg, #ffd93d, #ffcd3c);
+        }
+        .player3 {
+            background: linear-gradient(145deg, #6bcf7f, #51cf66);
+        }
+        .player4 {
+            background: linear-gradient(145deg, #9775fa, #845ef7);
+        }
+
+        .piece:hover {
+            transform: scale(1.15);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .piece.selected {
+            border: 3px solid #ffeb3b;
+            box-shadow: 0 0 15px rgba(255, 235, 59, 0.8);
+            transform: scale(1.1);
+            z-index: 50;
+        }
+
+        .possible-move {
+            background-color: rgba(0, 123, 255, 0.1) !important;
+            border: 1.5px solid rgba(0, 123, 255, 0.5) !important;
+        }
+
+        .move-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #007bff;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #007bff;
+            z-index: 1001;
+            pointer-events: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            animation: hintAppear 0.3s ease-out;
+        }
+
+        .teleport-hint {
+            background: rgba(138, 43, 226, 0.95);
+            border-color: #8a2be2;
+            color: white;
+        }
+
+        @keyframes hintAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* Стили для стрелок направления */
+        .direction-arrow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 60%;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .direction-arrow svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .arrow-0 {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        .arrow-90 {
+            transform: translate(-50%, -50%) rotate(90deg);
+        }
+
+        .arrow-180 {
+            transform: translate(-50%, -50%) rotate(180deg);
+        }
+
+        .arrow-270 {
+            transform: translate(-50%, -50%) rotate(270deg);
+        }
+
+        /* Стили для храмов и тюрем */
+        .temple-icon, .jail-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            z-index: 5;
+            pointer-events: auto;
+            cursor: help;
+        }
+
+        .temple-icon svg, .jail-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Стили для иконок домов */
+        .home-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            z-index: 5;
+            pointer-events: auto;
+            cursor: help;
+        }
+
+        .home-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Стили для телепортов */
+        .teleport-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            z-index: 5;
+            pointer-events: auto;
+            cursor: help;
+        }
+
+        .teleport-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .teleport-path {
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-width: 50px;
+        }
+
+        /* Стили для всплывающих подсказок */
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.4;
+            white-space: nowrap;
+            z-index: 2000;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            max-width: 250px;
+            white-space: normal;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+            transform: translateY(-5px);
+        }
+
+        /* Стили для кубиков игроков на поле */
+        .player-dice {
+            position: absolute;
+            width: calc(min(90vw, 600px) * 37.5 / 600);
+            height: calc(min(90vw, 600px) * 37.5 / 600);
+            border: 2px solid #333;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: calc(min(90vw, 600px) * 18 / 600);
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .player-dice.active {
+            background: white;
+            color: #333;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transform: scale(1.05);
+        }
+
+        .player-dice.inactive {
+            background: #888;
+            color: #fff;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .player-dice.rolling {
+            animation: diceRoll 0.3s infinite;
+        }
+
+        /* Дополнительные правила для синхронизированной анимации */
+        .rolling {
+            animation: diceRoll 0.3s infinite !important;
+        }
+
+        .player-dice.active.rolling {
+            animation: diceRoll 0.3s infinite !important;
+        }
+
+        div.rolling {
+            animation: diceRoll 0.3s infinite !important;
+        }
+
+        .player-dice:hover.active {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .dice-face {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            padding: 4px;
+        }
+
+        /* Грани кубиков */
+        .dice-face.one {
+            grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+        }
+
+        .dice-face.one .dice-dot:nth-child(1) {
+            grid-row: 2;
+            grid-column: 2;
+        }
+
+        .dice-face.two {
+            grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+        }
+
+        .dice-face.two .dice-dot:nth-child(1) {
+            grid-row: 1;
+            grid-column: 1;
+        }
+
+        .dice-face.two .dice-dot:nth-child(2) {
+            grid-row: 3;
+            grid-column: 3;
+        }
+
+        .dice-face.three {
+            grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+        }
+
+        .dice-face.three .dice-dot:nth-child(1) {
+            grid-row: 1;
+            grid-column: 1;
+        }
+
+        .dice-face.three .dice-dot:nth-child(2) {
+            grid-row: 2;
+            grid-column: 2;
+        }
+
+        .dice-face.three .dice-dot:nth-child(3) {
+            grid-row: 3;
+            grid-column: 3;
+        }
+
+        .dice-face.four {
+            grid-template: 1fr 1fr / 1fr 1fr;
+        }
+
+        .dice-face.five {
+            grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+        }
+
+        .dice-face.five .dice-dot:nth-child(1) {
+            grid-row: 1;
+            grid-column: 1;
+        }
+
+        .dice-face.five .dice-dot:nth-child(2) {
+            grid-row: 1;
+            grid-column: 3;
+        }
+
+        .dice-face.five .dice-dot:nth-child(3) {
+            grid-row: 2;
+            grid-column: 2;
+        }
+
+        .dice-face.five .dice-dot:nth-child(4) {
+            grid-row: 3;
+            grid-column: 1;
+        }
+
+        .dice-face.five .dice-dot:nth-child(5) {
+            grid-row: 3;
+            grid-column: 3;
+        }
+
+        .dice-face.six {
+            grid-template: 1fr 1fr 1fr / 1fr 1fr;
+        }
+
+        .dice-dot {
+            width: calc(min(90vw, 600px) * 5 / 600);
+            height: calc(min(90vw, 600px) * 5 / 600);
+            background: #333;
+            border-radius: 50%;
+            justify-self: center;
+            align-self: center;
+        }
+
+        .game-message {
+            flex: 1;
+            font-size: 13px;
+            color: #2d3748;
+            font-weight: 500;
+            overflow-y: auto;
+            white-space: pre-line;
+            line-height: 1.5;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            border: 1px solid rgba(229, 62, 62, 0.1);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Панель кубиков */
+        .dice-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: min(90vw, 600px);
+            height: min(90vw, 600px);
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            margin: 20px auto;
+            gap: 20px;
+        }
+
+        /* Новые секции в dice-panel */
+        .next-player-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .next-player-section button {
+            font-size: 16px;
+            padding: 12px 24px;
+            min-width: 150px;
+        }
+
+        .info-section {
+            display: flex;
+            gap: 0px;
+            margin-bottom: 10px;
+            flex: 1;
+            height: calc(100% - 60px);
+        }
+
+        .game-message-container {
+            flex: 0.65;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .game-message-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d3748;
+            font-size: 15px;
+            text-align: center;
+        }
+
+        .dice-log-container {
+            flex: 0.35;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .dice-log {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 0;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .dice-log-entries {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            max-height: 100%;
+        }
+
+        .dice-log-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d3748;
+            font-size: 15px;
+            text-align: center;
+        }
+
+        .dice-log-entry {
+            display: block;
+            margin: 3px 0;
+            padding: 8px 10px;
+            background: white;
+            border-radius: 8px;
+            font-weight: 500;
+            border-left: 4px solid transparent;
+            font-size: 13px;
+        }
+
+        .dice-log-entry.first-move {
+            background: #e6fffa;
+            border-left-color: #38a169;
+            font-weight: 600;
+        }
+
+        .dice-log-entry .player-name {
+            font-weight: 600;
+        }
+
+        .dice-log-entry .dice-values {
+            color: #666;
+        }
+
+        .dice-log-entry .first-indicator {
+            color: #38a169;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .current-player {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #4a5568;
+        }
+
+        .dice {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s ease;
+        }
+
+        .dice.rolling {
+            animation: diceRoll 0.3s infinite;
+        }
+
+        @keyframes diceRoll {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .dice-result {
+            margin: 15px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        #roll-dice-btn {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            margin: 5px;
+        }
+
+        #roll-dice-btn:hover {
+            background: linear-gradient(135deg, #2f855a 0%, #276749 100%);
+        }
+
+        #roll-dice-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #random-move-btn {
+            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+            margin: 5px;
+			border: none;
+			border-radius: 12px;
+			font-size: 16px;
+			color: white;
+			font-weight: bold;
+        }
+
+        #random-move-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        #random-move-btn:disabled {
+            background: #e2e8f0;
+            color: #a0aec0;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Подсветка для онбординга */
+        .tutorial-highlight {
+            position: fixed;
+            border: 4px solid #FFD700;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8),
+                        inset 0 0 30px rgba(255, 215, 0, 0.3);
+            z-index: 9001;
+            pointer-events: none;
+            animation: tutorialPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes tutorialPulse {
+            0%, 100% {
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.8),
+                            inset 0 0 30px rgba(255, 215, 0, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(255, 215, 0, 1),
+                            inset 0 0 50px rgba(255, 215, 0, 0.5);
+            }
+        }
+
+        /* Активная кнопка обучения */
+        #random-move-btn.tutorial-button-active {
+            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+            cursor: pointer;
+            opacity: 1;
+        }
+
+        #random-move-btn.tutorial-button-active:hover {
+            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+        }
+
+        /* Счетчик шагов онбординга */
+        .tutorial-step-counter {
+            text-align: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .tutorial-step-counter .step-number {
+            color: #ed8936;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* Мобильная адаптивность */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+
+            h1 {
+                font-size: 24px;
+                margin: 5px 0 15px 0;
+            }
+
+            .navigation {
+                padding: 10px 15px;
+                margin-bottom: 20px;
+            }
+
+            .nav-links {
+                gap: 10px;
+            }
+
+            .nav-links a,
+            .nav-links button,
+            .nav-button {
+                padding: 10px 16px;
+                font-size: 13px;
+                border-radius: 12px;
+            }
+
+            .game-board {
+                margin: 10px auto;
+                border-radius: 15px;
+            }
+
+            .cell {
+                width: calc(100vw / 15);
+                height: calc(100vw / 15);
+            }
+
+            .piece {
+                width: calc(100vw / 15 * 35 / 35);
+                height: calc(100vw / 15 * 35 / 35);
+                top: calc(100vw / 15 * 2 / 35);
+                left: calc(100vw / 15 * 2 / 35);
+            }
+
+            .player-dice {
+                width: calc(100vw / 15 * 37.5 / 35);
+                height: calc(100vw / 15 * 37.5 / 35);
+            }
+
+            .dice-dot {
+                width: calc(100vw / 15 * 5 / 35);
+                height: calc(100vw / 15 * 5 / 35);
+            }
+
+            .game-layout {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                margin: 0;
+                padding: 0;
+            }
+
+            .dice-panel {
+                margin: 0 auto;
+                padding: 10px;
+                border-radius: 10px;
+                min-width: auto;
+                width: calc(100vw - 10px);
+                max-width: 100%;
+                height: calc(100vw - 20px);
+                max-height: 100%;
+                position: relative;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(15px);
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+
+            .dice {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Подсветка для онбординга -->
+    <div id="tutorial-highlight" class="tutorial-highlight" style="display: none;"></div>
+
+    <div class="container">
+        <nav class="navigation">
+            <div class="nav-links">
+                <a href="onboarding.html" class="current">👨‍🎓 Обучение</a>
+				<a href="index.html">🎮 Играть</a>
+                <a href="rules.html">📋 Правила</a>
+                <a href="situations.html">🎯 Игровые ситуации</a>
+                <a href="news.html">📰 Новости</a>
+                <a href="contacts.html">📧 Контакты</a>
+            </div>
+        </nav>
+
+        <h1>Обучение игре Чаупар</h1>
+
+        <div class="game-layout">
+            <div id="game-board" class="game-board"></div>
+
+            <div class="dice-panel">
+            <!-- 1. Счетчик шагов онбординга -->
+            <div id="tutorial-step-counter" class="tutorial-step-counter">
+                <span class="step-number">Готовы начать?</span>
+            </div>
+
+            <!-- 2. Кнопки управления ходом -->
+            <div class="next-player-section">                
+                <button id="random-move-btn" disabled>Сделать случайный ход</button>
+            </div>
+
+            <!-- 3. Подсказки игры и журнал бросков в одной строке -->
+            <div class="info-section">
+                <div class="game-message-container">
+                    <div class="game-message-title">Подсказки и советы:</div>
+                    <div id="game-message" class="game-message">Добро пожаловать в обучение! Здесь вы можете изучить основы игры.</div>
+                </div>
+                <div class="dice-log-container">
+                    <div class="dice-log-title">Журнал бросков:</div>
+                    <div id="dice-log" class="dice-log">
+                        <div id="dice-log-entries" class="dice-log-entries"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Скрытые элементы -->
+            <div style="display: none;">
+                <div id="current-player" class="current-player">
+                    Ходит: <span id="player-name">Красный</span>
+                </div>
+                <button id="roll-dice-btn">Бросить кубики</button>
+                <div id="dice-result" class="dice-result"></div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================
+        // КОНСТАНТЫ
+        // ================================
+
+        const BOARD_CELLS = [
+            "G1", "H1", "I1",
+            "F2", "G2", "H2", "I2",
+            "G3", "H3", "I3",
+            "G4", "H4", "I4",
+            "F5", "G5", "H5", "I5",
+            "G6", "H6", "I6", "K6", "N6",
+            "A7", "B7", "C7", "D7", "E7", "F7", "G7", "I7", "J7", "K7", "L7", "M7", "N7", "O7",
+            "A8", "B8", "C8", "D8", "E8", "F8", "J8", "K8", "L8", "M8", "N8", "O8",
+            "A9", "B9", "C9", "D9", "E9", "F9", "G9", "I9", "J9", "K9", "L9", "M9", "N9", "O9",
+            "B10", "E10", "G10", "H10", "I10",
+            "G11", "H11", "I11", "J11",
+            "G12", "H12", "I12",
+            "G13", "H13", "I13",
+            "G14", "H14", "I14", "J14",
+            "G15", "H15", "I15"
+        ];
+
+        const START_ZONES = {
+            1: ["M1", "N1", "O1", "M2", "N2", "O2"],
+            2: ["A14", "B14", "C14", "A15", "B15", "C15"],
+            3: ["N13", "O13", "N14", "O14", "N15", "O15"],
+            4: ["A1", "B1", "A2", "B2", "A3", "B3"]
+        };
+
+        const WAITING_ZONES = {
+            1: ["K1", "K2", "K3", "K4"],
+            2: ["E12", "E13", "E14", "E15"],
+            3: ["L11", "M11", "N11", "O11"],
+            4: ["A5", "B5", "C5", "D5"]
+        };
+
+        const ENTRY_CELLS = {
+            1: 'I1',
+            2: 'G15',
+            3: 'O9',
+            4: 'A7'
+        };
+
+        const TEMPLE_COORDS = ['K6', 'J11', 'E10', 'F5'];
+        const JAIL_COORDS = ['N6', 'J14', 'B10', 'F2'];
+
+        const TELEPORT_COORDS = {
+            1: 'I7',
+            2: 'G9',
+            3: 'I9',
+            4: 'G7'
+        };
+
+        const TELEPORT_MAPPINGS = {
+            'I7': {
+                1: 'I9',
+                3: 'G9',
+                6: 'G7'
+            },
+            'G9': {
+                1: 'G7',
+                3: 'I7',
+                6: 'I9'
+            },
+            'I9': {
+                1: 'G9',
+                3: 'G7',
+                6: 'I7'
+            },
+            'G7': {
+                1: 'I7',
+                3: 'I9',
+                6: 'G9'
+            }
+        };
+
+        const DICE_AREAS = {
+            1: { from: 'M4', to: 'O5' },
+            2: { from: 'A12', to: 'C13' },
+            3: { from: 'K14', to: 'M15' },
+            4: { from: 'C2', to: 'E3' }
+        };
+
+        const PLAYER_PATHS = {
+            1: [
+                'I1', 'I2', 'I3', 'I4', 'I5', 'I6', 'I7',
+                'J7', 'K7', 'L7', 'M7', 'N7', 'O7',
+                'O8', 'O9',
+                'N9', 'M9', 'L9', 'K9', 'J9', 'I9',
+                'I10', 'I11', 'I12', 'I13', 'I14', 'I15',
+                'H15', 'G15',
+                'G14', 'G13', 'G12', 'G11', 'G10', 'G9',
+                'F9', 'E9', 'D9', 'C9', 'B9', 'A9',
+                'A8', 'A7',
+                'B7', 'C7', 'D7', 'E7', 'F7', 'G7',
+                'G6', 'G5', 'G4', 'G3', 'G2', 'G1',
+                'H1',
+                'H2', 'H3', 'H4', 'H5', 'H6'
+            ],
+            2: [
+                'G15', 'G14', 'G13', 'G12', 'G11', 'G10', 'G9',
+                'F9', 'E9', 'D9', 'C9', 'B9', 'A9',
+                'A8', 'A7',
+                'B7', 'C7', 'D7', 'E7', 'F7', 'G7',
+                'G6', 'G5', 'G4', 'G3', 'G2', 'G1',
+                'H1', 'I1',
+                'I2', 'I3', 'I4', 'I5', 'I6', 'I7',
+                'J7', 'K7', 'L7', 'M7', 'N7', 'O7',
+                'O8', 'O9',
+                'N9', 'M9', 'L9', 'K9', 'J9', 'I9',
+                'I10', 'I11', 'I12', 'I13', 'I14', 'I15',
+                'H15',
+                'H14', 'H13', 'H12', 'H11', 'H10'
+            ],
+            3: [
+                'O9', 'N9', 'M9', 'L9', 'K9', 'J9', 'I9',
+                'I10', 'I11', 'I12', 'I13', 'I14', 'I15',
+                'H15', 'G15',
+                'G14', 'G13', 'G12', 'G11', 'G10', 'G9',
+                'F9', 'E9', 'D9', 'C9', 'B9', 'A9',
+                'A8', 'A7',
+                'B7', 'C7', 'D7', 'E7', 'F7', 'G7',
+                'G6', 'G5', 'G4', 'G3', 'G2', 'G1',
+                'H1', 'I1',
+                'I2', 'I3', 'I4', 'I5', 'I6', 'I7',
+                'J7', 'K7', 'L7', 'M7', 'N7', 'O7',
+                'O8',
+                'N8', 'M8', 'L8', 'K8', 'J8'
+            ],
+            4: [
+                'A7', 'B7', 'C7', 'D7', 'E7', 'F7', 'G7',
+                'G6', 'G5', 'G4', 'G3', 'G2', 'G1',
+                'H1', 'I1',
+                'I2', 'I3', 'I4', 'I5', 'I6', 'I7',
+                'J7', 'K7', 'L7', 'M7', 'N7', 'O7',
+                'O8', 'O9',
+                'N9', 'M9', 'L9', 'K9', 'J9', 'I9',
+                'I10', 'I11', 'I12', 'I13', 'I14', 'I15',
+                'H15', 'G15',
+                'G14', 'G13', 'G12', 'G11', 'G10', 'G9',
+                'F9', 'E9', 'D9', 'C9', 'B9', 'A9',
+                'A8',
+                'B8', 'C8', 'D8', 'E8', 'F8'
+            ]
+        };
+
+        const SPECIAL_MOVES = {
+            'K7': 'K6',
+            'N7': 'N6',
+            'I11': 'J11',
+            'I14': 'J14',
+            'E9': 'E10',
+            'B9': 'B10',
+            'G5': 'F5',
+            'G2': 'F2'
+        };
+
+        // ================================
+        // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+        // ================================
+
+        let gameBoard = {};
+        let playerCount = 2;
+        let pieces = {};
+        let playerNames = {1: 'Красный', 2: 'Желтый', 3: 'Зеленый', 4: 'Фиолетовый'};
+        let currentPlayer = 1;
+        let gamePhase = 'playing';
+        let lastDiceRoll = [0, 0];
+        let diceUsed = [false, false];
+        let playerDiceValues = {1: [1, 6], 2: [2, 5], 3: [3, 4], 4: [2, 5]};
+        let playerColors = ['Красный', 'Желтый', 'Зеленый', 'Фиолетовый'];
+        let diceRollNumber = 0;
+        let selectedPiece = null;
+        let cachedValidMoves = [];
+        let gameMessages = [];
+        let currentTooltip = null;
+
+        // ================================
+        // ПЕРЕМЕННЫЕ И КОНСТАНТЫ ОНБОРДИНГА
+        // ================================
+
+        let isTutorialActive = true;
+
+        // Массив TUTORIAL_STEPS удален - используется процедурный подход
+        // См. функцию runTutorial() ниже для полного сценария обучения
+
+        // ================================
+        // ФУНКЦИИ КООРДИНАТ И ПОЗИЦИОНИРОВАНИЯ
+        // ================================
+
+        function coordToPosition(coord) {
+            const col = coord.charCodeAt(0) - 65;
+            const row = parseInt(coord.substring(1)) - 1;
+
+            let boardSize;
+            if (window.innerWidth <= 768) {
+                boardSize = window.innerWidth;
+            } else {
+                boardSize = Math.min(window.innerWidth * 0.9, 600);
+            }
+
+            let cellSize;
+            if (window.innerWidth <= 768) {
+                cellSize = (boardSize-20) / 15;
+            } else {
+                cellSize = boardSize * 35 / 600;
+            }
+
+            const gameFieldSize = 15 * cellSize;
+            const offset = (boardSize - gameFieldSize) / 2;
+
+            return {
+                x: col * cellSize + offset,
+                y: row * cellSize + offset
+            };
+        }
+
+        function positionToCoord(x, y) {
+            let boardSize;
+            if (window.innerWidth <= 768) {
+                boardSize = window.innerWidth;
+            } else {
+                boardSize = Math.min(window.innerWidth * 0.9, 600);
+            }
+
+            let cellSize;
+            if (window.innerWidth <= 768) {
+                cellSize = boardSize / 15;
+            } else {
+                cellSize = boardSize * 35 / 600;
+            }
+
+            const gameFieldSize = 15 * cellSize;
+            const offset = (boardSize - gameFieldSize) / 2;
+
+            const col = Math.floor((x - offset) / cellSize);
+            const row = Math.floor((y - offset) / cellSize);
+            if (col < 0 || col > 14 || row < 0 || row > 14) return null;
+            return String.fromCharCode(65 + col) + (row + 1);
+        }
+
+        function getCurrentPosition(piece) {
+            const rect = piece.getBoundingClientRect();
+            const boardRect = document.getElementById('game-board').getBoundingClientRect();
+            const x = rect.left - boardRect.left + 17;
+            const y = rect.top - boardRect.top + 17;
+            return positionToCoord(x, y);
+        }
+
+        function calculateDiceAreaPosition(area) {
+            const fromPos = coordToPosition(area.from);
+            const toPos = coordToPosition(area.to);
+
+            if (!fromPos || !toPos) return null;
+
+            const centerX = (fromPos.x + toPos.x) / 2;
+            const centerY = (fromPos.y + toPos.y) / 2;
+
+            return { centerX, centerY };
+        }
+
+        // ================================
+        // ФУНКЦИИ РЕНДЕРИНГА
+        // ================================
+
+        function createBoard() {
+            const board = document.getElementById('game-board');
+            if (!board) {
+                return;
+            }
+
+            board.innerHTML = '';
+
+            BOARD_CELLS.forEach((coord) => {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.coord = coord;
+
+                const pos = coordToPosition(coord);
+                cell.style.left = pos.x + 'px';
+                cell.style.top = pos.y + 'px';
+
+                board.appendChild(cell);
+                gameBoard[coord] = null;
+            });
+
+            for (let player = 1; player <= 4; player++) {
+                START_ZONES[player].forEach(coord => {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell start-zone';
+                    cell.dataset.coord = coord;
+                    cell.dataset.player = player;
+
+                    const pos = coordToPosition(coord);
+                    cell.style.left = pos.x + 'px';
+                    cell.style.top = pos.y + 'px';
+
+                    board.appendChild(cell);
+                    gameBoard[coord] = [];
+                });
+            }
+
+            for (let player = 1; player <= 4; player++) {
+                WAITING_ZONES[player].forEach(coord => {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell waiting-zone';
+                    cell.dataset.coord = coord;
+                    cell.dataset.player = player;
+
+                    const pos = coordToPosition(coord);
+                    cell.style.left = pos.x + 'px';
+                    cell.style.top = pos.y + 'px';
+
+                    board.appendChild(cell);
+                    gameBoard[coord] = [];
+                });
+            }
+
+            createDirectionArrows();
+            createTemplesAndJails();
+            createTeleportIcons();
+            createHomeIcons();
+        }
+
+        function createDirectionArrows() {
+            const board = document.getElementById('game-board');
+            if (!board) return;
+
+            const arrowSVG = `<svg id="_Слой_2" data-name="Слой 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+                <defs>
+                    <style>
+                        .cls-1, .cls-2 { fill: #809786; }
+                        .cls-2 { stroke-miterlimit: 10; stroke-width: 40px; }
+                        .cls-2, .cls-3 { stroke: #809786; }
+                        .cls-3 { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 50px; }
+                    </style>
+                </defs>
+                <line class="cls-3" x1="540" y1="100" x2="540" y2="760"/>
+                <path class="cls-2" d="M534.74,97.9l-143.42,238.02c-2.01,3.33.39,7.58,4.28,7.58h286.84c3.89,0,6.29-4.25,4.28-7.58l-143.42-238.02c-1.94-3.23-6.62-3.23-8.57,0Z"/>
+                <circle class="cls-1" cx="540" cy="867.65" r="30"/>
+            </svg>`;
+
+            const arrows = [
+                { coords: ['O12', 'O10', 'G15'], rotation: 0 },
+                { coords: ['D15', 'F15', 'A7'], rotation: 90 },
+                { coords: ['A4', 'A6', 'I1'], rotation: 180 },
+                { coords: ['L1', 'J1', 'O9'], rotation: 270 }
+            ];
+
+            arrows.forEach(arrowGroup => {
+                arrowGroup.coords.forEach(coord => {
+                    let cell = board.querySelector(`[data-coord="${coord}"]`);
+
+                    if (!cell) {
+                        cell = document.createElement('div');
+                        cell.style.position = 'absolute';
+                        cell.style.background = 'transparent';
+                        cell.style.border = 'none';
+                        cell.style.pointerEvents = 'none';
+                        cell.dataset.coord = coord;
+
+                        const pos = coordToPosition(coord);
+                        cell.style.left = pos.x + 'px';
+                        cell.style.top = pos.y + 'px';
+                        cell.style.width = 'calc(min(90vw, 600px) * 35 / 600)';
+                        cell.style.height = 'calc(min(90vw, 600px) * 35 / 600)';
+
+                        board.appendChild(cell);
+                    }
+
+                    if (cell) {
+                        const arrowElement = document.createElement('div');
+                        arrowElement.className = `direction-arrow arrow-${arrowGroup.rotation}`;
+                        arrowElement.innerHTML = arrowSVG;
+
+                        cell.appendChild(arrowElement);
+                    }
+                });
+            });
+        }
+
+        function createTemplesAndJails() {
+            const board = document.getElementById('game-board');
+            if (!board) return;
+            
+            const templeSVG = `<svg id="_Слой_2" data-name="Слой 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+                <defs>
+                    <style>
+                        .cls-1 { fill: #809786; }
+                        .cls-2 { fill: none; stroke: #809786; stroke-linecap: round; stroke-linejoin: round; stroke-width: 50px; }
+                    </style>
+                </defs>
+                <path class="cls-1" d="M674.31,653.29v220.38h-264.56v-220.38h264.56M696.09,631.51h-308.12v263.93h308.12v-263.93h0Z"/>
+                <path class="cls-1" d="M366.19,633.74v239.92h-150.58v-239.92h150.58M387.97,611.97h-194.13v283.48h194.13v-283.48h0Z"/>
+                <g>
+                    <rect class="cls-1" x="217.57" y="561.25" width="145.7" height="43.45"/>
+                    <path class="cls-1" d="M356.01,568.51v28.94h-131.18v-28.94h131.18M370.53,553.99h-160.22v57.97h160.22v-57.97h0Z"/>
+                </g>
+                <path class="cls-1" d="M868.45,633.74v239.92h-150.58v-239.92h150.58M890.23,611.97h-194.13v283.48h194.13v-283.48h0Z"/>
+                <g>
+                    <rect class="cls-1" x="719.82" y="561.25" width="145.7" height="43.45"/>
+                    <path class="cls-1" d="M858.26,568.51v28.94h-131.18v-28.94h131.18M872.78,553.99h-160.22v57.97h160.22v-57.97h0Z"/>
+                </g>
+                <path class="cls-1" d="M674.31,557.52v52.21h-265.29v-52.21h265.29M696.09,535.74h-308.84v95.77h308.84v-95.77h0Z"/>
+                <path class="cls-1" d="M548.41,686.42c30.85,0,55.95,25.1,55.95,55.95v130.1h-124.66v-130.1c0-30.85,25.1-55.95,55.95-55.95h12.75M548.41,664.64h-12.75c-42.93,0-77.73,34.8-77.73,77.73v151.88h168.21v-151.88c0-42.93-34.8-77.73-77.73-77.73h0Z"/>
+                <path class="cls-1" d="M558.8,276.96h0,0M542.59,288.22c12.17,10.26,29.93,25.57,51.17,44.36,35.81,31.68,63.94,57.77,71.65,66.47,1.24,1.4,11.99,15.19,6.65,67.1-1.24,12.09-3.12,23.63-4.97,33.29h-251.12c-1.75-8.27-3.45-18.07-4.52-28.54-3.35-32.83.95-58.79,12.12-73.08,15.32-19.61,42.17-46.14,75.6-74.69,17.52-14.97,32.65-26.88,43.42-34.92M544.76,243.75c-7.55,0-107.79,77.99-149.78,131.74-42.6,54.52-7,160.26-7,160.26h308.12s33.11-119.46-3.52-160.77c-21.4-24.14-141.58-128.98-147.55-131.18-.07-.03-.16-.05-.27-.05h0Z"/>
+                <line class="cls-2" x1="542.67" y1="184.56" x2="542.67" y2="253.2"/>
+                <line class="cls-2" x1="157.71" y1="894.25" x2="922.29" y2="894.25"/>
+            </svg>`;
+            
+            const jailSVG = `<svg id="_Слой_2" data-name="Слой 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+                <defs>
+                    <style>
+                        .cls-1 { stroke-width: 60px; }
+                        .cls-1, .cls-2 { fill: none; stroke: #809786; stroke-linecap: round; stroke-linejoin: round; }
+                        .cls-2 { stroke-width: 50px; }
+                    </style>
+                </defs>
+                <line class="cls-1" x1="320" y1="100" x2="320" y2="947.48"/>
+                <line class="cls-1" x1="760" y1="116.26" x2="760" y2="963.74"/>
+                <line class="cls-2" x1="374.62" y1="265.38" x2="265.38" y2="374.62"/>
+                <line class="cls-2" x1="814.62" y1="705.38" x2="705.38" y2="814.62"/>
+                <line class="cls-2" x1="814.62" y1="366.49" x2="705.38" y2="257.25"/>
+                <line class="cls-2" x1="374.62" y1="806.49" x2="265.38" y2="697.25"/>
+                <line class="cls-1" x1="971.87" y1="320" x2="124.39" y2="320"/>
+                <line class="cls-1" x1="955.61" y1="760" x2="108.13" y2="760"/>
+            </svg>`;
+            
+            // Координаты для храмов
+            const templeCoords = ['K6', 'J11', 'E10', 'F5'];
+            // Координаты для тюрем  
+            const jailCoords = ['N6', 'J14', 'B10', 'F2'];
+            
+            // Создаем храмы
+            templeCoords.forEach(coord => {
+                let cell = board.querySelector(`[data-coord="${coord}"]`);
+                
+                // Если ячейка не найдена, создаем невидимый контейнер
+                if (!cell) {
+                    cell = document.createElement('div');
+                    cell.style.position = 'absolute';
+                    cell.style.background = 'transparent';
+                    cell.style.border = 'none';
+                    cell.style.pointerEvents = 'none';
+                    cell.dataset.coord = coord;
+                    
+                    const pos = coordToPosition(coord);
+                    cell.style.left = pos.x + 'px';
+                    cell.style.top = pos.y + 'px';
+                    cell.style.width = 'calc(min(90vw, 600px) * 35 / 600)';
+                    cell.style.height = 'calc(min(90vw, 600px) * 35 / 600)';
+                    
+                    board.appendChild(cell);
+                }
+                
+                if (cell) {
+                    const templeElement = document.createElement('div');
+                    templeElement.className = 'temple-icon';
+                    templeElement.innerHTML = templeSVG;
+                    templeElement.title = 'Здесь фишка защищена от сбивания. Только одна фишка одновременно. Фишка может покинуть Храм в любой свой ход. Мимо фишек, зашедших в Храм, можно пройти.';
+                    
+                    // Добавляем обработчики для всплывающих подсказок
+                    templeElement.addEventListener('mouseenter', function(e) {
+                        if (selectedPiece === null) {
+                            showTooltip(e, 'Здесь фишка защищена от сбивания. Только одна фишка одновременно. Фишка может покинуть Храм в любой свой ход. Мимо фишек, зашедших в Храм, можно пройти.');
+                        }
+                    });
+                    
+                    templeElement.addEventListener('mouseleave', function() {
+                        hideTooltip();
+                    });
+                    
+                    cell.appendChild(templeElement);
+                }
+            });
+            
+            // Создаем тюрьмы
+            jailCoords.forEach(coord => {
+                let cell = board.querySelector(`[data-coord="${coord}"]`);
+                
+                // Если ячейка не найдена, создаем невидимый контейнер
+                if (!cell) {
+                    cell = document.createElement('div');
+                    cell.style.position = 'absolute';
+                    cell.style.background = 'transparent';
+                    cell.style.border = 'none';
+                    cell.style.pointerEvents = 'none';
+                    cell.dataset.coord = coord;
+                    
+                    const pos = coordToPosition(coord);
+                    cell.style.left = pos.x + 'px';
+                    cell.style.top = pos.y + 'px';
+                    cell.style.width = 'calc(min(90vw, 600px) * 35 / 600)';
+                    cell.style.height = 'calc(min(90vw, 600px) * 35 / 600)';
+                    
+                    board.appendChild(cell);
+                }
+                
+                if (cell) {
+                    const jailElement = document.createElement('div');
+                    jailElement.className = 'jail-icon';
+                    jailElement.innerHTML = jailSVG;
+                    jailElement.title = 'Тюрьма: Попав сюда, вы «застряли». Чтобы выйти, нужно выбросить хотя бы одну 6 - это плата за выход, а вторая кость укажет, на сколько шагов вы двигаетесь. На этом поле может находиться только одна фишка одновременно. Фишка защищена от сбивания, мимо фишки в тюрьме можно пройти.';
+                    
+                    // Добавляем обработчики для всплывающих подсказок
+                    jailElement.addEventListener('mouseenter', function(e) {
+                        if (selectedPiece === null) {
+                            showTooltip(e, 'Тюрьма: Попав сюда, вы «застряли». Чтобы выйти, нужно выбросить хотя бы одну 6 - это плата за выход, а вторая кость укажет, на сколько шагов вы двигаетесь. На этом поле может находиться только одна фишка одновременно. Фишка защищена от сбивания, мимо фишки в тюрьме можно пройти.');
+                        }
+                    });
+                    
+                    jailElement.addEventListener('mouseleave', function() {
+                        hideTooltip();
+                    });
+                    
+                    cell.appendChild(jailElement);
+                }
+            });
+        }
+
+        function createTeleportIcons() {
+            const board = document.getElementById('game-board');
+            if (!board) return;
+            
+            const teleportSVG = `<svg id="_Слой_2" data-name="Слой 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+                <path class="teleport-path" d="M866.57,852.97c-244.78,120.03-517.09,49.7-623.37-119.8-70.66-112.68-71.2-274.38,16.19-398.05,80.05-113.28,230.86-190.36,380.5-162.31,24.28,4.55,195.35,36.62,238.83,181.63,30.83,102.84-16.59,215.55-105.25,274.38-103.07,68.4-267.23,67.53-340.02-27.05-53.8-69.91-58.76-192.41,16.19-251.19,61.05-47.88,177.25-55.16,214.54,3.86,25.09,39.72,10.64,103.46-36.43,154.58"/>
+            </svg>`;
+
+            const teleportConfig = [
+                { coord: 'I7', color: '#ff4444', player: 1 }, // Красный
+                { coord: 'G9', color: '#FFD700', player: 2 }, // Желтый
+                { coord: 'I9', color: '#228B22', player: 3 }, // Зеленый
+                { coord: 'G7', color: '#8A2BE2', player: 4 }  // Фиолетовый
+            ];
+
+            // Отображаем телепорты только для активных игроков
+            teleportConfig.filter(config => config.player <= playerCount).forEach(config => {
+                let cell = board.querySelector(`[data-coord="${config.coord}"]`);
+                if (!cell) {
+                    cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.coord = config.coord;
+                    
+                    const pos = coordToPosition(config.coord);
+                    cell.style.position = 'absolute';
+                    cell.style.left = pos.x + 'px';
+                    cell.style.top = pos.y + 'px';
+                    cell.style.width = '35px';
+                    cell.style.height = '35px';
+                    
+                    board.appendChild(cell);
+                }
+
+                const teleportElement = document.createElement('div');
+                teleportElement.innerHTML = teleportSVG;
+                // Адаптивный размер: 80% от размера клетки (как храмы и тюрьмы)
+                const cellSize = window.innerWidth <= 768
+                    ? `calc(100vw / 15 * 0.8)`
+                    : `calc(min(90vw, 600px) * 35 / 600 * 0.8)`;
+
+                teleportElement.style.cssText = `
+                    position: absolute;
+                    width: ${cellSize};
+                    height: ${cellSize};
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    pointer-events: auto;
+                    z-index: 5;
+                `;
+                
+                // Применяем цвет к SVG
+                const pathElement = teleportElement.querySelector('.teleport-path');
+                if (pathElement) {
+                    pathElement.style.fill = 'none';
+                    pathElement.style.stroke = config.color;
+                    pathElement.style.strokeWidth = '50px';
+                    pathElement.style.strokeLinecap = 'round';
+                    pathElement.style.strokeLinejoin = 'round';
+                }
+
+                // Добавляем всплывающую подсказку
+                const tooltipText = 'Телепорт: Позволяет на следующем ходу переместиться в телепорт другого игрока: на 1 на кубике – следующий по часовой стрелке, на 3 - напротив, на 6 - следующий против часовой стрелки (ближний к дому). Доступно только из телепорта своего цвета.';
+                teleportElement.title = tooltipText;
+                
+                // Добавляем обработчики для всплывающих подсказок
+                teleportElement.addEventListener('mouseover', function(e) {
+                    if (selectedPiece === null) {
+                        showTooltip(e, tooltipText);
+                    }
+                });
+                teleportElement.addEventListener('mouseout', function() {
+                    hideTooltip();
+                });
+
+                cell.appendChild(teleportElement);
+            });
+        }
+
+        function createHomeIcons() {
+            const board = document.getElementById('game-board');
+            if (!board) return;
+
+            // SVG из файла дом.svg
+            const homeSVG = `<svg width="225" height="225" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 225 225">
+                <g>
+                    <title>Layer 1</title>
+                    <rect class="home-rect" transform="rotate(135 169.523 60.6687)" stroke="null" id="svg_9" height="154.9685" width="12" y="-16.81559" x="163.52322" fill="#000000"/>
+                    <rect class="home-rect" transform="rotate(45 62.1397 59.4509)" stroke="null" id="svg_10" height="162.27469" width="12" y="-21.68647" x="56.13972" fill="#000000"/>
+                    <rect class="home-rect" stroke="null" id="svg_11" height="133.79764" width="12" y="90.98392" x="23.0398" fill="#000000"/>
+                    <rect class="home-rect" id="svg_12" height="134" width="12" y="90.98392" x="193.94538" stroke="null" fill="#000000"/>
+                    <rect class="home-rect" id="svg_13" height="12" width="178.22264" y="213.09539" x="23.38823" stroke="null" fill="#000000"/>
+                    <rect class="home-rect" id="svg_14" height="95.29598" width="12" y="121.58432" x="47.67534" fill="#000000"/>
+                    <rect class="home-rect" stroke="null" id="svg_15" height="12" width="53.48195" y="121.78866" x="49.52235" fill="#000000"/>
+                    <rect class="home-rect" stroke="null" id="svg_17" height="56.98814" width="14.99915" y="3.67401" x="163.3073" fill="#000000"/>
+                    <rect class="home-rect" transform="rotate(135 173.161 48.9787)" id="svg_18" height="35.8423" width="9" y="31.05753" x="168.66093" stroke="null" fill="none"/>
+                    <rect class="home-rect" id="svg_19" height="50" width="12" y="111.50541" x="131.87666" stroke="null" fill="#000000"/>
+                    <rect class="home-rect" id="svg_29" height="50" width="12" y="111.01097" x="170.18025" stroke="null" fill="#000000"/>
+                    <rect class="home-rect" id="svg_30" height="12" width="50" y="110.69749" x="131.93574" stroke="null" fill="#000000"/>
+                    <rect class="home-rect" stroke="null" id="svg_31" height="12" width="50" y="149.56916" x="131.93574" fill="#000000"/>
+                    <rect class="home-rect" id="svg_32" height="94.98433" width="12" y="121.66928" x="91.18339" stroke="null" fill="#000000"/>
+                </g>
+            </svg>`;
+
+            // Конфигурация домов с координатами финишных зон и цветами, соответствующими телепортам
+            const homeConfig = [
+                { coords: ['H2', 'H3', 'H4', 'H5', 'H6'], color: '#fcacac', player: 1 },      // Красный
+                { coords: ['H14', 'H13', 'H12', 'H11', 'H10'], color: '#ffd93d', player: 2 }, // Желтый
+                { coords: ['N8', 'M8', 'L8', 'K8', 'J8'], color: '#6bcf7f', player: 3 },      // Зеленый
+                { coords: ['B8', 'C8', 'D8', 'E8', 'F8'], color: '#c4b3f5', player: 4 }       // Фиолетовый
+            ];
+
+            const playerNames = ['Красного', 'Желтого', 'Зеленого', 'Фиолетового'];
+
+            // Отображаем дома только для активных игроков
+            homeConfig.filter(config => config.player <= playerCount).forEach(config => {
+                config.coords.forEach(coord => {
+                    let cell = board.querySelector(`[data-coord="${coord}"]`);
+
+                    // Если ячейка не найдена, создаем невидимый контейнер
+                    if (!cell) {
+                        cell = document.createElement('div');
+                        cell.style.position = 'absolute';
+                        cell.style.background = 'transparent';
+                        cell.style.border = 'none';
+                        cell.style.pointerEvents = 'none';
+                        cell.dataset.coord = coord;
+
+                        const pos = coordToPosition(coord);
+                        cell.style.left = pos.x + 'px';
+                        cell.style.top = pos.y + 'px';
+                        cell.style.width = 'calc(min(90vw, 600px) * 35 / 600)';
+                        cell.style.height = 'calc(min(90vw, 600px) * 35 / 600)';
+
+                        board.appendChild(cell);
+                    }
+
+                    if (cell) {
+                        const homeElement = document.createElement('div');
+                        homeElement.className = 'home-icon';
+                        homeElement.innerHTML = homeSVG;
+
+                        // Применяем цвет игрока ко всем rect элементам SVG
+                        const rects = homeElement.querySelectorAll('.home-rect');
+                        rects.forEach(rect => {
+                            if (rect.getAttribute('fill') !== 'none') {
+                                rect.style.fill = config.color;
+                            }
+                        });
+
+                        // Добавляем подсказку
+                        const tooltipText = 'Дом — финальные клетки вашего пути. Заведите сюда все свои фишки, чтобы победить. Войти можно только в дом своего цвета.';
+                        homeElement.title = tooltipText;
+
+                        // Добавляем обработчики для всплывающих подсказок
+                        homeElement.addEventListener('mouseenter', function(e) {
+                            if (selectedPiece === null) {
+                                showTooltip(e, tooltipText);
+                            }
+                        });
+
+                        homeElement.addEventListener('mouseleave', function() {
+                            hideTooltip();
+                        });
+
+                        cell.appendChild(homeElement);
+                    }
+                });
+            });
+        }
+
+        function createPieces() {
+            const board = document.getElementById('game-board');
+            const colors = ['player1', 'player2', 'player3', 'player4'];
+            pieces = {};
+
+            for (let player = 1; player <= playerCount; player++) {
+                pieces[player] = [];
+                const startCoords = START_ZONES[player];
+
+                startCoords.forEach((coord, index) => {
+                    const piece = document.createElement('div');
+                    piece.className = `piece ${colors[player-1]}`;
+                    piece.dataset.player = player;
+                    piece.dataset.id = `p${player}_${index}`;
+
+                    const pos = coordToPosition(coord);
+                    piece.style.left = pos.x + 'px';
+                    piece.style.top = pos.y + 'px';
+                    piece.style.zIndex = '10';
+                    piece.style.position = 'absolute';
+
+                    board.appendChild(piece);
+                    pieces[player].push(piece);
+
+                    if (!gameBoard[coord]) {
+                        gameBoard[coord] = [];
+                    }
+                    gameBoard[coord].push(piece);
+                });
+            }
+        }
+
+        // ================================
+        // ФУНКЦИИ КУБИКОВ
+        // ================================
+
+        function createDiceFace(value) {
+            const faceClasses = ['', 'one', 'two', 'three', 'four', 'five', 'six'];
+            const dotCounts = [0, 1, 2, 3, 4, 5, 6];
+
+            let html = '';
+            for (let i = 0; i < dotCounts[value]; i++) {
+                html += '<div class="dice-dot"></div>';
+            }
+
+            return {
+                html: html,
+                className: faceClasses[value]
+            };
+        }
+
+        function createPlayerDice() {
+            const board = document.getElementById('game-board');
+            if (!board) return;
+
+            document.querySelectorAll('.player-dice').forEach(dice => dice.remove());
+
+            for (let player = 1; player <= playerCount; player++) {
+                const area = DICE_AREAS[player];
+                const areaPos = calculateDiceAreaPosition(area);
+
+                if (!areaPos) continue;
+
+                for (let diceIndex = 0; diceIndex < 2; diceIndex++) {
+                    const dice = document.createElement('div');
+                    dice.className = 'player-dice inactive';
+                    dice.id = `player-dice-${player}-${diceIndex + 1}`;
+                    dice.dataset.player = player;
+                    dice.dataset.diceIndex = diceIndex;
+
+                    const face = document.createElement('div');
+                    face.className = 'dice-face';
+                    face.textContent = '?';
+                    dice.appendChild(face);
+
+                    const diceSize = Math.min(90 * window.innerWidth / 100, 600) * 37.5 / 600;
+                    const spacing = 8;
+                    const offsetX = diceIndex === 0 ? -diceSize/2 - spacing/2 : diceSize/2 + spacing/2;
+
+                    dice.style.left = (areaPos.centerX + offsetX) + 'px';
+                    dice.style.top = (areaPos.centerY - diceSize/2) + 'px';
+
+                    board.appendChild(dice);
+                }
+            }
+        }
+
+        function updatePlayerDiceStates() {
+            for (let player = 1; player <= 4; player++) {
+                const dice1 = document.getElementById(`player-dice-${player}-1`);
+                const dice2 = document.getElementById(`player-dice-${player}-2`);
+
+                if (dice1 && dice2) {
+                    const isActive = player === currentPlayer;
+                    const className = isActive ? 'player-dice active' : 'player-dice inactive';
+
+                    dice1.className = className;
+                    dice2.className = className;
+
+                    const values = playerDiceValues[player];
+                    updatePlayerDiceFace(dice1, values[0]);
+                    updatePlayerDiceFace(dice2, values[1]);
+                }
+            }
+        }
+
+        function updatePlayerDiceFace(diceElement, value) {
+            const faceElement = diceElement.querySelector('.dice-face');
+            if (value === 0) {
+                faceElement.textContent = '?';
+                faceElement.className = 'dice-face';
+            } else {
+                const faceData = createDiceFace(value);
+                faceElement.className = 'dice-face ' + faceData.className;
+                faceElement.innerHTML = faceData.html;
+            }
+        }
+
+        function setDice(dice1, dice2) {
+            
+            lastDiceRoll = [dice1, dice2];
+            playerDiceValues[currentPlayer] = [dice1, dice2];
+            diceUsed = [false, false];
+            diceRollNumber++;            
+            updatePlayerDiceStates();
+
+        }
+
+        // ================================
+        // ФУНКЦИИ ПОДСКАЗОК
+        // ================================
+
+        function showMoveHints(piece) {
+            if (gamePhase === 'determining-order') {
+                return;
+            }
+
+            if (lastDiceRoll[0] === 0 && lastDiceRoll[1] === 0) {
+                return;
+            }
+
+            clearMoveHints();
+
+            const validMoves = calculateAndCacheValidMoves(piece);
+
+            validMoves.forEach(move => {
+                showSingleMoveHint(move);
+            });
+        }
+
+        function showSingleMoveHint(move) {
+            const cell = document.querySelector(`[data-coord="${move.coord}"]`);
+            if (cell) {
+                const hint = document.createElement('div');
+                hint.className = move.isTeleport ? 'move-hint teleport-hint' : 'move-hint';
+
+                hint.textContent = move.isTeleport ? `Т${move.steps}` : move.steps;
+
+                cell.appendChild(hint);
+                cell.classList.add('possible-move');
+            }
+        }
+
+        function clearMoveHints() {
+            document.querySelectorAll('.move-hint').forEach(hint => hint.remove());
+            document.querySelectorAll('.possible-move').forEach(cell => {
+                cell.classList.remove('possible-move');
+            });
+        }
+
+        // Функция для получения текущей позиции фишки
+        function getPiecePosition(piece) {
+            const startZones = Object.values(START_ZONES).flat();
+            const waitingZones = Object.values(WAITING_ZONES).flat();
+            const currentCoord = getCurrentPosition(piece);            
+
+            if (!currentCoord) {
+                return {type: 'unknown', coord: null};
+            }
+
+            if (startZones.includes(currentCoord)) {                
+                return {type: 'start', coord: currentCoord};
+            }
+
+            if (waitingZones.includes(currentCoord)) {
+                return {type: 'waiting', coord: currentCoord};
+            }
+
+            return {type: 'board', coord: currentCoord};
+        }
+
+        // Функция для вычисления возможных ходов фишки
+        function calculatePossibleMoves(piece, steps = 12, dice1 = 0, dice2 = 0) {
+            const playerNum = parseInt(piece.dataset.player);
+            const position = getPiecePosition(piece);
+            const path = PLAYER_PATHS[playerNum];
+            const possibleMoves = [];
+
+            if (position.type === 'start') {
+                // Фишка в стартовой зоне - нужна 1 для выхода
+                const waitingZones = WAITING_ZONES[playerNum];
+                const hasOne = (dice1 === 1) || (dice2 === 1);
+
+                if (hasOne) {
+                    // Простые ходы на 1 во все доступные WAITING_ZONES
+                    waitingZones.forEach(coord => {
+                        possibleMoves.push({
+                            coord: coord,
+                            steps: 1
+                        });
+                    });
+
+                    // Комбо-ходы: если есть единица, можем использовать второй кубик для движения
+                    const otherDiceValues = [];
+                    if (dice1 === 1 && dice2 >= 1) otherDiceValues.push(dice2);
+                    if (dice2 === 1 && dice1 >= 1 && dice1 !== dice2) otherDiceValues.push(dice1);
+
+                    otherDiceValues.forEach(diceValue => {
+                        const entryCell = ENTRY_CELLS[playerNum];
+                        const entryIndex = path.indexOf(entryCell);
+
+                        if (entryIndex >= 0) {
+                            if (diceValue === 1) {
+                                // Специальный случай для 1:1 - выход прямо на входную клетку
+                                possibleMoves.push({
+                                    coord: entryCell,
+                                    steps: 2
+                                });
+                            } else {
+                                // Обычный случай: 1 для выхода + остаток для движения
+                                const remainingSteps = diceValue - 1;
+                                if (remainingSteps > 0) {
+                                    const targetIndex = entryIndex + remainingSteps;
+                                    if (targetIndex < path.length) {
+                                        possibleMoves.push({
+                                            coord: path[targetIndex],
+                                            steps: 1 + diceValue
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } else if (position.type === 'waiting') {
+                // Фишка в зоне ожидания - может выйти на стартовое поле
+                const entryCell = ENTRY_CELLS[playerNum];
+                const entryIndex = path.indexOf(entryCell);
+
+                for (let i = 1; i <= Math.min(steps, 12); i++) {
+                    const targetIndex = entryIndex + i - 1;
+                    if (targetIndex >= 0 && targetIndex < path.length) {
+                        possibleMoves.push({
+                            coord: path[targetIndex],
+                            steps: i
+                        });
+                    }
+                }
+            } else if (position.type === 'board') {
+                // Фишка уже на поле
+                const currentIndex = path.indexOf(position.coord);
+                if (currentIndex >= 0) {
+                    for (let i = 1; i <= Math.min(steps, 12); i++) {
+                        const targetIndex = currentIndex + i;
+                        if (targetIndex < path.length) {
+                            possibleMoves.push({
+                                coord: path[targetIndex],
+                                steps: i
+                            });
+                        }
+                    }
+                }
+            }
+
+            return possibleMoves;
+        }
+
+        function calculateAndCacheValidMoves(piece) {
+            // Получаем значения кубиков с учетом использованных
+            const dice1 = diceUsed[0] ? 0 : lastDiceRoll[0];
+            const dice2 = diceUsed[1] ? 0 : lastDiceRoll[1];
+
+            if (dice1 === 0 && dice2 === 0) {
+                return [];
+            }
+
+            // Рассчитываем все возможные ходы для фишки с учетом ИСПОЛЬЗОВАННЫХ кубиков
+            // Передаем отфильтрованные значения, чтобы calculatePossibleMoves правильно
+            // определила доступность выхода из стартовой зоны (нужна единица!)
+            const allPossibleMoves = calculatePossibleMoves(piece, 12, dice1, dice2);
+
+            // Фильтруем по доступным значениям неиспользованных кубиков
+            const availableMoves = new Set();
+
+            // Добавляем только неиспользованные кубики
+            if (!diceUsed[0] && dice1 > 0) availableMoves.add(dice1);
+            if (!diceUsed[1] && dice2 > 0) availableMoves.add(dice2);
+
+            // Сумма доступна только если оба кубика не использованы
+            if (!diceUsed[0] && !diceUsed[1] && dice1 > 0 && dice2 > 0) {
+                availableMoves.add(dice1 + dice2);
+            }
+
+            const filteredMoves = allPossibleMoves.filter(move =>
+                availableMoves.has(move.steps)
+            );
+
+            return filteredMoves;
+        }
+
+        // Функция для выделения фишки
+        function selectPiece(piece) {
+            // Убрать выделение с предыдущей фишки
+            if (selectedPiece) {
+                selectedPiece.classList.remove('selected');
+            }
+
+            // Выделить новую фишку
+            selectedPiece = piece;
+            if (piece) {
+                piece.classList.add('selected');
+            }
+        }
+
+        // Функция для обновления выбранной фишки с показом подсказок
+        function updateSelectedPiece(piece) {
+            selectPiece(piece);
+
+            if (piece) {                
+                // Вычисляем и показываем возможные ходы
+                const validMoves = calculateAndCacheValidMoves(piece);
+                clearMoveHints();
+                validMoves.forEach(move => {
+                    showSingleMoveHint(move);
+                });
+            } else {
+                // Очищаем подсказки при снятии выделения
+                clearMoveHints();
+            }
+        }
+
+        // Упрощенная функция перемещения фишки для онбординга
+        function performMove(piece, targetCoord, skipValidation = false) {
+            if (!piece || !targetCoord) return;
+
+            const currentPos = getCurrentPosition(piece);
+
+            let stepsUsed = 0;
+
+            if (!skipValidation) {
+                // Определяем количество шагов
+                const validMoves = calculateAndCacheValidMoves(piece);
+
+                const targetMove = validMoves.find(move => move.coord === targetCoord);
+
+                if (!targetMove) {                    
+                    return;
+                }                
+
+                stepsUsed = targetMove.steps;
+            } 
+            const dice1 = lastDiceRoll[0];
+            const dice2 = lastDiceRoll[1];
+
+            // Перемещаем фишку
+            movePiece(piece, targetCoord);
+
+            // Отмечаем использованные кубики
+            // Определяем, какой кубик использовать в зависимости от хода
+            if (stepsUsed === dice1 + dice2 && !diceUsed[0] && !diceUsed[1]) {
+                // Использованы оба кубика
+                diceUsed[0] = true;
+                diceUsed[1] = true;
+                
+            } else if (stepsUsed === dice1 && !diceUsed[0]) {
+                // Использован первый кубик
+                diceUsed[0] = true;                
+            } else if (stepsUsed === dice2 && !diceUsed[1]) {
+                // Использован второй кубик
+                diceUsed[1] = true;
+            } else if (stepsUsed === dice1 && !diceUsed[1] && dice1 === dice2) {
+                // Для дублей: если первый уже использован, используем второй
+                diceUsed[1] = true;
+            }
+
+            // Снимаем выделение после хода (как в index.html)
+            // Это позволяет игроку выбрать другую фишку или ту же для следующего хода
+            updateSelectedPiece(null);
+
+            // Проверка currentTutorialStep удалена - логика теперь в runTutorial()
+        }
+
+        // Функция startYellowPlayerTurn удалена - логика перенесена в runTutorial()
+
+        // ================================
+        // ФУНКЦИИ СООБЩЕНИЙ
+        // ================================
+
+        function updateGameMessage(message) {
+            gameMessages.push(message);
+
+            if (gameMessages.length > 7) {
+                gameMessages = gameMessages.slice(-7);
+            }
+
+            // Преобразуем массив сообщений в HTML с разделителями
+            const displayMessage = [...gameMessages].reverse()
+                .map(msg => `<div>${msg}</div>`)
+                .join('<div style="text-align: center; margin: 10px 0; color: rgba(255,255,255,0.3);">───────────────</div>');
+
+            const messageElement = document.getElementById('game-message');
+            if (messageElement) {
+                messageElement.innerHTML = displayMessage;  // ← Изменено с textContent на innerHTML
+            }
+        }
+
+        function showTooltip(event, text) {
+            hideTooltip();
+
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = text;
+
+            document.body.appendChild(tooltip);
+
+            const rect = event.target.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+
+            let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+            let top = rect.top - tooltipRect.height - 10;
+
+            if (left < 0) left = 10;
+            if (left + tooltipRect.width > window.innerWidth) {
+                left = window.innerWidth - tooltipRect.width - 10;
+            }
+            if (top < 0) top = rect.bottom + 10;
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.classList.add('show');
+
+            currentTooltip = tooltip;
+        }
+
+        function hideTooltip() {
+            if (currentTooltip) {
+                currentTooltip.remove();
+                currentTooltip = null;
+            }
+        }
+
+        // ================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ================================
+
+        window.addEventListener('DOMContentLoaded', () => {
+            createBoard();
+            createPieces();
+            createPlayerDice();
+            updatePlayerDiceStates();
+
+            // Инициализация онбординга
+            initTutorial();
+
+            // Обработчик кнопки удален - управление через runTutorial()
+        });
+
+        // ================================
+        // ФУНКЦИИ ПОДСВЕТКИ ДЛЯ ОНБОРДИНГА
+        // ================================
+
+        // Подсветить один элемент или зону элементов
+        function highlightElement(selector) {
+            const highlight = document.getElementById('tutorial-highlight');
+            const elements = document.querySelectorAll(selector);
+
+            if (elements.length === 0) {
+                highlight.style.display = 'none';
+                return;
+            }
+
+            // Для одного элемента - обычная подсветка
+            if (elements.length === 1) {
+                const element = elements[0];
+                const rect = element.getBoundingClientRect();
+                highlight.style.display = 'block';
+                highlight.style.left = (rect.left - 10) + 'px';
+                highlight.style.top = (rect.top - 10) + 'px';
+                highlight.style.width = (rect.width + 20) + 'px';
+                highlight.style.height = (rect.height + 20) + 'px';
+            } else {
+                // Для нескольких элементов - объединяющая зона
+                highlightZone(selector);
+            }
+        }
+
+        // Подсветить зону, охватывающую несколько элементов
+        // Принимает строку или массив строк
+        function highlightZone(selector) {
+            const highlight = document.getElementById('tutorial-highlight');
+
+            // Если передан массив - создать рамку для каждой зоны
+            if (Array.isArray(selector)) {
+                highlight.style.display = 'none';
+
+                // Цикл по каждой зоне
+                selector.forEach(zoneSelector => {
+                    const elements = document.querySelectorAll(zoneSelector);
+                    if (elements.length === 0) return;
+
+                    // Вычислить охватывающий прямоугольник для этой зоны
+                    let minLeft = Infinity;
+                    let minTop = Infinity;
+                    let maxRight = -Infinity;
+                    let maxBottom = -Infinity;
+
+                    elements.forEach(element => {
+                        const rect = element.getBoundingClientRect();
+                        minLeft = Math.min(minLeft, rect.left);
+                        minTop = Math.min(minTop, rect.top);
+                        maxRight = Math.max(maxRight, rect.right);
+                        maxBottom = Math.max(maxBottom, rect.bottom);
+                    });
+
+                    // Создать отдельную рамку для этой зоны
+                    createHighlightElement({
+                        left: minLeft,
+                        top: minTop,
+                        width: maxRight - minLeft,
+                        height: maxBottom - minTop
+                    });
+                });
+                return;
+            }
+
+            // Если передана строка - одна рамка для всех элементов
+            const elements = document.querySelectorAll(selector);
+
+            if (elements.length === 0) {
+                highlight.style.display = 'none';
+                return;
+            }
+
+            // Вычислить охватывающий прямоугольник для всех элементов
+            let minLeft = Infinity;
+            let minTop = Infinity;
+            let maxRight = -Infinity;
+            let maxBottom = -Infinity;
+
+            elements.forEach(element => {
+                const rect = element.getBoundingClientRect();
+                minLeft = Math.min(minLeft, rect.left);
+                minTop = Math.min(minTop, rect.top);
+                maxRight = Math.max(maxRight, rect.right);
+                maxBottom = Math.max(maxBottom, rect.bottom);
+            });
+
+            // Применить объединяющую рамку
+            highlight.style.display = 'block';
+            highlight.style.left = (minLeft - 10) + 'px';
+            highlight.style.top = (minTop - 10) + 'px';
+            highlight.style.width = (maxRight - minLeft + 20) + 'px';
+            highlight.style.height = (maxBottom - minTop + 20) + 'px';
+        }
+		
+
+        // Скрыть подсветку
+        function clearHighlight() {
+            const highlight = document.getElementById('tutorial-highlight');
+            highlight.style.display = 'none';
+
+            // Удалить все дополнительные подсветки
+            const multiHighlights = document.querySelectorAll('.tutorial-highlight-multi');
+            multiHighlights.forEach(h => h.remove());
+        }
+
+        // ================================
+        // ФУНКЦИИ РАБОТЫ С ФИШКАМИ
+        // ================================
+
+        // Получить текущую позицию фишки
+        function getCurrentPosition(piece) {
+            const rect = piece.getBoundingClientRect();
+            const boardRect = document.getElementById('game-board').getBoundingClientRect();
+            const x = rect.left - boardRect.left + 17;
+            const y = rect.top - boardRect.top + 17;
+            return positionToCoord(x, y);
+        }
+
+        // Удалить фишку из клетки в gameBoard
+        function removePieceFromCell(piece, coord) {
+            if (gameBoard[coord]) {
+                if (Array.isArray(gameBoard[coord])) {
+                    const index = gameBoard[coord].indexOf(piece);
+                    if (index > -1) {
+                        gameBoard[coord].splice(index, 1);
+                    }
+                } else if (gameBoard[coord] === piece) {
+                    gameBoard[coord] = null;
+                }
+            }
+        }
+
+        // Добавить фишку в клетку gameBoard
+        function addPieceToCell(piece, coord) {
+            const isWaitingZone = Object.values(WAITING_ZONES).flat().includes(coord);
+            const isStartZone = Object.values(START_ZONES).flat().includes(coord);
+
+            if (isWaitingZone || isStartZone) {
+                if (!gameBoard[coord]) {
+                    gameBoard[coord] = [];
+                }
+                gameBoard[coord].push(piece);
+            } else {
+                gameBoard[coord] = piece;
+            }
+        }
+
+        // Вычислить позицию фишки с учетом офсетов для зон
+        function calculatePiecePosition(coord) {
+            const basePos = coordToPosition(coord);
+            const isWaitingZone = Object.values(WAITING_ZONES).flat().includes(coord);
+            const isStartZone = Object.values(START_ZONES).flat().includes(coord);
+
+            if (isWaitingZone || isStartZone) {
+                const piecesInCell = gameBoard[coord] ? gameBoard[coord].length : 0;
+                const offset = piecesInCell * 3;
+                return {
+                    x: basePos.x + offset,
+                    y: basePos.y + offset
+                };
+            }
+
+            return basePos;
+        }
+
+        // Переместить фишку на новую координату
+        function movePiece(piece, targetCoord) {
+            const currentPos = getCurrentPosition(piece);
+            if (currentPos) {
+                removePieceFromCell(piece, currentPos);
+            }
+
+            // Позиционирование фишки в зависимости от типа зоны
+            const pos = calculatePiecePosition(targetCoord);
+            piece.style.left = pos.x + 'px';
+            piece.style.top = pos.y + 'px';
+
+            addPieceToCell(piece, targetCoord);
+
+            // Обновляем позицию в массиве pieces
+            const piecePlayer = parseInt(piece.dataset.player);
+            if (pieces[piecePlayer]) {
+                const pieceData = pieces[piecePlayer].find(p => p.element === piece);
+                if (pieceData) {
+                    pieceData.position = targetCoord;
+                }
+            }
+        }
+
+        // Анимировать движение фишки вдоль пути
+        function animatePieceAlongPath(piece, path, delay = 50) {
+            let index = 0;
+
+            function moveToNext() {
+                if (index >= path.length) {
+                    return; // Конец пути
+                }
+
+                const coord = path[index];
+                movePiece(piece, coord);
+
+                index++;
+                setTimeout(moveToNext, delay);
+            }
+
+            moveToNext();
+        }
+
+        // Создать дополнительный элемент подсветки
+        function createHighlightElement(rect) {
+            const highlight = document.createElement('div');
+            highlight.className = 'tutorial-highlight tutorial-highlight-multi';
+            highlight.style.position = 'fixed';
+            highlight.style.border = '4px solid #FFD700';
+            highlight.style.borderRadius = '15px';
+            highlight.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.8), inset 0 0 30px rgba(255, 215, 0, 0.3)';
+            highlight.style.zIndex = '9001';
+            highlight.style.pointerEvents = 'none';
+            highlight.style.animation = 'tutorialPulse 2s ease-in-out infinite';
+            highlight.style.left = (rect.left - 10) + 'px';
+            highlight.style.top = (rect.top - 10) + 'px';
+            highlight.style.width = (rect.width + 20) + 'px';
+            highlight.style.height = (rect.height + 20) + 'px';
+            document.body.appendChild(highlight);
+        }
+
+        // Выделить несколько элементов отдельными рамками
+        function highlightMultiple(selectors) {
+            const highlight = document.getElementById('tutorial-highlight');
+            highlight.style.display = 'none';
+
+            selectors.forEach(selector => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    const rect = element.getBoundingClientRect();
+                    createHighlightElement(rect);
+                }
+            });
+        }
+
+        // ================================
+        // НОВЫЕ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ПРОЦЕДУРНОГО ОНБОРДИНГА
+        // ================================
+
+        // Простая задержка
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Показать шаг обучения и дождаться нажатия кнопки
+        function showStep(config) {
+            return new Promise((resolve) => {
+                const { stepNumber, totalSteps, message, buttonText, highlight, highlightType, onShow } = config;
+
+                // Обновить счетчик шагов
+                const counter = document.getElementById('tutorial-step-counter');
+                if (stepNumber === 0) {
+                    counter.innerHTML = '<span class="step-number">Готовы начать?</span>';
+                } else {
+                    counter.innerHTML = `Шаг <span class="step-number">${stepNumber}</span> из ${totalSteps}`;
+                }
+
+                // Обновить сообщение
+                updateGameMessage(message);
+
+                // Обновить текст кнопки
+                const btn = document.getElementById('random-move-btn');
+                btn.textContent = buttonText || 'Продолжить';
+                btn.disabled = false;
+                btn.classList.add('tutorial-button-active');
+
+                // Обновить подсветку
+                clearHighlight();
+                if (highlight) {
+                    if (highlightType === 'zone') {
+                        highlightZone(highlight);
+                    } else if (highlightType === 'multiple') {
+                        highlightMultiple(highlight);
+                    } else {
+                        highlightElement(highlight);
+                    }
+                }
+
+                // Вызвать дополнительную логику, если есть
+                if (onShow && typeof onShow === 'function') {
+                    onShow();
+                }
+
+                // Установить обработчик на кнопку (однократный)
+                const clickHandler = () => {
+                    btn.removeEventListener('click', clickHandler);
+                    btn.classList.remove('tutorial-button-active');
+                    resolve();
+                };
+                btn.addEventListener('click', clickHandler);
+            });
+        }
+
+        // Анимация броска кубиков
+        async function animateDiceRoll(player, values) {
+            const dice1 = document.getElementById(`player-dice-${player}-1`);
+            const dice2 = document.getElementById(`player-dice-${player}-2`);
+
+            dice1.classList.add('rolling');
+            dice2.classList.add('rolling');
+
+            const animationInterval = setInterval(() => {
+                const randomValue1 = Math.floor(Math.random() * 6) + 1;
+                const randomValue2 = Math.floor(Math.random() * 6) + 1;
+                updatePlayerDiceFace(dice1, randomValue1);
+                updatePlayerDiceFace(dice2, randomValue2);
+            }, 100);
+
+            await delay(1500);
+
+            clearInterval(animationInterval);
+
+            updatePlayerDiceFace(dice1, values[0]);
+            updatePlayerDiceFace(dice2, values[1]);
+
+            dice1.classList.remove('rolling');
+            dice2.classList.remove('rolling');
+
+            lastDiceRoll = values;
+            diceUsed = [false, false];
+        }
+
+        // Выбрать и переместить фишку программно
+        async function selectAndMovePiece(pieceId, targetCoord) {
+            const piece = document.querySelector(`.piece[data-id="${pieceId}"]`);
+            if (piece) {
+                updateSelectedPiece(piece);
+                await delay(1000);
+                cachedValidMoves = calculateAndCacheValidMoves(piece);
+                performMove(piece, targetCoord);
+                await delay(1000);
+            } 
+        }
+
+        // ================================
+        // ГЛАВНАЯ ФУНКЦИЯ ОБУЧЕНИЯ (ПРОЦЕДУРНЫЙ СЦЕНАРИЙ)
+        // ================================
+
+        async function runTutorial() {
+            try {
+                
+
+                // Шаг 0: Приветствие
+                await showStep({
+                    stepNumber: 0,
+                    totalSteps: 15,
+                    message: 'Добро пожаловать в обучение игре Чаупар! Нажмите кнопку, чтобы начать пошаговое изучение правил игры.',
+                    buttonText: 'Начать обучение',
+                    highlight: null
+                });
+
+                // Шаг 1: Основные зоны игры
+                await showStep({
+                    stepNumber: 1,
+                    totalSteps: 15,
+                    message: 'Сейчас первые фишки обоих игроков проходят свой путь от Стартовой зоны к Дому по игровому полю. Цель — довести <u>все</u> свои фишки до своего дома раньше соперников.',
+                    buttonText: 'Понятно',
+                    highlight: [
+                        '#game-board',
+                        '[data-coord="M1"], [data-coord="O2"]',
+                        '[data-coord="H1"], [data-coord="H6"]'
+                    ],
+                    highlightType: 'zone',
+                    onShow: () => {
+                        setTimeout(() => {
+                            const redPiece = document.querySelector('.piece.player1[data-id="p1_0"]');
+                            if (redPiece) {
+                                const tutorialPath = ['M1', 'K1', ...PLAYER_PATHS[1]];
+                                animatePieceAlongPath(redPiece, tutorialPath, 100);
+                            }
+                        }, 500);
+
+                        setTimeout(() => {
+                            const yelPiece = document.querySelector('.piece.player2[data-id="p2_0"]');
+                            if (yelPiece) {
+                                const tutorialPath = ['E14', ...PLAYER_PATHS[2]];
+                                animatePieceAlongPath(yelPiece, tutorialPath, 100);
+                            }
+                        }, 1000);
+                    }
+                });
+
+                // Шаг 2: Кубики - ожидание клика пользователя
+                const dice1 = document.getElementById('player-dice-1-1');
+                const dice2 = document.getElementById('player-dice-1-2');
+
+                await showStep({
+                    stepNumber: 2,
+                    totalSteps: 15,
+                    message: 'Нажми, чтобы бросить кости! Выпавшие числа показывают, насколько клеток ты можешь продвинуть фишку. Если выпали одинаковые значения 1 и 1 или 6 и 6 — получаешь дополнительный ход!',
+                    buttonText: 'Продолжить',
+                    highlight: '[id^="player-dice-1-"]',
+                    highlightType: 'element',
+                    onShow: () => {
+                        const btn = document.getElementById('random-move-btn');
+                        btn.disabled = true;
+                        btn.classList.remove('tutorial-button-active');
+
+                        const diceClickHandler = async () => {
+                            await animateDiceRoll(1, [3, 1]);
+
+                            dice1.removeEventListener('click', diceClickHandler);
+                            dice2.removeEventListener('click', diceClickHandler);
+                            //dice1.classList.remove('active');
+                            //dice2.classList.remove('active');
+							
+
+                            await delay(500);
+							
+                            btn.disabled = false;
+							btn.click();
+                        };
+
+                        dice1.addEventListener('click', diceClickHandler);
+                        dice2.addEventListener('click', diceClickHandler);
+                        dice1.classList.add('active');
+                        dice2.classList.add('active');
+                    }
+                });
+
+                // Шаг 3: Стартовая зона - красный игрок делает ход
+                await showStep({
+                    stepNumber: 3,
+                    totalSteps: 15,
+                    message: 'Стартовая зона – здесь начинают все фишки. Чтобы вывести фишку на поле, нужно выбросить хотя бы одну единицу: на единицу фишка выходит в зону ожидания, а на второе значение может сделать ход по полю. Выберите любую фишку и сделайте ход на 1 – в зону ожидания, а затем по игровому полю на 3.',
+                    buttonText: 'Далее',
+                    highlight: '[data-coord="M1"], [data-coord="O2"]',
+                    highlightType: 'zone',
+                    onShow: () => {
+                        const btn = document.getElementById('random-move-btn');
+                        btn.disabled = true;
+                        btn.classList.remove('tutorial-button-active');
+
+                        const redPiecesInStart = document.querySelectorAll('.piece.player1');
+
+                        const pieceClickHandler = (event) => {
+                            const piece = event.currentTarget;
+                            if (selectedPiece === piece) {                         
+								updateSelectedPiece(null);
+                            } else {
+                                highlightZone ('[data-coord="K1"], [data-coord="K4"]');
+								updateSelectedPiece(piece);
+                            }
+                        };
+
+                        const cellClickHandler = (event) => {
+                            const cell = event.currentTarget;
+                            const coord = cell.dataset.coord;
+                            if (selectedPiece && cell.classList.contains('possible-move')) {
+                                performMove(selectedPiece, coord);
+
+                                const allDiceUsed = diceUsed[0] && diceUsed[1];
+                                if (allDiceUsed) {
+                                    redPiecesInStart.forEach(p => {
+                                        p.removeEventListener('click', pieceClickHandler);
+                                        p.style.cursor = '';
+                                    });
+                                    document.querySelectorAll('.cell').forEach(c => {
+                                        c.removeEventListener('click', cellClickHandler);
+                                    });
+                                    
+									setTimeout(() => {
+									btn.disabled = false;
+                                    btn.classList.add('tutorial-button-active');
+                                    btn.click();
+									btn.disabled = true;
+									}, 1000);
+									
+                                }
+                            }
+                        };
+
+                        redPiecesInStart.forEach(piece => {
+                            piece.addEventListener('click', pieceClickHandler);
+                            piece.style.cursor = 'pointer';
+                        });
+                        document.querySelectorAll('.cell').forEach(cell => {
+                            cell.addEventListener('click', cellClickHandler);
+                        });
+                    }
+                });
+
+                // Шаг 3b: Ход желтого игрока (автоматически)
+                
+				clearHighlight ();
+				updateGameMessage('Теперь ход желтого игрока.');
+                await delay(1000);
+
+                currentPlayer = 2;
+                updatePlayerDiceStates();
+
+                await animateDiceRoll(2, [1, 6]);
+                await delay(500);
+
+                await selectAndMovePiece('p2_5', 'E15');
+                await selectAndMovePiece('p2_5', 'G10');
+				
+                // Передаем ход красному игроку
+                currentPlayer = 1;
+                updatePlayerDiceStates();                
+
+                // Новый шаг с броском 2:2
+                await showStep({
+                    stepNumber: 4,
+                    totalSteps: 15,
+                    message: 'Ваша очередь, бросайте кубики!',
+                    buttonText: 'Продолжить',
+                    highlight: '[id^="player-dice-1-"]',
+                    highlightType: 'element',
+                    onShow: () => {
+                        const btn = document.getElementById('random-move-btn');
+                        btn.disabled = true;
+                        btn.classList.remove('tutorial-button-active');
+
+                        // Получаем кубики внутри onShow
+                        const dice1 = document.getElementById('player-dice-1-1');
+                        const dice2 = document.getElementById('player-dice-1-2');
+
+                        const diceClickHandler = async () => {
+                            // Анимация броска с результатом 2:2
+                            await animateDiceRoll(1, [2, 2]);
+
+                            // Очистка обработчиков (одноразовый клик)
+                            dice1.removeEventListener('click', diceClickHandler);
+                            dice2.removeEventListener('click', diceClickHandler);
+							clearHighlight ();
+							highlightElement('[data-coord="I3"]');  // Подсвечиваем ячейку I3
+							updateGameMessage('Выпало 2:2! Так как сейчас не выпало единицы, вы можете продолжить ход только той фишкой, что уже на поле. Щелкните по фишке и передвиньте ее на 4 хода.');
+                            
+
+                            // Пауза перед переходом
+                            await delay(2000);
+
+                            // Автоматический переход к следующему шагу
+                            btn.click();
+                        };
+
+                        // Регистрация обработчиков
+                        dice1.addEventListener('click', diceClickHandler);
+                        dice2.addEventListener('click', diceClickHandler);
+                        dice1.classList.add('active');
+                        dice2.classList.add('active');
+						
+						
+                        const redPiecesInStart = document.querySelectorAll('.piece.player1');
+
+                        const pieceClickHandler = (event) => {
+                            const piece = event.currentTarget;
+                            if (selectedPiece === piece) {                              
+								updateSelectedPiece(null);
+                            } else {
+                                clearHighlight ();
+								updateSelectedPiece(piece);
+                            }
+                        };
+
+                        const cellClickHandler = (event) => {
+                            const cell = event.currentTarget;
+                            const coord = cell.dataset.coord;
+                            if (selectedPiece && cell.classList.contains('possible-move')) {
+                                performMove(selectedPiece, coord);
+
+                                const allDiceUsed = diceUsed[0] && diceUsed[1];
+                                if (allDiceUsed) {
+                                    redPiecesInStart.forEach(p => {
+                                        p.removeEventListener('click', pieceClickHandler);
+                                        p.style.cursor = '';
+                                    });
+                                    document.querySelectorAll('.cell').forEach(c => {
+                                        c.removeEventListener('click', cellClickHandler);
+                                    });
+
+                                    setTimeout(() => {
+									btn.disabled = false;
+                                    btn.classList.add('tutorial-button-active');
+                                    btn.click();
+									btn.disabled = true;
+									}, 1000);
+                                }
+                            }
+                        };
+
+                        redPiecesInStart.forEach(piece => {
+                            piece.addEventListener('click', pieceClickHandler);
+                            piece.style.cursor = 'pointer';
+                        });
+                        document.querySelectorAll('.cell').forEach(cell => {
+                            cell.addEventListener('click', cellClickHandler);
+                        });
+						
+                    }
+                });
+				//Шаг 5: Телепорт
+				await showStep({
+                    stepNumber: 5,
+                    totalSteps: 15,
+                    message: 'Сейчас фишка в телепорте — особое поле для каждого игрока. Если твоя фишка сюда попала, <u> на следующем броске кубиков </u> она может перескочить вперёд:\n• на 1 — в телепорт следующего игрока,\n• на 3 — в противоположный по диагонали,\n• на 6 — в ближний к дому. Используй телепорты, чтобы опередить соперников!',
+					buttonText: 'Понятно',
+                    highlight: '[data-coord="I7"]',  // Подсвечиваем телепорт красного
+					highlightType: 'element'
+					});
+					
+					// Шаг 5b: Ход желтого игрока (автоматически)
+					const btn = document.getElementById('random-move-btn');btn.disabled = true;
+					btn.classList.remove('tutorial-button-active');
+									
+					clearHighlight();
+					updateGameMessage('Теперь ход желтого игрока.');
+					await delay(1000);
+
+					currentPlayer = 2;
+					updatePlayerDiceStates();
+
+					await animateDiceRoll(2, [2, 5]);
+					await delay(500);
+					await selectAndMovePiece('p2_5', 'A9');
+					
+					await delay(1000);
+
+					currentPlayer = 1;
+					updatePlayerDiceStates();					
+					
+					
+				// Шаг 6: Телепортация
+                await showStep({
+                    stepNumber: 6,
+                    totalSteps: 15,
+                    message: 'Желтый игрок сделал свой ход. Бросайте кубики и посмотрим, получится ли у вас ускорить ход!',
+                    buttonText: 'Продолжить',
+                    highlight: null,
+                    onShow: () => {
+                        const btn = document.getElementById('random-move-btn');
+                        btn.disabled = true;
+                        btn.classList.remove('tutorial-button-active');
+
+                        // Получаем кубики внутри onShow
+                        const dice1 = document.getElementById('player-dice-1-1');
+                        const dice2 = document.getElementById('player-dice-1-2');
+
+                        const diceClickHandler = async () => {
+                            // Анимация броска с результатом 3:4
+                            await animateDiceRoll(1, [3, 4]);
+
+                            // Очистка обработчиков (одноразовый клик)
+                            dice1.removeEventListener('click', diceClickHandler);
+                            dice2.removeEventListener('click', diceClickHandler);
+
+							updateGameMessage('Вам повезло! На 3 вы можете перенести фишку в противоположный по диагонали телепорт, а на 4 сходить дальше. Щелкните на фишку, чтобы увидеть доступные ходы!');
+
+                            // Не переходим автоматически - ждем действий пользователя
+                            await delay(500);
+                        };
+
+                        // Регистрация обработчиков
+                        dice1.addEventListener('click', diceClickHandler);
+                        dice2.addEventListener('click', diceClickHandler);
+                        dice1.classList.add('active');
+                        dice2.classList.add('active');
+
+
+                        const redPiecesInStart = document.querySelectorAll('.piece.player1');
+
+                        const pieceClickHandler = (event) => {
+                            const piece = event.currentTarget;
+                            if (selectedPiece === piece) {
+                                updateSelectedPiece(null, true); // true = очистить хинты
+                            } else {
+                                // Выделяем фишку без показа стандартных хинтов
+                                if (selectedPiece) {
+                                    selectedPiece.classList.remove('selected');
+                                }
+                                selectedPiece = piece;
+                                piece.classList.add('selected');
+
+                                // Очищаем старые хинты
+                                clearMoveHints();
+
+                                // Показываем телепортные хинты только для фишки на I7
+                                const pieceCoord = getCurrentPosition(piece);
+                                if (pieceCoord === 'I7') {
+                                    // Хинт на G9 (телепорт на 3)
+                                    const cellG9 = document.querySelector('[data-coord="G9"]');
+                                    if (cellG9) {
+                                        const hint1 = document.createElement('div');
+                                        hint1.className = 'move-hint teleport-hint';
+                                        hint1.textContent = 'Т3';
+                                        hint1.style.cssText = `
+                                            position: absolute;
+                                            top: 50%;
+                                            left: 50%;
+                                            transform: translate(-50%, -50%);
+                                            background: rgba(138, 43, 226, 0.9);
+                                            border: 1.5px solid #8A2BE2;
+                                            border-radius: 50%;
+                                            color: #fff;
+                                            width: 22px;
+                                            height: 22px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                            box-shadow: 0 4px 8px rgba(138, 43, 226, 0.4);
+                                            z-index: 100;
+                                            pointer-events: none;
+                                        `;
+                                        cellG9.appendChild(hint1);
+                                        cellG9.classList.add('possible-move');
+                                    }
+
+                                    // Хинт на C9 (телепорт + 4 шага = 7)
+                                    const cellC9 = document.querySelector('[data-coord="C9"]');
+                                    if (cellC9) {
+                                        const hint2 = document.createElement('div');
+                                        hint2.className = 'move-hint teleport-hint';
+                                        hint2.textContent = 'Т7';
+                                        hint2.style.cssText = `
+                                            position: absolute;
+                                            top: 50%;
+                                            left: 50%;
+                                            transform: translate(-50%, -50%);
+                                            background: rgba(138, 43, 226, 0.9);
+                                            border: 1.5px solid #8A2BE2;
+                                            border-radius: 50%;
+                                            color: #fff;
+                                            width: 22px;
+                                            height: 22px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                            box-shadow: 0 4px 8px rgba(138, 43, 226, 0.4);
+                                            z-index: 100;
+                                            pointer-events: none;
+                                        `;
+                                        cellC9.appendChild(hint2);
+                                        cellC9.classList.add('possible-move');
+                                    }
+                                }
+                                // Показываем обычные хинты для фишки на G9 с кубиком 4
+                                else if (pieceCoord === 'G9' && diceUsed[0] && !diceUsed[1]) {
+                                    // Рассчитываем целевую клетку: G9 + 4 шага по пути желтого игрока
+                                    const yellowPath = PLAYER_PATHS[2]; // Желтый путь
+                                    const g9Index = yellowPath.indexOf('G9');
+                                    if (g9Index !== -1 && g9Index + 4 < yellowPath.length) {
+                                        const targetCoord = yellowPath[g9Index + 4]; // E9
+                                        const targetCell = document.querySelector(`[data-coord="${targetCoord}"]`);
+                                        if (targetCell) {
+                                            const hint = document.createElement('div');
+                                            hint.className = 'move-hint';
+                                            hint.textContent = '4';
+                                            hint.style.cssText = `
+                                                position: absolute;
+                                                top: 50%;
+                                                left: 50%;
+                                                transform: translate(-50%, -50%);
+                                                background: rgba(255, 255, 255, 0.9);
+                                                border: 1.5px solid #007bff;
+                                                border-radius: 50%;
+                                                color: #007bff;
+                                                width: 22px;
+                                                height: 22px;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                font-size: 11px;
+                                                font-weight: bold;
+                                                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                                                z-index: 100;
+                                                pointer-events: none;
+                                            `;
+                                            targetCell.appendChild(hint);
+                                            targetCell.classList.add('possible-move');
+                                        }
+                                    }
+                                }
+                            }
+                        };
+
+                        const cellClickHandler = async (event) => {
+                            const cell = event.currentTarget;
+                            const coord = cell.dataset.coord;
+
+                            if (selectedPiece && cell.classList.contains('possible-move')) {
+                                const pieceCoord = getCurrentPosition(selectedPiece);
+
+                                // Клик на G9 - телепорт на 3, остается кубик 4
+                                if (coord === 'G9' && pieceCoord === 'I7') {
+                                    // Перемещаем фишку на G9 напрямую (без валидации)
+                                    movePiece(selectedPiece, 'G9');
+
+                                    // Отмечаем использование кубика 3
+                                    diceUsed[0] = true;
+
+                                    // Очищаем хинты
+                                    clearMoveHints();
+
+                                    // Снимаем выделение с фишки
+                                    updateSelectedPiece(null, true);
+
+                                    // Показываем сообщение о возможности продолжения хода
+                                    updateGameMessage('Вы телепортировались на 3! Теперь можете выбрать эту фишку снова и сходить на 4.');
+
+                                    // Не переходим к следующему шагу - ждем второго хода
+
+                                }
+                                // Клик на C9 - телепорт на 3 + движение на 4 (сразу)
+                                else if (coord === 'C9' && pieceCoord === 'I7') {
+                                    // Перемещаем фишку сразу на C9 напрямую (без валидации)
+                                    movePiece(selectedPiece, 'C9');
+
+                                    // Отмечаем использование обоих кубиков
+                                    diceUsed[0] = true;
+                                    diceUsed[1] = true;
+
+                                    // Очищаем хинты
+                                    clearMoveHints();
+
+                                    // Снимаем выделение с фишки
+                                    updateSelectedPiece(null, true);
+
+                                    updateGameMessage('Отличный ход! Вы телепортировались и прошли дальше на 4 клетки.');
+
+                                    // Очищаем обработчики и переходим к следующему шагу
+                                    redPiecesInStart.forEach(p => {
+                                        p.removeEventListener('click', pieceClickHandler);
+                                        p.style.cursor = '';
+                                    });
+                                    document.querySelectorAll('.cell').forEach(c => {
+                                        c.removeEventListener('click', cellClickHandler);
+                                    });
+
+                                    setTimeout(() => {
+									btn.disabled = false;
+                                    btn.classList.add('tutorial-button-active');
+                                    btn.click();
+									btn.disabled = true;
+									}, 1000);
+                                }
+                                // Обычный ход с G9 на 4 (после первого телепорта)
+                                else if (pieceCoord === 'G9' && !diceUsed[1]) {
+                                    // Перемещаем фишку напрямую (без валидации)
+                                    movePiece(selectedPiece, coord);
+
+                                    // Отмечаем использование второго кубика
+                                    diceUsed[1] = true;
+
+                                    clearMoveHints();
+                                    updateSelectedPiece(null, true);
+
+                                    updateGameMessage('Отлично! Вы завершили ход.');
+
+                                    // Очищаем обработчики и переходим к следующему шагу
+                                    redPiecesInStart.forEach(p => {
+                                        p.removeEventListener('click', pieceClickHandler);
+                                        p.style.cursor = '';
+                                    });
+                                    document.querySelectorAll('.cell').forEach(c => {
+                                        c.removeEventListener('click', cellClickHandler);
+                                    });
+
+                                    await delay(1500);
+                                    btn.disabled = false;
+                                    btn.classList.add('tutorial-button-active');
+                                    setTimeout(() => btn.click(), 1000);
+                                }
+                            }
+                        };
+
+                        redPiecesInStart.forEach(piece => {
+                            piece.addEventListener('click', pieceClickHandler);
+                            piece.style.cursor = 'pointer';
+                        });
+                        document.querySelectorAll('.cell').forEach(cell => {
+                            cell.addEventListener('click', cellClickHandler);
+                        });
+						
+                    }
+                });
+					//Ход желтого на 1 и 2
+					clearHighlight();
+					updateGameMessage('Теперь ход желтого игрока.');
+					await delay(1000);
+
+					currentPlayer = 2;
+					updatePlayerDiceStates();
+
+					await animateDiceRoll(2, [1, 2]);
+					await delay(500);
+					await selectAndMovePiece('p2_5', 'A7');
+					await selectAndMovePiece('p2_4', 'E14');
+					
+					await delay(1000);
+
+				// Передаем ход красному игроку
+                currentPlayer = 1;
+                updatePlayerDiceStates();                
+
+                // Новый шаг 7 с броском 2:3
+                await showStep({
+                    stepNumber: 7,
+                    totalSteps: 15,
+                    message: 'Желтый игрок на единицу вывел еще одну фишку в игру, а вторую подвинул дальше по ходу. Ваша очередь, бросайте кубики!',
+                    buttonText: 'Продолжить',
+                    highlight: null,
+                    onShow: () => {
+                        const btn = document.getElementById('random-move-btn');
+                        btn.disabled = true;
+                        btn.classList.remove('tutorial-button-active');
+
+                        // Получаем кубики внутри onShow
+                        const dice1 = document.getElementById('player-dice-1-1');
+                        const dice2 = document.getElementById('player-dice-1-2');
+
+                        const diceClickHandler = async () => {
+                            // Анимация броска с результатом 4:3
+                            await animateDiceRoll(1, [4, 3]);
+
+                            // Очистка обработчиков (одноразовый клик)
+                            dice1.removeEventListener('click', diceClickHandler);
+                            dice2.removeEventListener('click', diceClickHandler);
+
+							updateGameMessage('Если твоя фишка догоняет чужую ровно по выпавшему значению — ты можешь её съесть! Съеденная фишка возвращается на стартовую позицию. Съешь желтую фишку и продолжай ход.');
+
+                            // Теперь ищем желтую фишку и вешаем обработчик
+                            await delay(500);
+
+                            // Ищем желтую фишку через gameBoard
+                            let yellowPieceOnA7 = null;
+                            if (gameBoard['A7']) {
+                                const pieceOnA7 = Array.isArray(gameBoard['A7']) ? gameBoard['A7'][0] : gameBoard['A7'];
+                                if (pieceOnA7 && parseInt(pieceOnA7.dataset.player) === 2) {
+                                    yellowPieceOnA7 = pieceOnA7;
+                                }
+                            }
+                            
+
+                            if (yellowPieceOnA7) {
+                                yellowPieceOnA7.addEventListener('click', captureHandler);
+                                yellowPieceOnA7.style.cursor = 'pointer';
+                            }
+                        };
+
+                        // Регистрация обработчиков
+                        dice1.addEventListener('click', diceClickHandler);
+                        dice2.addEventListener('click', diceClickHandler);
+                        dice1.classList.add('active');
+                        dice2.classList.add('active');
+
+
+                        const redPiecesInStart = document.querySelectorAll('.piece.player1');
+
+                        const pieceClickHandler = (event) => {
+                            const piece = event.currentTarget;
+                            if (selectedPiece === piece) {
+                                updateSelectedPiece(null, true); // true = очистить хинты
+                            } else {
+                                // Выделяем фишку без показа стандартных хинтов
+                                if (selectedPiece) {
+                                    selectedPiece.classList.remove('selected');
+                                }
+                                selectedPiece = piece;
+                                piece.classList.add('selected');
+
+                                // Очищаем старые хинты
+                                clearMoveHints();
+
+                                // Показываем хинты в зависимости от позиции фишки
+                                const pieceCoord = getCurrentPosition(piece);
+
+                                // Если фишка на C9 - показываем хинт на A7 (4 шага для захвата)
+                                if (pieceCoord === 'C9' && !diceUsed[0]) {
+                                    const cellA7 = document.querySelector('[data-coord="A7"]');
+                                    if (cellA7) {
+                                        const hint = document.createElement('div');
+                                        hint.className = 'move-hint';
+                                        hint.textContent = '4';
+                                        hint.style.cssText = `
+                                            position: absolute;
+                                            top: 50%;
+                                            left: 50%;
+                                            transform: translate(-50%, -50%);
+                                            background: rgba(255, 255, 255, 0.9);
+                                            border: 1.5px solid #007bff;
+                                            border-radius: 50%;
+                                            color: #007bff;
+                                            width: 22px;
+                                            height: 22px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                                            z-index: 100;
+                                            pointer-events: none;
+                                        `;
+                                        cellA7.appendChild(hint);
+                                        cellA7.classList.add('possible-move');
+                                    }
+                                }
+                                // Если фишка на A7 (после захвата) - показываем хинт на D7 (3 шага)
+                                else if (pieceCoord === 'A7' && diceUsed[0] && !diceUsed[1]) {
+                                    const cellD7 = document.querySelector('[data-coord="D7"]');
+                                    if (cellD7) {
+                                        const hint = document.createElement('div');
+                                        hint.className = 'move-hint';
+                                        hint.textContent = '3';
+                                        hint.style.cssText = `
+                                            position: absolute;
+                                            top: 50%;
+                                            left: 50%;
+                                            transform: translate(-50%, -50%);
+                                            background: rgba(255, 255, 255, 0.9);
+                                            border: 1.5px solid #007bff;
+                                            border-radius: 50%;
+                                            color: #007bff;
+                                            width: 22px;
+                                            height: 22px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                                            z-index: 100;
+                                            pointer-events: none;
+                                        `;
+                                        cellD7.appendChild(hint);
+                                        cellD7.classList.add('possible-move');
+                                    }
+                                }
+                            }
+                        };
+
+                        const cellClickHandler = async (event) => {
+                            const cell = event.currentTarget;
+                            const coord = cell.dataset.coord;
+
+                            if (selectedPiece && cell.classList.contains('possible-move')) {
+                                const pieceCoord = getCurrentPosition(selectedPiece);
+
+                                
+                                // Клик на D7 - продолжение хода на 3
+                                if (coord === 'D7' && pieceCoord === 'A7') {
+                                    // Перемещаем фишку на D7
+                                    movePiece(selectedPiece, 'D7');
+
+                                    // Отмечаем использование кубика 3
+                                    diceUsed[1] = true;
+
+                                    clearMoveHints();
+                                    updateSelectedPiece(null, true);
+
+                                    // updateGameMessage('Отлично! Вы завершили ход после захвата.');
+
+                                    // Очищаем обработчики и переходим к следующему шагу
+                                    redPiecesInStart.forEach(p => {
+                                        p.removeEventListener('click', pieceClickHandler);
+                                        p.style.cursor = '';
+                                    });
+                                    document.querySelectorAll('.cell').forEach(c => {
+                                        c.removeEventListener('click', cellClickHandler);
+                                    });
+
+                                    setTimeout(() => {
+									btn.disabled = false;
+                                    btn.classList.add('tutorial-button-active');
+                                    btn.click();
+									btn.disabled = true;
+									}, 1000);
+                                }
+                            }
+                        };
+
+                        // Определяем captureHandler ДО того, как он будет использован
+                        const captureHandler = async (event) => {
+                            event.stopPropagation(); // Останавливаем всплытие события
+                            const yellowPiece = event.currentTarget;
+                            const yellowCoord = getCurrentPosition(yellowPiece);
+
+                            // Если кликнули на желтую фишку на A7, когда выделена красная на C9
+                            if (yellowCoord === 'A7' && selectedPiece) {
+                                const selectedCoord = getCurrentPosition(selectedPiece);
+                                
+
+                                if (selectedCoord === 'C9') {
+                                    
+
+                                    // Убираем желтую фишку
+                                    movePiece(yellowPiece, 'C15');
+
+                                    // Перемещаем красную фишку на A7
+                                    movePiece(selectedPiece, 'A7');
+
+                                    // Отмечаем использование кубика 4
+                                    diceUsed[0] = true;
+
+                                    // Очищаем хинты
+                                    clearMoveHints();
+
+                                    // Снимаем выделение с фишки
+                                    updateSelectedPiece(null, true);
+
+                                    // Показываем сообщение
+                                    updateGameMessage('Ого! Вы съели желтую фишку! Она вернулась на стартовую позицию. Теперь вы можете продолжить ход и передвинуть свою фишку  на 3 шага.');
+
+                                    // Удаляем обработчик с желтой фишки
+                                    yellowPiece.removeEventListener('click', captureHandler);
+                                }
+                            }
+                        };
+
+                        redPiecesInStart.forEach(piece => {
+                            piece.addEventListener('click', pieceClickHandler);
+                            piece.style.cursor = 'pointer';
+                        });
+                        document.querySelectorAll('.cell').forEach(cell => {
+                            cell.addEventListener('click', cellClickHandler);
+                        });
+
+                    }
+				});
+				
+				//Ход желтого на 3 и 4
+					clearHighlight();
+					updateGameMessage('Теперь ход желтого игрока.');
+					await delay(1000);
+
+					currentPlayer = 2;
+					updatePlayerDiceStates();
+
+					await animateDiceRoll(2, [4, 3]);
+					await delay(500);
+					await selectAndMovePiece('p2_4', 'G12');
+					await selectAndMovePiece('p2_4', 'G9');
+					
+					await delay(1000);
+					// Передаем ход красному игроку
+                currentPlayer = 1;
+                updatePlayerDiceStates();                
+
+                // Новый шаг 8: в Храм
+                await showStep({
+                    stepNumber: 8,
+                    totalSteps: 15,
+                    message: 'Желтый игрок встал в свой телепорт! Ваша очередь, бросайте кубики!',
+                    buttonText: 'Продолжить',
+                    highlight: null,
+                    onShow: () => {
+                        const btn = document.getElementById('random-move-btn');
+                        btn.disabled = true;
+                        btn.classList.remove('tutorial-button-active');
+
+                        // Получаем кубики внутри onShow
+                        const dice1 = document.getElementById('player-dice-1-1');
+                        const dice2 = document.getElementById('player-dice-1-2');
+
+                        const diceClickHandler = async () => {
+                            // Анимация броска с результатом 2:3
+                            await animateDiceRoll(1, [2, 3]);
+
+                            // Очистка обработчиков (одноразовый клик)
+                            dice1.removeEventListener('click', diceClickHandler);
+                            dice2.removeEventListener('click', diceClickHandler);
+							
+							updateGameMessage('Выпало 2:3! Продолжайте ход той же фишкой. Щелкните по фишке и передвиньте ее на 5 ходов.');
+                            
+
+                            // Пауза перед переходом
+                            await delay(2000);
+
+                            // Автоматический переход к следующему шагу
+                            btn.click();							
+
+                        };
+
+                        // Регистрация обработчиков
+                        dice1.addEventListener('click', diceClickHandler);
+                        dice2.addEventListener('click', diceClickHandler);
+                        dice1.classList.add('active');
+                        dice2.classList.add('active');
+						
+						
+                        const redPiecesInStart = document.querySelectorAll('.piece.player1');
+
+                        const pieceClickHandler = (event) => {
+                            const piece = event.currentTarget;
+                            if (selectedPiece === piece) {
+                                updateSelectedPiece(null);
+                            } else {
+                                updateSelectedPiece(piece);
+                            }
+                        };
+
+                        const cellClickHandler = (event) => {
+                            const cell = event.currentTarget;
+                            const coord = cell.dataset.coord;
+                            if (selectedPiece && cell.classList.contains('possible-move')) {
+                                performMove(selectedPiece, coord);
+
+                                const allDiceUsed = diceUsed[0] && diceUsed[1];
+                                if (allDiceUsed) {
+                                    redPiecesInStart.forEach(p => {
+                                        p.removeEventListener('click', pieceClickHandler);
+                                        p.style.cursor = '';
+                                    });
+                                    document.querySelectorAll('.cell').forEach(c => {
+                                        c.removeEventListener('click', cellClickHandler);
+                                    });
+
+                                    setTimeout(() => {
+									btn.disabled = false;
+                                    btn.classList.add('tutorial-button-active');
+                                    btn.click();
+									btn.disabled = true;
+									}, 1000);
+                                }
+                            }
+                        };
+
+                        redPiecesInStart.forEach(piece => {
+                            piece.addEventListener('click', pieceClickHandler);
+                            piece.style.cursor = 'pointer';
+                        });
+                        document.querySelectorAll('.cell').forEach(cell => {
+                            cell.addEventListener('click', cellClickHandler);
+                        });
+						
+                    }
+                });
+				const pieceOnG5 = gameBoard['G5'];
+				if (pieceOnG5) {
+					const piece = Array.isArray(pieceOnG5) ? pieceOnG5[0] : pieceOnG5;
+					await delay(500);
+					movePiece(piece, 'F5'); // Прямое перемещение
+					updateGameMessage ('Если ход заканчивается напротив храма или тюрьмы фишка автоматически туда перемещается. <u>Храм</u> — безопасное место. В храме фишку нельзя съесть, но в каждом храме она может стоять только одна. Если храм занят, другие не могут закончить ход в храме, но могут пройти мимо.');
+					}
+				highlightMultiple (['[data-coord="F5"]', '[data-coord="E10"]', '[data-coord="J11"]', '[data-coord="K6"]']);					
+
+				// Приостанавливаем выполнение и ждем нажатия кнопки
+				await new Promise((resolve) => {
+					const btn = document.getElementById('random-move-btn');
+					btn.disabled = false;
+					btn.classList.add('tutorial-button-active');
+
+					const clickHandler = () => {
+						btn.disabled = true;
+						btn.classList.remove('tutorial-button-active');
+						btn.removeEventListener('click', clickHandler);
+						resolve();
+					};
+
+					btn.addEventListener('click', clickHandler);
+				});
+				await delay(500);
+				clearHighlight ();
+				await delay(500);
+				currentPlayer = 2;
+				updatePlayerDiceStates();
+				await animateDiceRoll(2, [1, 4]);
+				await delay(500);
+				const pieceOnG9 = gameBoard['G9'];
+				if (pieceOnG9) {
+					const piece = Array.isArray(pieceOnG9) ? pieceOnG9[0] : pieceOnG9;
+						await delay(500);
+						movePiece(piece, 'G7'); // Прямое перемещение
+					}
+				//await movePiece('p2_4', 'G7');
+				await selectAndMovePiece('p2_4', 'G3');
+					
+				await delay(1000);
+					// Передаем ход красному игроку
+                currentPlayer = 1;
+                updatePlayerDiceStates();
+				
+                // Новый шаг 9: Пропуск хода
+                await showStep({
+                    stepNumber: 9,
+                    totalSteps: 15,
+                    message: 'Желтый игрок телепортировался в ближайший телепорт на 1 и на 4 продолжил ход. Ваша очередь, бросайте кубики!',
+                    buttonText: 'Продолжить',
+                    highlight: null,
+                    onShow: () => {
+                        const btn = document.getElementById('random-move-btn');
+                        btn.disabled = true;
+                        btn.classList.remove('tutorial-button-active');
+
+                        // Получаем кубики внутри onShow
+                        const dice1 = document.getElementById('player-dice-1-1');
+                        const dice2 = document.getElementById('player-dice-1-2');
+
+                        const diceClickHandler = async () => {
+                            // Анимация броска с результатом 2:3
+                            await animateDiceRoll(1, [4, 5]);
+
+                            // Очистка обработчиков (одноразовый клик)
+                            dice1.removeEventListener('click', diceClickHandler);
+                            dice2.removeEventListener('click', diceClickHandler);
+							
+							updateGameMessage('Иногда хода нет — например, если путь заблокирован (перепрыгивать фишки нельзя) или фишка в тюрьме. В этом случае ты пропускаешь ход и ждёшь следующего более удачного броска.');
+							highlightMultiple (['[data-coord="G3"]']);					
+
+														
+
+                            // Включаем кнопку и автоматически переходим к следующему шагу
+                            setTimeout(() => {
+									btn.disabled = false;
+                                    btn.classList.add('tutorial-button-active');
+                                    btn.click();
+									btn.disabled = true;
+									}, 1000);							
+                        };
+
+                        // Регистрация обработчиков
+                        dice1.addEventListener('click', diceClickHandler);
+                        dice2.addEventListener('click', diceClickHandler);
+                        dice1.classList.add('active');
+                        dice2.classList.add('active');
+																		
+                    }
+                });
+				
+				// Приостанавливаем выполнение и ждем нажатия кнопки
+							await new Promise((resolve) => {
+								const btn = document.getElementById('random-move-btn');
+								btn.disabled = false;
+								btn.classList.add('tutorial-button-active');
+
+								const clickHandler = () => {
+									btn.disabled = true;
+									btn.classList.remove('tutorial-button-active');
+									btn.removeEventListener('click', clickHandler);
+									resolve();
+								};
+
+								btn.addEventListener('click', clickHandler);
+							});
+							await delay(500);
+							clearHighlight ();
+							await delay(500);                       
+
+                            
+                            
+				currentPlayer = 2;
+				updatePlayerDiceStates();
+				
+				await animateDiceRoll(2, [2, 1]);
+				await delay(500);
+				await selectAndMovePiece('p2_4', 'G1');
+				await delay(500);
+				await selectAndMovePiece('p2_2', 'E13');					
+				await delay(500);
+					// Передаем ход красному игроку
+                currentPlayer = 1;
+                updatePlayerDiceStates();
+				
+				
+				// Шаг 10: Тюрьма
+                await showStep({
+                    stepNumber: 10,
+                    totalSteps: 15,
+                    message: 'Желтый игрок сделал свой ход. Бросайте кубики!',
+                    buttonText: 'Продолжить',
+                    highlight: null,
+                    onShow: () => {
+                        const btn = document.getElementById('random-move-btn');
+                        btn.disabled = true;
+                        btn.classList.remove('tutorial-button-active');
+
+                        // Получаем кубики внутри onShow
+                        const dice1 = document.getElementById('player-dice-1-1');
+                        const dice2 = document.getElementById('player-dice-1-2');
+
+                        const diceClickHandler = async () => {
+                            // Анимация броска с результатом 3:4
+                            await animateDiceRoll(1, [3, 3]);
+
+                            // Очистка обработчиков (одноразовый клик)
+                            dice1.removeEventListener('click', diceClickHandler);
+                            dice2.removeEventListener('click', diceClickHandler);
+
+							updateGameMessage('Из-за стоящей желтой фишки вам доступен ход только на одну тройку и вы попадаете в <u>тюрьму</u> — тоже безопасное место, но чтобы выйти из тюрьмы, нужно выбросить 6 на одном из кубиков и использовать второй кубик для хода. Пропускать ход тоже нельзя, поэтому делайте свой ход.');
+							// Подсветим тюрьмы
+							highlightMultiple (['[data-coord="F2"]', '[data-coord="B10"]', '[data-coord="J14"]', '[data-coord="N6"]']);					
+
+				
+
+                            // Не переходим автоматически - ждем действий пользователя
+                            await delay(500);
+                        };
+
+                        // Регистрация обработчиков
+                        dice1.addEventListener('click', diceClickHandler);
+                        dice2.addEventListener('click', diceClickHandler);
+                        dice1.classList.add('active');
+                        dice2.classList.add('active');
+
+
+                        const redPiecesInStart = document.querySelectorAll('.piece.player1');
+
+                        const pieceClickHandler = (event) => {
+                            const piece = event.currentTarget;
+                            if (selectedPiece === piece) {
+                                updateSelectedPiece(null, true); // true = очистить хинты
+                            } else {
+                                // Выделяем фишку без показа стандартных хинтов
+                                if (selectedPiece) {
+                                    clearHighlight ();
+									selectedPiece.classList.remove('selected');
+                                }
+                                selectedPiece = piece;
+                                piece.classList.add('selected');
+
+                                // Очищаем старые хинты
+                                clearMoveHints();
+
+                                // Показываем хинт только для фишки на F2
+                                const pieceCoord = getCurrentPosition(piece);
+                                if (pieceCoord === 'F5') {
+                                    // Хинт на F2 (телепорт на 3)
+                                    const cellF2 = document.querySelector('[data-coord="F2"]');
+                                    if (cellF2) {
+                                        const hint1 = document.createElement('div');
+                                        hint1.className = 'move-hint teleport-hint';
+                                        hint1.textContent = '3';
+                                        hint1.style.cssText = `
+                                            position: absolute;
+                                            top: 50%;
+                                            left: 50%;
+                                            transform: translate(-50%, -50%);
+                                            background: rgba(255, 255, 255, 0.9);
+                                            border: 1.5px solid #007bff;
+                                            border-radius: 50%;
+                                            color: #007bff;
+                                            width: 22px;
+                                            height: 22px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                                            z-index: 100;
+                                            pointer-events: none;
+                                        `;
+                                        cellF2.appendChild(hint1);
+                                        cellF2.classList.add('possible-move');
+                                    }
+
+                                    
+                                }
+                                
+                            }
+                        };
+
+                        const cellClickHandler = async (event) => {
+                            const cell = event.currentTarget;
+                            const coord = cell.dataset.coord;
+
+                            if (selectedPiece && cell.classList.contains('possible-move')) {
+                                const pieceCoord = getCurrentPosition(selectedPiece);
+
+                                
+                                if (coord === 'F2' && pieceCoord === 'F5') {
+                                    
+                                    movePiece(selectedPiece, 'F2');
+
+                                    // Отмечаем использование кубика 
+                                    diceUsed[0] = true;
+									diceUsed[1] = true;
+
+                                    // Очищаем хинты
+                                    clearMoveHints();
+
+                                    // Снимаем выделение с фишки
+                                    updateSelectedPiece(null, true);
+
+                                    // Показываем сообщение о возможности продолжения хода
+                                    updateGameMessage('Теперь эта фишка в тюрьме, будем ждать 6 хотя бы на одном из кубиков для выхода из тюрьмы.');
+
+                                    // Очищаем обработчики и переходим к следующему шагу
+                                    redPiecesInStart.forEach(p => {
+                                        p.removeEventListener('click', pieceClickHandler);
+                                        p.style.cursor = '';
+                                    });
+                                    document.querySelectorAll('.cell').forEach(c => {
+                                        c.removeEventListener('click', cellClickHandler);
+                                    });
+
+                                    setTimeout(() => {
+									btn.disabled = false;
+                                    btn.classList.add('tutorial-button-active');
+                                    btn.click();
+									btn.disabled = true;
+									}, 1000);
+
+                                }                             
+                                
+                            }
+                        };
+
+                        redPiecesInStart.forEach(piece => {
+                            piece.addEventListener('click', pieceClickHandler);
+                            piece.style.cursor = 'pointer';
+                        });
+                        document.querySelectorAll('.cell').forEach(cell => {
+                            cell.addEventListener('click', cellClickHandler);
+                        });
+						
+                    }
+                });
+					//Ход желтого на 1 и 2
+					clearHighlight();
+					updateGameMessage('Теперь ход желтого игрока.');
+					await delay(1000);
+
+					currentPlayer = 2;
+					updatePlayerDiceStates();
+
+					await animateDiceRoll(2, [6, 5]);
+					await delay(500);
+					await selectAndMovePiece('p2_4', 'I5');
+					await selectAndMovePiece('p2_4', 'L7');
+					
+					await delay(1000);
+
+				// Передаем ход красному игроку
+                currentPlayer = 1;
+                updatePlayerDiceStates();
+
+				// Шаг 11: Заход в дом
+                await showStep({
+                    stepNumber: 11,
+                    totalSteps: 15,
+                    message: 'Ваша очередь, бросайте кубики!',
+                    buttonText: 'Продолжить',
+                    highlight: null,
+                    onShow: () => {
+                        const btn = document.getElementById('random-move-btn');
+                        btn.disabled = true;
+                        btn.classList.remove('tutorial-button-active');
+
+                        // Получаем кубики внутри onShow
+                        const dice1 = document.getElementById('player-dice-1-1');
+                        const dice2 = document.getElementById('player-dice-1-2');
+
+                        const diceClickHandler = async () => {
+                            // Анимация броска с результатом 6:4
+                            await animateDiceRoll(1, [6, 4]);
+
+                            // Очистка обработчиков (одноразовый клик)
+                            dice1.removeEventListener('click', diceClickHandler);
+                            dice2.removeEventListener('click', diceClickHandler);
+
+							updateGameMessage('Выпало 6 и 4. Одна шестерка тратится на выход из тюрьмы, а на второе значение вы заходите в дом.');
+
+                            // Не переходим автоматически - ждем действий пользователя
+                            await delay(500);
+                        };
+
+                        // Регистрация обработчиков
+                        dice1.addEventListener('click', diceClickHandler);
+                        dice2.addEventListener('click', diceClickHandler);
+                        dice1.classList.add('active');
+                        dice2.classList.add('active');
+
+
+                        const redPiecesInStart = document.querySelectorAll('.piece.player1');
+
+                        const pieceClickHandler = (event) => {
+                            const piece = event.currentTarget;
+                            if (selectedPiece === piece) {
+                                updateSelectedPiece(null, true); // true = очистить хинты
+                            } else {
+                                // Выделяем фишку без показа стандартных хинтов
+                                if (selectedPiece) {
+                                    selectedPiece.classList.remove('selected');
+                                }
+                                selectedPiece = piece;
+                                piece.classList.add('selected');
+
+                                // Очищаем старые хинты
+                                clearMoveHints();
+
+                                // Показываем хинт только для фишки на H3
+                                const pieceCoord = getCurrentPosition(piece);
+                                if (pieceCoord === 'F2') {
+                                    // Хинт на H3
+                                    const cellH3 = document.querySelector('[data-coord="H3"]');
+                                    if (cellH3) {
+                                        const hint1 = document.createElement('div');
+                                        hint1.className = 'move-hint teleport-hint';
+                                        hint1.textContent = '4';
+                                        hint1.style.cssText = `
+                                            position: absolute;
+                                            top: 50%;
+                                            left: 50%;
+                                            transform: translate(-50%, -50%);
+                                            background: rgba(255, 255, 255, 0.9);
+                                            border: 1.5px solid #007bff;
+                                            border-radius: 50%;
+                                            color: #007bff;
+                                            width: 22px;
+                                            height: 22px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                                            z-index: 100;
+                                            pointer-events: none;
+                                        `;
+                                        cellH3.appendChild(hint1);
+                                        cellH3.classList.add('possible-move');
+                                    }
+
+                                    
+                                }
+                                
+                            }
+                        };
+
+                        const cellClickHandler = async (event) => {
+                            const cell = event.currentTarget;
+                            const coord = cell.dataset.coord;
+
+                            if (selectedPiece && cell.classList.contains('possible-move')) {
+                                const pieceCoord = getCurrentPosition(selectedPiece);
+
+                                // Клик на H3
+                                if (coord === 'H3' && pieceCoord === 'F2') {
+                                    // Перемещаем фишку на H3 напрямую (без валидации)
+                                    movePiece(selectedPiece, 'H3');
+
+                                    // Отмечаем использование кубика 3
+                                    diceUsed[0] = true;
+									diceUsed[1] = true;
+
+                                    // Очищаем хинты
+                                    clearMoveHints();
+
+                                    // Снимаем выделение с фишки
+                                    updateSelectedPiece(null, true);
+
+                                    // Показываем сообщение о возможности продолжения хода
+                                    updateGameMessage('Теперь эта фишка в тюрьме, будем ждать 6 хотя бы на одном из кубиков для выхода из тюрьмы.');
+
+                                    // Очищаем обработчики и переходим к следующему шагу
+                                    redPiecesInStart.forEach(p => {
+                                        p.removeEventListener('click', pieceClickHandler);
+                                        p.style.cursor = '';
+                                    });
+                                    document.querySelectorAll('.cell').forEach(c => {
+                                        c.removeEventListener('click', cellClickHandler);
+                                    });
+
+                                    setTimeout(() => {
+									btn.disabled = false;
+                                    btn.classList.add('tutorial-button-active');
+                                    btn.click();
+									btn.disabled = true;
+									}, 1000);
+
+                                }                             
+                                
+                            }
+                        };
+
+                        redPiecesInStart.forEach(piece => {
+                            piece.addEventListener('click', pieceClickHandler);
+                            piece.style.cursor = 'pointer';
+                        });
+                        document.querySelectorAll('.cell').forEach(cell => {
+                            cell.addEventListener('click', cellClickHandler);
+                        });
+						
+                    }
+                });
+					//Ход желтого на 3 и 2
+					clearHighlight();
+					updateGameMessage('Теперь ход желтого игрока.');
+					await delay(1000);
+
+					currentPlayer = 2;
+					updatePlayerDiceStates();
+
+					await animateDiceRoll(2, [6, 5]);
+					await delay(500);
+					await selectAndMovePiece('p2_2', 'G11');					
+					
+					await delay(1000);
+
+				// Передаем ход красному игроку
+                currentPlayer = 1;
+                updatePlayerDiceStates(); 
+
+				// Новый шаг 11: Пропуск хода
+                await showStep({
+                    stepNumber: 11,
+                    totalSteps: 15,
+                    message: 'Желтый игрок сходил. Ваша очередь, бросайте кубики!',
+                    buttonText: 'Понятно',
+                    highlight: null,                    
+                    onShow: () => {
+                        const btn = document.getElementById('random-move-btn');
+                        btn.disabled = true;
+                        btn.classList.remove('tutorial-button-active');
+
+                        // Получаем кубики внутри onShow
+                        const dice1 = document.getElementById('player-dice-1-1');
+                        const dice2 = document.getElementById('player-dice-1-2');
+
+                        const diceClickHandler = async () => {
+                            // Анимация броска с результатом 2:5
+                            await animateDiceRoll(1, [2, 5]);
+
+                            // Очистка обработчиков (одноразовый клик)
+                            dice1.removeEventListener('click', diceClickHandler);
+                            dice2.removeEventListener('click', diceClickHandler);
+							
+							updateGameMessage('Выпало 2 и 5. <u>По правилу большего хода:</u> если нельзя использовать оба кубика, обязательно нужно использовать большее значение. У вас осталось 2 шага в доме и больше нет возможных ходов, а выпало 2 и 5 - большее значение (5) использовать нельзя, поэтому ход пропускается.');
+							
+							highlightZone (['[id^="player-dice-1-"]']);					
+
+							// Приостанавливаем выполнение и ждем нажатия кнопки
+							await new Promise((resolve) => {
+								const btn = document.getElementById('random-move-btn');
+								btn.disabled = false;
+								btn.classList.add('tutorial-button-active');
+
+								const clickHandler = () => {
+									btn.disabled = true;
+									btn.classList.remove('tutorial-button-active');
+									btn.removeEventListener('click', clickHandler);
+									resolve();
+								};
+
+								btn.addEventListener('click', clickHandler);
+							});
+							await delay(500);
+							clearHighlight ();
+							await delay(500);
+                            
+
+                            setTimeout(() => {
+									btn.disabled = false;
+                                    btn.classList.add('tutorial-button-active');
+                                    btn.click();
+									btn.disabled = true;
+									}, 1000);							
+                        };
+
+                        // Регистрация обработчиков
+                        dice1.addEventListener('click', diceClickHandler);
+                        dice2.addEventListener('click', diceClickHandler);
+                        dice1.classList.add('active');
+                        dice2.classList.add('active');
+																		
+                    }
+                });
+				currentPlayer = 2;
+				updatePlayerDiceStates();
+
+				await animateDiceRoll(2, [6, 6]);
+				await delay(500);
+				updateGameMessage('У желтого игрока выпал <u> дубль 6:6 </u>, после завершения текущего хода он повторно бросает кубики!');
+				await selectAndMovePiece('p2_4', 'N9');
+				await selectAndMovePiece('p2_4', 'I10');
+					
+				await delay(1000);
+				//Повторный ход желтого после дубля
+				currentPlayer = 2;
+				updatePlayerDiceStates();
+
+				await animateDiceRoll(2, [2, 2]);
+				await delay(500);
+				await selectAndMovePiece('p2_2', 'G9');
+				await selectAndMovePiece('p2_4', 'I12');
+					// Передаем ход красному игроку
+                currentPlayer = 1;
+                updatePlayerDiceStates();
+				
+
+                await showStep({
+                    stepNumber: 12,
+                    totalSteps: 15,
+                    message: 'Ваша очередь, бросайте кубики.',
+                    buttonText: 'Продолжить',
+                    highlight: null,
+                    onShow: () => {
+                        const btn = document.getElementById('random-move-btn');
+                        btn.disabled = true;
+                        btn.classList.remove('tutorial-button-active');
+
+                        const diceClickHandler = async () => {
+                            await animateDiceRoll(1, [2, 1]);
+
+                            dice1.removeEventListener('click', diceClickHandler);
+                            dice2.removeEventListener('click', diceClickHandler);                           
+							setTimeout(() => {
+									btn.disabled = false;
+                                    btn.classList.add('tutorial-button-active');
+                                    btn.click();
+									btn.disabled = true;
+									}, 1000);
+                        };
+
+                        dice1.addEventListener('click', diceClickHandler);
+                        dice2.addEventListener('click', diceClickHandler);
+                        dice1.classList.add('active');
+                        dice2.classList.add('active');
+                    }
+                });
+
+                // Шаг 3: Стартовая зона - красный игрок делает ход
+                await showStep({
+                    stepNumber: 13,
+                    totalSteps: 15,
+                    message: 'Заведите фишку до конца в дом и начните другой фишкой путь в дом.',
+                    buttonText: 'Далее',
+                    highlight: null,
+                    onShow: () => {
+                        const btn = document.getElementById('random-move-btn');
+                        btn.disabled = true;
+                        btn.classList.remove('tutorial-button-active');
+
+                        const redPiecesInStart = document.querySelectorAll('.piece.player1');
+
+                        const pieceClickHandler = (event) => {
+                            const piece = event.currentTarget;
+                            if (selectedPiece === piece) {
+                                updateSelectedPiece(null);
+                            } else {
+                                updateSelectedPiece(piece);
+                            }
+                        };
+
+                        const cellClickHandler = (event) => {
+                            const cell = event.currentTarget;
+                            const coord = cell.dataset.coord;
+                            if (selectedPiece && cell.classList.contains('possible-move')) {
+                                performMove(selectedPiece, coord);
+
+                                const allDiceUsed = diceUsed[0] && diceUsed[1];
+                                if (allDiceUsed) {
+                                    redPiecesInStart.forEach(p => {
+                                        p.removeEventListener('click', pieceClickHandler);
+                                        p.style.cursor = '';
+                                    });
+                                    document.querySelectorAll('.cell').forEach(c => {
+                                        c.removeEventListener('click', cellClickHandler);
+                                    });
+
+                                    setTimeout(() => {
+									btn.disabled = false;
+                                    btn.classList.add('tutorial-button-active');
+                                    btn.click();
+									btn.disabled = true;
+									}, 1000);
+                                }
+                            }
+                        };
+
+                        redPiecesInStart.forEach(piece => {
+                            piece.addEventListener('click', pieceClickHandler);
+                            piece.style.cursor = 'pointer';
+                        });
+                        document.querySelectorAll('.cell').forEach(cell => {
+                            cell.addEventListener('click', cellClickHandler);
+                        });
+                    }
+                });
+                
+
+                // Обучение завершено
+                finishTutorial();
+
+            } catch (error) {
+                updateGameMessage('Произошла ошибка в обучении. Перезагрузите страницу.');
+            }
+        }
+
+        // ================================
+        // ИНИЦИАЛИЗАЦИЯ И ЗАВЕРШЕНИЕ ОБУЧЕНИЯ
+        // ================================
+
+        // Инициализация обучения
+        function initTutorial() {
+            isTutorialActive = true;
+            runTutorial();
+        }
+
+        // Завершение обучения
+        function finishTutorial() {
+            isTutorialActive = false;
+            clearHighlight();
+            updateGameMessage('Ваша вторая фишка зашла в дом! 🎉 <u>Обучение завершено!</u> Вы освоили все механики игры: ✓ Базовые ходы ✓ Телепорты ✓ Съедение фишек ✓ Храмы и тюрьмы ✓ Заход в дом ✓ Правило большего хода. /n Удачи в игре!');
+
+            const counter = document.getElementById('tutorial-step-counter');
+            counter.innerHTML = '<span class="step-number">✓ Обучение завершено</span>';
+
+            const btn = document.getElementById('random-move-btn');
+            btn.disabled = false;
+			btn.textContent = 'Начать игру';
+            btn.classList.add('tutorial-button-active');
+        }
+
+        // Обработчик handleTutorialButtonClick удален - кнопка управляется в runTutorial()
+
+        // Глобальный доступ к функциям для тестирования
+        window.setDice = setDice;
+        window.showMoveHints = showMoveHints;
+        window.clearMoveHints = clearMoveHints;
+        window.updateGameMessage = updateGameMessage;
+    </script>
+</body>
+</html>

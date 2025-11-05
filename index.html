@@ -5392,34 +5392,34 @@
                         diceUsed = [false, false];
                         isStartZoneComboMove = false;
 
-                        // Ждем небольшую паузу и продолжаем случайный ход
-                        setTimeout(async () => {
-                            try {
-                                // Бросаем кубики автоматически
-                                await rollPlayerDice();
-                                await new Promise(resolve => setTimeout(resolve, 1500));
+                        // Ждем паузу перед продолжением хода (используя чистый async/await)
+                        try {
+                            await new Promise(resolve => setTimeout(resolve, 1000));
 
-                                // Рекурсивно вызываем performRandomMove для продолжения
-                                await performRandomMove(true);
-                            } catch (error) {
-                                // В случае ошибки завершаем случайный ход
-                                isPerformingRandomMove = false;
-                                if (randomMoveBtn) {
-                                    randomMoveBtn.disabled = false;
-                                }
+                            // Бросаем кубики автоматически
+                            await rollPlayerDice();
+                            await new Promise(resolve => setTimeout(resolve, 1500));
+
+                            // Рекурсивно вызываем performRandomMove для продолжения
+                            await performRandomMove(true);
+                        } catch (error) {
+                            console.error('❌ Ошибка при продолжении дубля (нет ходов):', error);
+                            // В случае ошибки завершаем случайный ход
+                            isPerformingRandomMove = false;
+                            if (randomMoveBtn) {
+                                randomMoveBtn.disabled = false;
                             }
-                        }, 1000);
+                        }
                         return; // Выходим, продолжаем через рекурсивный вызов
                     } else {
                         // Нет дубля или превышен лимит - завершаем
-						updateGameMessage(`Нет доступных ходов для случайного хода`);
+                        updateGameMessage(`Нет доступных ходов для случайного хода`);
                         // document.getElementById('game-message').textContent = 'Нет доступных ходов для случайного хода';
 
                         // Если достигнут лимит дублей, вызываем checkTurnCompletion для корректной передачи хода
                         if (isDoubleRoll && consecutiveDoubles >= 3) {
-                            setTimeout(() => {
-                                checkTurnCompletion();
-                            }, 500);
+                            await new Promise(resolve => setTimeout(resolve, 500));
+                            checkTurnCompletion();
                         }
                         return;
                     }
@@ -5595,7 +5595,7 @@
                 console.log(`🎲 Проверка дубля после цикла: isDoubleRoll=${isDoubleRoll}, consecutiveDoubles=${consecutiveDoubles}, allDiceUsed=${allDiceUsed}, allExpectedMovesCompleted=${allExpectedMovesCompleted}`);
 
                 if (isDoubleRoll && consecutiveDoubles < 3 &&  (allExpectedMovesCompleted || allDiceUsed || isStartZoneComboMove)) {
-				
+
                     // Дубль выпал и мы можем продолжить
                     // consecutiveDoubles++;
 
@@ -5605,23 +5605,24 @@
                     diceUsed = [false, false];
                     isStartZoneComboMove = false;
 
-                    // Ждем небольшую паузу и продолжаем случайный ход
-                    setTimeout(async () => {
-                        try {
-                            // Бросаем кубики автоматически
-                            await rollPlayerDice();
-                            await new Promise(resolve => setTimeout(resolve, 1500));
+                    // Ждем паузу перед продолжением хода (используя чистый async/await)
+                    try {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
 
-                            // Рекурсивно вызываем performRandomMove для продолжения
-                            await performRandomMove(true);
-                        } catch (error) {
-                            // В случае ошибки завершаем случайный ход
-                            isPerformingRandomMove = false;
-                            if (randomMoveBtn) {
-                                randomMoveBtn.disabled = false;
-                            }
+                        // Бросаем кубики автоматически
+                        await rollPlayerDice();
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+
+                        // Рекурсивно вызываем performRandomMove для продолжения
+                        await performRandomMove(true);
+                    } catch (error) {
+                        console.error('❌ Ошибка при продолжении дубля:', error);
+                        // В случае ошибки завершаем случайный ход
+                        isPerformingRandomMove = false;
+                        if (randomMoveBtn) {
+                            randomMoveBtn.disabled = false;
                         }
-                    }, 1000);
+                    }
                     return; // Выходим, не вызывая checkTurnCompletion
                 } else {
                     // Нет дубля или достигнут лимит - завершаем ход
@@ -5691,10 +5692,6 @@
                 }
             });
         }
-
-        //function initializeEventHandlers() {
-            // Функция оставлена для совместимости, обработчики событий масштабирования удалены
-        //}
 
         function selectPiece(piece) {
             // Убрать выделение с предыдущей фишки
@@ -5825,7 +5822,8 @@
             // Объединяем обычные и телепортные ходы
             const allMoves = [...validMoves, ...teleportMoves];
 
-            return allMoves;
+            console.log('✅ Все возможные ходы:', allMoves);
+			return allMoves;
         }
 
         // Показывает подсказки на основе кешированных ходов

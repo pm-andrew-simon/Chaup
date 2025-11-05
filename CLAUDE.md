@@ -15,7 +15,7 @@ This is a web application implementing Chaupar, a traditional Indian board game.
 **Site Structure:**
 - `index.html`: Main game interface with full game logic
 - `rules.html`: Game rules and instructions
-- `situations.html`: Common game scenarios and explanations  
+- `situations.html`: Common game scenarios and explanations
 - `contacts.html`: Contact information and support
 - `news.html`: Project news and updates
 
