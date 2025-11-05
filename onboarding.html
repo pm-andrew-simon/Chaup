@@ -995,7 +995,7 @@
 
             .game-board {
                 width: calc(100vw - 10px);
-                height: 100%;
+                height: calc(100vw - 10px);
                 border-radius: 5px;
                 transform-origin: center center;
                 position: relative;
@@ -1003,6 +1003,7 @@
                 /* Делаем игровое поле прокручиваемым */
                 pointer-events: auto;
                 touch-action: pan-y;
+                margin: 0 auto 10px auto;
             }
 
             .cell {
