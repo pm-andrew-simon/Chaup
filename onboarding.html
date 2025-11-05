@@ -817,15 +817,33 @@
             font-weight: 700;
         }
 
-        /* Мобильная адаптивность */
-        @media (max-width: 768px) {
-            body {
-                padding: 5px;
-            }
+        .game-board-container {
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+        }
 
-            h1 {
-                font-size: 24px;
-                margin: 5px 0 15px 0;
+        /* Контейнер для игрового поля с именами игроков */
+        .board-with-names {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Контейнеры для верхних и нижних имён */
+        .player-names-top,
+        .player-names-bottom {
+            display: flex;
+            justify-content: space-between;
+            width: min(90vw, 600px);
+            gap: 20px;
+        }
+
+        /* Мобильная адаптивность */
+        @media (max-width: 600px) {
+            .container {
+                padding: 5px;
             }
 
             .navigation {
@@ -866,10 +884,61 @@
                 width: calc(100vw / 15 * 37.5 / 35);
                 height: calc(100vw / 15 * 37.5 / 35);
             }
+        }
 
-            .dice-dot {
-                width: calc(100vw / 15 * 5 / 35);
-                height: calc(100vw / 15 * 5 / 35);
+        @media (max-width: 480px) {
+            h1 {
+                margin: 5px 0;
+                font-size: 20px;
+            }
+
+            .container {
+                padding: 0;
+                max-width: 100%;
+            }
+
+            .game-layout {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                margin: 0;
+                padding: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                overflow-y: auto;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .container {
+                padding: 0;
+                max-width: 100%;
+            }
+
+            h1 {
+                margin: 5px 0;
+                font-size: 20px;
+            }
+
+            .navigation {
+                padding: 10px 15px;
+                margin-bottom: 20px;
+            }
+
+            .nav-links {
+                gap: 10px;
+            }
+
+            .nav-links a,
+            .nav-links button,
+            .nav-button {
+                padding: 10px 16px;
+                font-size: 13px;
+                border-radius: 12px;
             }
 
             .game-layout {
@@ -880,7 +949,86 @@
                 padding: 0;
             }
 
+            .game-board-container {
+                width: 100vw;
+                height: 100vw;
+                max-width: none;
+                max-height: none;
+                margin: 0;
+                overflow: hidden;
+                position: relative;
+                /* Разрешаем прокрутку через игровое поле */
+                touch-action: pan-y;
+            }
+
+            /* Адаптивные стили для блоков с именами на мобильных */
+            .player-names-top,
+            .player-names-bottom {
+                width: 100vw;
+                padding: 0 10px;
+                box-sizing: border-box;
+                gap: 10px;
+            }
+
+            .player-name-box {
+                font-size: 14px;
+                padding: 8px 12px;
+                min-width: 100px;
+            }
+
+            /* Сохраняем выравнивание на мобильных */
+            #player-name-4 {
+                margin-right: auto;
+            }
+
+            #player-name-1 {
+                margin-left: auto;
+            }
+
+            #player-name-2 {
+                margin-right: auto;
+            }
+
+            #player-name-3 {
+                margin-left: auto;
+            }
+
+            .game-board {
+                width: calc(100vw - 10px);
+                height: 100%;
+                border-radius: 5px;
+                transform-origin: center center;
+                position: relative;
+                border: none;
+                /* Делаем игровое поле прокручиваемым */
+                pointer-events: auto;
+                touch-action: pan-y;
+            }
+
+            .cell {
+                width: calc(100vw / 15);
+                height: calc(100vw / 15);
+            }
+
+            .piece {
+                width: calc(100vw / 15 * 35 / 35);
+                height: calc(100vw / 15 * 35 / 35);
+                top: calc(100vw / 15 * 2 / 35);
+                left: calc(100vw / 15 * 2 / 35);
+            }
+
+            .player-dice {
+                width: calc(100vw / 15 * 37.5 / 35);
+                height: calc(100vw / 15 * 37.5 / 35);
+            }
+
+            .dice-dot {
+                width: calc(100vw / 15 * 5 / 35);
+                height: calc(100vw / 15 * 5 / 35);
+            }
+
             .dice-panel {
+                /* Убираем order: -1 чтобы панель была под игровым полем */
                 margin: 0 auto;
                 padding: 10px;
                 border-radius: 10px;
