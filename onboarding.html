@@ -884,6 +884,26 @@
                 width: calc(100vw / 15 * 37.5 / 35);
                 height: calc(100vw / 15 * 37.5 / 35);
             }
+
+            .dice-dot {
+                width: calc(100vw / 15 * 5 / 35);
+                height: calc(100vw / 15 * 5 / 35);
+            }
+
+            button {
+                padding: 12px 20px;
+                font-size: 14px;
+                min-width: 120px;
+            }
+
+            .game-message {
+                font-size: 13px;
+            }
+
+            .game-message-title,
+            .dice-log-title {
+                font-size: 14px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1050,6 +1070,36 @@
                 width: 45px;
                 height: 45px;
                 font-size: 18px;
+            }
+
+            .dice-log {
+                font-size: 12px;
+                padding: 10px;
+                margin: 10px 0;
+                overflow-y: auto;
+                flex: 1;
+                min-height: 0; /* Позволяет flex-элементу сжиматься */
+            }
+
+            .dice-log-entry {
+                font-size: 11px;
+                padding: 6px 8px;
+            }
+
+            .player-result {
+                font-size: 12px;
+                padding: 3px;
+                margin: 3px 0;
+            }
+
+            .game-message {
+                font-size: 12px;
+                padding: 8px;
+            }
+
+            .game-message-title,
+            .dice-log-title {
+                font-size: 13px;
             }
         }
     </style>
