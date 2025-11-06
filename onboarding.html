@@ -766,7 +766,7 @@
 
         /* Подсветка для онбординга */
         .tutorial-highlight {
-            position: fixed;
+            position: absolute;
             border: 4px solid #FFD700;
             border-radius: 15px;
             box-shadow: 0 0 30px rgba(255, 215, 0, 0.8),
@@ -1338,6 +1338,8 @@
         let selectedPiece = null;
         let cachedValidMoves = [];
         let gameMessages = [];
+        let currentHighlightSelector = null;  // Сохраняем текущий селектор для обновления при прокрутке
+        let currentHighlightType = 'element';  // 'element' или 'zone'
         let currentTooltip = null;
 
         // ================================
@@ -2318,7 +2320,29 @@
             // Инициализация онбординга
             initTutorial();
 
-            // Обработчик кнопки удален - управление через runTutorial()
+            // Обработчик прокрутки для обновления позиции подсветки
+            let ticking = false;
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        updateHighlightPosition();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }, { passive: true });
+
+            // Обработчик изменения размера окна
+            let resizeTicking = false;
+            window.addEventListener('resize', () => {
+                if (!resizeTicking) {
+                    window.requestAnimationFrame(() => {
+                        updateHighlightPosition();
+                        resizeTicking = false;
+                    });
+                    resizeTicking = true;
+                }
+            }, { passive: true });
         });
 
         // ================================
@@ -2327,6 +2351,10 @@
 
         // Подсветить один элемент или зону элементов
         function highlightElement(selector) {
+            // Сохраняем селектор для обновления при прокрутке
+            currentHighlightSelector = selector;
+            currentHighlightType = 'element';
+
             const highlight = document.getElementById('tutorial-highlight');
             const elements = document.querySelectorAll(selector);
 
@@ -2340,8 +2368,9 @@
                 const element = elements[0];
                 const rect = element.getBoundingClientRect();
                 highlight.style.display = 'block';
-                highlight.style.left = (rect.left - 10) + 'px';
-                highlight.style.top = (rect.top - 10) + 'px';
+                // Используем pageX/pageY координаты (absolute positioning)
+                highlight.style.left = (rect.left + window.scrollX - 10) + 'px';
+                highlight.style.top = (rect.top + window.scrollY - 10) + 'px';
                 highlight.style.width = (rect.width + 20) + 'px';
                 highlight.style.height = (rect.height + 20) + 'px';
             } else {
@@ -2353,6 +2382,10 @@
         // Подсветить зону, охватывающую несколько элементов
         // Принимает строку или массив строк
         function highlightZone(selector) {
+            // Сохраняем селектор для обновления при прокрутке
+            currentHighlightSelector = selector;
+            currentHighlightType = 'zone';
+
             const highlight = document.getElementById('tutorial-highlight');
 
             // Если передан массив - создать рамку для каждой зоны
@@ -2378,10 +2411,10 @@
                         maxBottom = Math.max(maxBottom, rect.bottom);
                     });
 
-                    // Создать отдельную рамку для этой зоны
+                    // Создать отдельную рамку для этой зоны с pageX/pageY координатами
                     createHighlightElement({
-                        left: minLeft,
-                        top: minTop,
+                        left: minLeft + window.scrollX,
+                        top: minTop + window.scrollY,
                         width: maxRight - minLeft,
                         height: maxBottom - minTop
                     });
@@ -2411,14 +2444,82 @@
                 maxBottom = Math.max(maxBottom, rect.bottom);
             });
 
-            // Применить объединяющую рамку
+            // Применить объединяющую рамку с pageX/pageY координатами
             highlight.style.display = 'block';
-            highlight.style.left = (minLeft - 10) + 'px';
-            highlight.style.top = (minTop - 10) + 'px';
+            highlight.style.left = (minLeft + window.scrollX - 10) + 'px';
+            highlight.style.top = (minTop + window.scrollY - 10) + 'px';
             highlight.style.width = (maxRight - minLeft + 20) + 'px';
             highlight.style.height = (maxBottom - minTop + 20) + 'px';
         }
 		
+
+        // Обновить позицию подсветки при прокрутке
+        function updateHighlightPosition() {
+            if (!currentHighlightSelector) return;
+
+            const highlight = document.getElementById('tutorial-highlight');
+            if (!highlight || highlight.style.display === 'none') return;
+
+            // Напрямую обновляем координаты без пересоздания элементов
+            if (Array.isArray(currentHighlightSelector)) {
+                // Для массива селекторов - обновляем все дополнительные подсветки
+                const multiHighlights = document.querySelectorAll('.tutorial-highlight-multi');
+                let index = 0;
+                currentHighlightSelector.forEach(zoneSelector => {
+                    const elements = document.querySelectorAll(zoneSelector);
+                    if (elements.length === 0) return;
+
+                    let minLeft = Infinity, minTop = Infinity;
+                    let maxRight = -Infinity, maxBottom = -Infinity;
+
+                    elements.forEach(element => {
+                        const rect = element.getBoundingClientRect();
+                        minLeft = Math.min(minLeft, rect.left);
+                        minTop = Math.min(minTop, rect.top);
+                        maxRight = Math.max(maxRight, rect.right);
+                        maxBottom = Math.max(maxBottom, rect.bottom);
+                    });
+
+                    if (multiHighlights[index]) {
+                        multiHighlights[index].style.left = (minLeft + window.scrollX - 10) + 'px';
+                        multiHighlights[index].style.top = (minTop + window.scrollY - 10) + 'px';
+                        multiHighlights[index].style.width = (maxRight - minLeft + 20) + 'px';
+                        multiHighlights[index].style.height = (maxBottom - minTop + 20) + 'px';
+                    }
+                    index++;
+                });
+            } else {
+                // Для одного селектора
+                const elements = document.querySelectorAll(currentHighlightSelector);
+                if (elements.length === 0) return;
+
+                if (elements.length === 1) {
+                    // Один элемент - обновляем основную подсветку с pageX/pageY координатами
+                    const rect = elements[0].getBoundingClientRect();
+                    highlight.style.left = (rect.left + window.scrollX - 10) + 'px';
+                    highlight.style.top = (rect.top + window.scrollY - 10) + 'px';
+                    highlight.style.width = (rect.width + 20) + 'px';
+                    highlight.style.height = (rect.height + 20) + 'px';
+                } else {
+                    // Несколько элементов - вычисляем объединяющий прямоугольник
+                    let minLeft = Infinity, minTop = Infinity;
+                    let maxRight = -Infinity, maxBottom = -Infinity;
+
+                    elements.forEach(element => {
+                        const rect = element.getBoundingClientRect();
+                        minLeft = Math.min(minLeft, rect.left);
+                        minTop = Math.min(minTop, rect.top);
+                        maxRight = Math.max(maxRight, rect.right);
+                        maxBottom = Math.max(maxBottom, rect.bottom);
+                    });
+
+                    highlight.style.left = (minLeft + window.scrollX - 10) + 'px';
+                    highlight.style.top = (minTop + window.scrollY - 10) + 'px';
+                    highlight.style.width = (maxRight - minLeft + 20) + 'px';
+                    highlight.style.height = (maxBottom - minTop + 20) + 'px';
+                }
+            }
+        }
 
         // Скрыть подсветку
         function clearHighlight() {
@@ -2428,6 +2529,10 @@
             // Удалить все дополнительные подсветки
             const multiHighlights = document.querySelectorAll('.tutorial-highlight-multi');
             multiHighlights.forEach(h => h.remove());
+
+            // Сбрасываем сохраненный селектор
+            currentHighlightSelector = null;
+            currentHighlightType = 'element';
         }
 
         // ================================
@@ -2537,7 +2642,7 @@
         function createHighlightElement(rect) {
             const highlight = document.createElement('div');
             highlight.className = 'tutorial-highlight tutorial-highlight-multi';
-            highlight.style.position = 'fixed';
+            highlight.style.position = 'absolute';
             highlight.style.border = '4px solid #FFD700';
             highlight.style.borderRadius = '15px';
             highlight.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.8), inset 0 0 30px rgba(255, 215, 0, 0.3)';
@@ -2560,7 +2665,13 @@
                 const element = document.querySelector(selector);
                 if (element) {
                     const rect = element.getBoundingClientRect();
-                    createHighlightElement(rect);
+                    // Передаем pageX/pageY координаты с учетом прокрутки
+                    createHighlightElement({
+                        left: rect.left + window.scrollX,
+                        top: rect.top + window.scrollY,
+                        width: rect.width,
+                        height: rect.height
+                    });
                 }
             });
         }

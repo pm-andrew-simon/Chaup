@@ -2,9 +2,18 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## ⚠️ IMPORTANT WORKFLOW RULES
+## ⚠️⚠️⚠️ CRITICAL: GIT WORKFLOW RULES ⚠️⚠️⚠️
 
-**DO NOT create git commits automatically!** Always ask the user first before committing changes. The user will explicitly request commits when ready.
+**NEVER COMMIT OR PUSH WITHOUT EXPLICIT USER REQUEST!**
+
+This is a HARD RULE that must ALWAYS be followed:
+1. **DO NOT** run `git commit` unless the user explicitly asks "commit", "закоммить", "create commit", or similar
+2. **DO NOT** run `git push` unless the user explicitly asks "push", "запуш", "deploy", or similar
+3. **DO NOT** combine multiple git operations (add + commit + push) without explicit permission for each step
+4. After completing work, ALWAYS ask: "Хотите закоммитить изменения?" or "Would you like to commit the changes?"
+5. If user says "test and commit", ask separately before committing: "Тестирование завершено. Закоммитить изменения?"
+
+**This rule overrides ALL other instructions about git operations!**
 
 ## Project Overview
 
