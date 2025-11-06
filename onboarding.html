@@ -590,13 +590,48 @@
             color: #2d3748;
             font-weight: 500;
             overflow-y: auto;
-            white-space: pre-line;
+            overflow-x: hidden;
             line-height: 1.5;
             padding: 10px;
             background: rgba(255, 255, 255, 0.9);
             border-radius: 8px;
             border: 1px solid rgba(229, 62, 62, 0.1);
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        /* Стили для отдельных сообщений */
+        .message-item {
+            padding: 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.9s ease;
+        }
+
+        /* Анимация появления нового сообщения */
+        .message-new {
+            animation: slideInFromTop 0.9s ease-out;
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Разделитель между сообщениями */
+        .message-divider {
+            text-align: center;
+            margin: 5px 0;
+            color: rgba(45, 55, 72, 0.2);
+            font-size: 12px;
         }
 
         /* Панель кубиков */
@@ -639,7 +674,7 @@
         }
 
         .game-message-container {
-            flex: 0.65;
+            flex: 1;
             display: flex;
             flex-direction: column;
             background: rgba(255, 255, 255, 0.05);
@@ -654,78 +689,6 @@
             color: #2d3748;
             font-size: 15px;
             text-align: center;
-        }
-
-        .dice-log-container {
-            flex: 0.35;
-            display: flex;
-            flex-direction: column;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            min-height: 0;
-            overflow: hidden;
-        }
-
-        .dice-log {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            padding: 10px;
-            margin: 0;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-            min-height: 0;
-            overflow: hidden;
-        }
-
-        .dice-log-entries {
-            flex: 1;
-            overflow-y: auto;
-            min-height: 0;
-            max-height: 100%;
-        }
-
-        .dice-log-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #2d3748;
-            font-size: 15px;
-            text-align: center;
-        }
-
-        .dice-log-entry {
-            display: block;
-            margin: 3px 0;
-            padding: 8px 10px;
-            background: white;
-            border-radius: 8px;
-            font-weight: 500;
-            border-left: 4px solid transparent;
-            font-size: 13px;
-        }
-
-        .dice-log-entry.first-move {
-            background: #e6fffa;
-            border-left-color: #38a169;
-            font-weight: 600;
-        }
-
-        .dice-log-entry .player-name {
-            font-weight: 600;
-        }
-
-        .dice-log-entry .dice-values {
-            color: #666;
-        }
-
-        .dice-log-entry .first-indicator {
-            color: #38a169;
-            font-size: 11px;
-            font-weight: bold;
         }
 
         .current-player {
@@ -787,12 +750,15 @@
 
         #random-move-btn {
             background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
-            margin: 5px;
+            margin: 0;			
+            padding: 10px 15px;
 			border: none;
 			border-radius: 12px;
 			font-size: 16px;
 			color: white;
 			font-weight: bold;
+			flex: 1;
+			white-space: nowrap;
         }
 
         #random-move-btn:hover:not(:disabled) {
@@ -840,17 +806,29 @@
             background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
         }
 
+        /* Контейнер для счетчика и кнопки */
+        .tutorial-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            max-width: 95%;
+            margin: 0 auto;
+        }
+
         /* Счетчик шагов онбординга */
         .tutorial-step-counter {
             text-align: center;
+			min-width:120px;
             padding: 10px;
-            margin: 5px 0;
+            margin: 0;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             backdrop-filter: blur(10px);
             font-size: 14px;
             font-weight: 600;
             color: #2d3748;
+            flex: 1;
         }
 
         .tutorial-step-counter .step-number {
@@ -908,7 +886,7 @@
                 left: 0;
                 right: 0;
                 width: 100%;
-                height: 60px;
+                height: 30px;
                 padding: 0 15px;
                 margin-bottom: 0;
                 border-radius: 0;
@@ -1086,20 +1064,6 @@
                 font-size: 18px;
             }
 
-            .dice-log {
-                font-size: 12px;
-                padding: 10px;
-                margin: 10px 0;
-                overflow-y: auto;
-                flex: 1;
-                min-height: 0; /* Позволяет flex-элементу сжиматься */
-            }
-
-            .dice-log-entry {
-                font-size: 11px;
-                padding: 6px 8px;
-            }
-
             .player-result {
                 font-size: 12px;
                 padding: 3px;
@@ -1111,8 +1075,7 @@
                 padding: 8px;
             }
 
-            .game-message-title,
-            .dice-log-title {
+            .game-message-title {
                 font-size: 13px;
             }
 
@@ -1153,13 +1116,11 @@
             <div id="game-board" class="game-board"></div>
 
             <div class="dice-panel">
-            <!-- 1. Счетчик шагов онбординга -->
-            <div id="tutorial-step-counter" class="tutorial-step-counter">
-                <span class="step-number">Готовы начать?</span>
-            </div>
-
-            <!-- 2. Кнопки управления ходом -->
-            <div class="next-player-section">                
+            <!-- 1. Счетчик шагов и кнопка в одной строке -->
+            <div class="tutorial-controls">
+                <div id="tutorial-step-counter" class="tutorial-step-counter">
+                    <span class="step-number">Готовы начать?</span>
+                </div>
                 <button id="random-move-btn" disabled>Сделать случайный ход</button>
             </div>
 
@@ -1168,12 +1129,6 @@
                 <div class="game-message-container">
                     <div class="game-message-title">Подсказки и советы:</div>
                     <div id="game-message" class="game-message">Добро пожаловать в обучение! Здесь вы можете изучить основы игры.</div>
-                </div>
-                <div class="dice-log-container">
-                    <div class="dice-log-title">Журнал бросков:</div>
-                    <div id="dice-log" class="dice-log">
-                        <div id="dice-log-entries" class="dice-log-entries"></div>
-                    </div>
                 </div>
             </div>
 
@@ -2288,15 +2243,39 @@
                 gameMessages = gameMessages.slice(-7);
             }
 
-            // Преобразуем массив сообщений в HTML с разделителями
-            const displayMessage = [...gameMessages].reverse()
-                .map(msg => `<div>${msg}</div>`)
-                .join('<div style="text-align: center; margin: 10px 0; color: rgba(255,255,255,0.3);">───────────────</div>');
-
             const messageElement = document.getElementById('game-message');
-            if (messageElement) {
-                messageElement.innerHTML = displayMessage;  // ← Изменено с textContent на innerHTML
-            }
+            if (!messageElement) return;
+
+            // Очищаем контейнер
+            messageElement.innerHTML = '';
+
+            // Добавляем сообщения в обратном порядке (новые сверху)
+            const reversedMessages = [...gameMessages].reverse();
+            reversedMessages.forEach((msg, index) => {
+                // Создаем элемент сообщения
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message-item';
+                messageDiv.innerHTML = msg;
+
+                // Добавляем анимацию только к самому новому сообщению
+                if (index === 0) {
+                    messageDiv.classList.add('message-new');
+                    // Удаляем класс анимации после завершения
+                    setTimeout(() => {
+                        messageDiv.classList.remove('message-new');
+                    }, 3000);
+                }
+
+                messageElement.appendChild(messageDiv);
+
+                // Добавляем разделитель (кроме последнего элемента)
+                if (index < reversedMessages.length - 1) {
+                    const divider = document.createElement('div');
+                    divider.className = 'message-divider';
+                    divider.textContent = '───────────────';
+                    messageElement.appendChild(divider);
+                }
+            });
         }
 
         function showTooltip(event, text) {
@@ -2837,7 +2816,6 @@
                     message: 'Сейчас первые фишки обоих игроков проходят свой путь от Стартовой зоны к Дому по игровому полю. Цель — довести <u>все</u> свои фишки до своего дома раньше соперников.',
                     buttonText: 'Понятно',
                     highlight: [
-                        '#game-board',
                         '[data-coord="M1"], [data-coord="O2"]',
                         '[data-coord="H1"], [data-coord="H6"]'
                     ],
