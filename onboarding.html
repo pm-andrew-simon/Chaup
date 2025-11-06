@@ -150,17 +150,17 @@
             display: none;
             flex-direction: column;
             justify-content: space-around;
-            width: 30px;
+            width: 15px;
             height: 25px;
             background: transparent;
             border: none;
             cursor: pointer;
             padding: 0;
-            z-index: 1001;
+            z-index: 2005;
         }
 
         .hamburger span {
-            width: 100%;
+            width: 30%;
             height: 3px;
             background: #667eea;
             border-radius: 2px;
@@ -419,7 +419,7 @@
             font-size: 12px;
             line-height: 1.4;
             white-space: nowrap;
-            z-index: 2000;
+            z-index: 103;
             pointer-events: none;
             opacity: 0;
             transform: translateY(-10px);
@@ -813,7 +813,7 @@
             border-radius: 15px;
             box-shadow: 0 0 30px rgba(255, 215, 0, 0.8),
                         inset 0 0 30px rgba(255, 215, 0, 0.3);
-            z-index: 9001;
+            z-index: 100;
             pointer-events: none;
             animation: tutorialPulse 2s ease-in-out infinite;
         }
@@ -898,8 +898,7 @@
             }
 
             h1 {
-                margin: 5px 0;
-                font-size: 20px;
+                display: none;
             }
 
             /* Мобильная навигация - фиксированная вверху */
@@ -916,7 +915,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                z-index: 1000;
+                z-index: 2005;
                 overflow: visible;
             }
 
@@ -955,7 +954,7 @@
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 overflow-y: auto;
                 overflow-x: hidden;
-                z-index: 999;
+                z-index: 2005;
             }
 
             /* Развернутое меню */
@@ -2674,7 +2673,7 @@
             highlight.style.border = '4px solid #FFD700';
             highlight.style.borderRadius = '15px';
             highlight.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.8), inset 0 0 30px rgba(255, 215, 0, 0.3)';
-            highlight.style.zIndex = '9001';
+            highlight.style.zIndex = '100';
             highlight.style.pointerEvents = 'none';
             highlight.style.animation = 'tutorialPulse 2s ease-in-out infinite';
             highlight.style.left = (rect.left - 10) + 'px';
