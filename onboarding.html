@@ -2684,6 +2684,17 @@
         function delay(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
+		
+		function nextStep (btn, delay = 1000) {
+			setTimeout(() => {
+				btn.disabled = false;
+				btn.classList.add('tutorial-button-active');
+				btn.click();
+				btn.disabled = true;
+			}, delay);
+}
+		
+		
 
         // Показать шаг обучения и дождаться нажатия кнопки
         function showStep(config) {
@@ -2902,12 +2913,7 @@
                                         c.removeEventListener('click', cellClickHandler);
                                     });
                                     
-									setTimeout(() => {
-									btn.disabled = false;
-                                    btn.classList.add('tutorial-button-active');
-                                    btn.click();
-									btn.disabled = true;
-									}, 1000);
+									nextStep (btn);
 									
                                 }
                             }
@@ -3013,12 +3019,7 @@
                                         c.removeEventListener('click', cellClickHandler);
                                     });
 
-                                    setTimeout(() => {
-									btn.disabled = false;
-                                    btn.classList.add('tutorial-button-active');
-                                    btn.click();
-									btn.disabled = true;
-									}, 1000);
+                                    nextStep (btn);
                                 }
                             }
                         };
@@ -3127,26 +3128,6 @@
                                         const hint1 = document.createElement('div');
                                         hint1.className = 'move-hint teleport-hint';
                                         hint1.textContent = 'Т3';
-                                        hint1.style.cssText = `
-                                            position: absolute;
-                                            top: 50%;
-                                            left: 50%;
-                                            transform: translate(-50%, -50%);
-                                            background: rgba(138, 43, 226, 0.9);
-                                            border: 1.5px solid #8A2BE2;
-                                            border-radius: 50%;
-                                            color: #fff;
-                                            width: 22px;
-                                            height: 22px;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            font-size: 11px;
-                                            font-weight: bold;
-                                            box-shadow: 0 4px 8px rgba(138, 43, 226, 0.4);
-                                            z-index: 100;
-                                            pointer-events: none;
-                                        `;
                                         cellG9.appendChild(hint1);
                                         cellG9.classList.add('possible-move');
                                     }
@@ -3157,26 +3138,6 @@
                                         const hint2 = document.createElement('div');
                                         hint2.className = 'move-hint teleport-hint';
                                         hint2.textContent = 'Т7';
-                                        hint2.style.cssText = `
-                                            position: absolute;
-                                            top: 50%;
-                                            left: 50%;
-                                            transform: translate(-50%, -50%);
-                                            background: rgba(138, 43, 226, 0.9);
-                                            border: 1.5px solid #8A2BE2;
-                                            border-radius: 50%;
-                                            color: #fff;
-                                            width: 22px;
-                                            height: 22px;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            font-size: 11px;
-                                            font-weight: bold;
-                                            box-shadow: 0 4px 8px rgba(138, 43, 226, 0.4);
-                                            z-index: 100;
-                                            pointer-events: none;
-                                        `;
                                         cellC9.appendChild(hint2);
                                         cellC9.classList.add('possible-move');
                                     }
@@ -3193,26 +3154,6 @@
                                             const hint = document.createElement('div');
                                             hint.className = 'move-hint';
                                             hint.textContent = '4';
-                                            hint.style.cssText = `
-                                                position: absolute;
-                                                top: 50%;
-                                                left: 50%;
-                                                transform: translate(-50%, -50%);
-                                                background: rgba(255, 255, 255, 0.9);
-                                                border: 1.5px solid #007bff;
-                                                border-radius: 50%;
-                                                color: #007bff;
-                                                width: 22px;
-                                                height: 22px;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                                font-size: 11px;
-                                                font-weight: bold;
-                                                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                                                z-index: 100;
-                                                pointer-events: none;
-                                            `;
                                             targetCell.appendChild(hint);
                                             targetCell.classList.add('possible-move');
                                         }
@@ -3274,12 +3215,7 @@
                                         c.removeEventListener('click', cellClickHandler);
                                     });
 
-                                    setTimeout(() => {
-									btn.disabled = false;
-                                    btn.classList.add('tutorial-button-active');
-                                    btn.click();
-									btn.disabled = true;
-									}, 1000);
+                                    nextStep (btn);
                                 }
                                 // Обычный ход с G9 на 4 (после первого телепорта)
                                 else if (pieceCoord === 'G9' && !diceUsed[1]) {
@@ -3303,10 +3239,7 @@
                                         c.removeEventListener('click', cellClickHandler);
                                     });
 
-                                    await delay(1500);
-                                    btn.disabled = false;
-                                    btn.classList.add('tutorial-button-active');
-                                    setTimeout(() => btn.click(), 1000);
+                                    nextStep (btn);
                                 }
                             }
                         };
@@ -3419,26 +3352,6 @@
                                         const hint = document.createElement('div');
                                         hint.className = 'move-hint';
                                         hint.textContent = '4';
-                                        hint.style.cssText = `
-                                            position: absolute;
-                                            top: 50%;
-                                            left: 50%;
-                                            transform: translate(-50%, -50%);
-                                            background: rgba(255, 255, 255, 0.9);
-                                            border: 1.5px solid #007bff;
-                                            border-radius: 50%;
-                                            color: #007bff;
-                                            width: 22px;
-                                            height: 22px;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            font-size: 11px;
-                                            font-weight: bold;
-                                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                                            z-index: 100;
-                                            pointer-events: none;
-                                        `;
                                         cellA7.appendChild(hint);
                                         cellA7.classList.add('possible-move');
                                     }
@@ -3450,26 +3363,6 @@
                                         const hint = document.createElement('div');
                                         hint.className = 'move-hint';
                                         hint.textContent = '3';
-                                        hint.style.cssText = `
-                                            position: absolute;
-                                            top: 50%;
-                                            left: 50%;
-                                            transform: translate(-50%, -50%);
-                                            background: rgba(255, 255, 255, 0.9);
-                                            border: 1.5px solid #007bff;
-                                            border-radius: 50%;
-                                            color: #007bff;
-                                            width: 22px;
-                                            height: 22px;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            font-size: 11px;
-                                            font-weight: bold;
-                                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                                            z-index: 100;
-                                            pointer-events: none;
-                                        `;
                                         cellD7.appendChild(hint);
                                         cellD7.classList.add('possible-move');
                                     }
@@ -3507,12 +3400,7 @@
                                         c.removeEventListener('click', cellClickHandler);
                                     });
 
-                                    setTimeout(() => {
-									btn.disabled = false;
-                                    btn.classList.add('tutorial-button-active');
-                                    btn.click();
-									btn.disabled = true;
-									}, 1000);
+                                    nextStep (btn);
                                 }
                             }
                         };
@@ -3653,12 +3541,7 @@
                                         c.removeEventListener('click', cellClickHandler);
                                     });
 
-                                    setTimeout(() => {
-									btn.disabled = false;
-                                    btn.classList.add('tutorial-button-active');
-                                    btn.click();
-									btn.disabled = true;
-									}, 1000);
+                                    nextStep (btn);
                                 }
                             }
                         };
@@ -3743,17 +3626,9 @@
                             dice2.removeEventListener('click', diceClickHandler);
 							
 							updateGameMessage('Иногда хода нет — например, если путь заблокирован (перепрыгивать фишки нельзя) или фишка в тюрьме. В этом случае ты пропускаешь ход и ждёшь следующего более удачного броска.');
-							highlightMultiple (['[data-coord="G3"]']);					
-
-														
-
-                            // Включаем кнопку и автоматически переходим к следующему шагу
-                            setTimeout(() => {
-									btn.disabled = false;
-                                    btn.classList.add('tutorial-button-active');
-                                    btn.click();
-									btn.disabled = true;
-									}, 1000);							
+							highlightMultiple (['[data-coord="G3"]']);
+							
+                            nextStep (btn);							
                         };
 
                         // Регистрация обработчиков
@@ -3866,28 +3741,8 @@
                                     const cellF2 = document.querySelector('[data-coord="F2"]');
                                     if (cellF2) {
                                         const hint1 = document.createElement('div');
-                                        hint1.className = 'move-hint teleport-hint';
+                                        hint1.className = 'move-hint';
                                         hint1.textContent = '3';
-                                        hint1.style.cssText = `
-                                            position: absolute;
-                                            top: 50%;
-                                            left: 50%;
-                                            transform: translate(-50%, -50%);
-                                            background: rgba(255, 255, 255, 0.9);
-                                            border: 1.5px solid #007bff;
-                                            border-radius: 50%;
-                                            color: #007bff;
-                                            width: 22px;
-                                            height: 22px;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            font-size: 11px;
-                                            font-weight: bold;
-                                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                                            z-index: 100;
-                                            pointer-events: none;
-                                        `;
                                         cellF2.appendChild(hint1);
                                         cellF2.classList.add('possible-move');
                                     }
@@ -3932,12 +3787,7 @@
                                         c.removeEventListener('click', cellClickHandler);
                                     });
 
-                                    setTimeout(() => {
-									btn.disabled = false;
-                                    btn.classList.add('tutorial-button-active');
-                                    btn.click();
-									btn.disabled = true;
-									}, 1000);
+                                    nextStep (btn);
 
                                 }                             
                                 
@@ -4036,26 +3886,6 @@
                                         const hint1 = document.createElement('div');
                                         hint1.className = 'move-hint teleport-hint';
                                         hint1.textContent = '4';
-                                        hint1.style.cssText = `
-                                            position: absolute;
-                                            top: 50%;
-                                            left: 50%;
-                                            transform: translate(-50%, -50%);
-                                            background: rgba(255, 255, 255, 0.9);
-                                            border: 1.5px solid #007bff;
-                                            border-radius: 50%;
-                                            color: #007bff;
-                                            width: 22px;
-                                            height: 22px;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            font-size: 11px;
-                                            font-weight: bold;
-                                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                                            z-index: 100;
-                                            pointer-events: none;
-                                        `;
                                         cellH3.appendChild(hint1);
                                         cellH3.classList.add('possible-move');
                                     }
@@ -4100,12 +3930,7 @@
                                         c.removeEventListener('click', cellClickHandler);
                                     });
 
-                                    setTimeout(() => {
-									btn.disabled = false;
-                                    btn.classList.add('tutorial-button-active');
-                                    btn.click();
-									btn.disabled = true;
-									}, 1000);
+                                    nextStep (btn);
 
                                 }                             
                                 
@@ -4188,12 +4013,7 @@
 							await delay(500);
                             
 
-                            setTimeout(() => {
-									btn.disabled = false;
-                                    btn.classList.add('tutorial-button-active');
-                                    btn.click();
-									btn.disabled = true;
-									}, 1000);							
+                            nextStep (btn);							
                         };
 
                         // Регистрация обработчиков
@@ -4243,12 +4063,7 @@
 
                             dice1.removeEventListener('click', diceClickHandler);
                             dice2.removeEventListener('click', diceClickHandler);                           
-							setTimeout(() => {
-									btn.disabled = false;
-                                    btn.classList.add('tutorial-button-active');
-                                    btn.click();
-									btn.disabled = true;
-									}, 1000);
+							nextStep (btn);
                         };
 
                         dice1.addEventListener('click', diceClickHandler);
@@ -4297,12 +4112,7 @@
                                         c.removeEventListener('click', cellClickHandler);
                                     });
 
-                                    setTimeout(() => {
-									btn.disabled = false;
-                                    btn.classList.add('tutorial-button-active');
-                                    btn.click();
-									btn.disabled = true;
-									}, 1000);
+                                    nextStep (btn);
                                 }
                             }
                         };
