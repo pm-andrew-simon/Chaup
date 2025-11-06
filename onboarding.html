@@ -648,29 +648,17 @@
             flex-direction: column;
             box-sizing: border-box;
             margin: 20px auto;
-            gap: 20px;
+            gap: 1px;
         }
 
         /* Новые секции в dice-panel */
-        .next-player-section {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 10px;
-            gap: 10px;
-        }
-
-        .next-player-section button {
-            font-size: 16px;
-            padding: 12px 24px;
-            min-width: 150px;
-        }
-
+        
         .info-section {
             display: flex;
             gap: 0px;
             margin-bottom: 10px;
             flex: 1;
-            height: calc(100% - 60px);
+            height: calc(100% - 20px);
         }
 
         .game-message-container {
@@ -1043,7 +1031,7 @@
             .dice-panel {
                 /* Убираем order: -1 чтобы панель была под игровым полем */
                 margin: 0 auto;
-                padding: 10px;
+                padding: 5px;
                 border-radius: 10px;
                 min-width: auto;
                 width: calc(100vw - 10px);
