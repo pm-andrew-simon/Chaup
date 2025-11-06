@@ -604,10 +604,13 @@
 
         /* Стили для отдельных сообщений */
         .message-item {
-            padding: 8px;
+            padding: 2px;
             border-radius: 6px;
             background: rgba(255, 255, 255, 0.5);
             transition: all 0.9s ease;
+            line-height: 1.5;
+			white-space: pre-wrap; 
+			tab-size: 4; 
         }
 
         /* Анимация появления нового сообщения */
@@ -3031,16 +3034,48 @@
 				await showStep({
                     stepNumber: 5,
                     totalSteps: 15,
-                    message: 'Сейчас фишка в телепорте — особое поле для каждого игрока. Если твоя фишка сюда попала, <u> на следующем броске кубиков </u> она может перескочить вперёд:\n• на 1 — в телепорт следующего игрока,\n• на 3 — в противоположный по диагонали,\n• на 6 — в ближний к дому. Используй телепорты, чтобы опередить соперников!',
+                    message: 'Сейчас фишка в телепорте — особое поле для каждого игрока. Если фишка сюда попала, <u> на следующем броске кубиков </u> она может перескочить вперёд:<div style="text-align: left;">      \t\t• на 1️⃣ — в телепорт следующего игрока,\n      \t\t• на 3️⃣ — в противоположный по диагонали,\n      \t\t• на 6️⃣ — в ближний к дому. </div>Используйте телепорты, чтобы обогнать соперников!',
 					buttonText: 'Понятно',
                     highlight: '[data-coord="I7"]',  // Подсвечиваем телепорт красного
-					highlightType: 'element'
+					highlightType: 'element',
+					onShow: () => {
+						// Показываем телепортные хинты только для фишки на I7
+							// Хинт на I9 (телепорт на 1)
+							const cellI9 = document.querySelector('[data-coord="I9"]');
+							if (cellI9) {
+								const hint1 = document.createElement('div');
+								hint1.className = 'move-hint teleport-hint';
+								hint1.textContent = 'Т1';
+								cellI9.appendChild(hint1);
+								cellI9.classList.add('possible-move');
+							}
+							// Хинт на G9 (телепорт на 3)
+							const cellG9 = document.querySelector('[data-coord="G9"]');
+							if (cellG9) {
+								const hint1 = document.createElement('div');
+								hint1.className = 'move-hint teleport-hint';
+								hint1.textContent = 'Т3';
+								cellG9.appendChild(hint1);
+								cellG9.classList.add('possible-move');
+							}
+
+							// Хинт на G7 (телепорт на 6)
+							const cellG7 = document.querySelector('[data-coord="G7"]');
+							if (cellG7) {
+								const hint2 = document.createElement('div');
+								hint2.className = 'move-hint teleport-hint';
+								hint2.textContent = 'Т6';
+								cellG7.appendChild(hint2);
+								cellG7.classList.add('possible-move');
+							}
+						
+					}
 					});
 					
 					// Шаг 5b: Ход желтого игрока (автоматически)
 					const btn = document.getElementById('random-move-btn');btn.disabled = true;
 					btn.classList.remove('tutorial-button-active');
-									
+					clearMoveHints();				
 					clearHighlight();
 					updateGameMessage('Теперь ход желтого игрока.');
 					await delay(1000);
@@ -3129,7 +3164,7 @@
                                     const cellC9 = document.querySelector('[data-coord="C9"]');
                                     if (cellC9) {
                                         const hint2 = document.createElement('div');
-                                        hint2.className = 'move-hint teleport-hint';
+                                        hint2.className = 'move-hint';
                                         hint2.textContent = 'Т7';
                                         cellC9.appendChild(hint2);
                                         cellC9.classList.add('possible-move');
