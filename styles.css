@@ -886,7 +886,7 @@ body {
             /* Скрываем навигационные ссылки по умолчанию */
             .nav-links {
                 position: fixed;
-                top: 60px;
+                top: 30px;
                 left: 0;
                 right: 0;
                 height: calc(100vh - 60px);

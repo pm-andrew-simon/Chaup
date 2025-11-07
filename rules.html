@@ -8,6 +8,7 @@
     <meta name="description" content="Полные правила игры Чаупар. Узнайте, как играть в древнюю индийскую настольную игру онлайн." />
 	<link type="image/x-icon" href="favicon.ico" rel="shortcut icon">
 	<link type="Image/x-icon" href="favicon.ico" rel="icon">
+    <link rel="stylesheet" href="styles.css">
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
         (function(m,e,t,r,i,k,a){
@@ -225,23 +226,11 @@
             .container {
                 padding: 10px;
             }
-            
+
             .content {
                 padding: 20px;
             }
-            
-            .nav-links {
-                gap: 10px;
-            }
-            
-            .nav-links a,
-            .nav-links button,
-            .nav-button {
-                padding: 10px 16px;
-                font-size: 13px;
-                border-radius: 12px;
-            }
-            
+
             h1 {
                 font-size: 24px;
                 margin-bottom: 20px;
@@ -252,8 +241,15 @@
 <body>
     <div class="container">
         <nav class="navigation">
+            <button class="hamburger" aria-label="Меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="page-title-mobile">📋 Правила</div>
             <div class="nav-links">
                 <a href="index.html">🎮 Играть</a>
+                <a href="onboarding.html">👨‍🎓 Обучение</a>
                 <a href="rules.html" class="current">📋 Правила</a>
                 <a href="situations.html">🎯 Игровые ситуации</a>
                 <a href="news.html">📰 Новости</a>
@@ -413,5 +409,36 @@
             </div>
         </div>
     </div>
+
+    <script>
+    // === МОБИЛЬНОЕ МЕНЮ ===
+    function toggleMobileMenu() {
+        const navLinks = document.querySelector('.nav-links');
+        const hamburger = document.querySelector('.hamburger');
+
+        navLinks.classList.toggle('active');
+        hamburger.classList.toggle('active');
+    }
+
+    // Обработчик клика на гамбургер
+    document.addEventListener('DOMContentLoaded', function() {
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        const navLinksItems = document.querySelectorAll('.nav-links a');
+
+        if (hamburger) {
+            hamburger.addEventListener('click', toggleMobileMenu);
+        }
+
+        // Закрываем меню при клике на ссылку
+        navLinksItems.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768 && navLinks.classList.contains('active')) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+    });
+    </script>
 </body>
 </html>
