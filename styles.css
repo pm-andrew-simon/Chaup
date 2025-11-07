@@ -12,7 +12,7 @@ body {
             overflow-x: auto;
         }
 
-        .container {
+        .game-container {
             max-width: 100%;
             margin: 0 auto;
             padding: 0 10px;
@@ -112,7 +112,18 @@ body {
         }
 
         /* Анимация появления подчеркивания */
-        .nav-links a.current::after {
+        @keyframes fadeInLine {
+            from {
+                opacity: 0;
+                width: 0%;
+            }
+            to {
+                opacity: 1;
+                width: 80%;
+            }
+        }
+		
+		.nav-links a.current::after {
             animation: fadeInLine 0.6s ease-out;
         }
 
@@ -632,7 +643,7 @@ body {
             gap: 0px;
             margin-bottom: 10px;
             flex: 1;
-            height: calc(100% - 20px);
+            height: calc(100% - 60px);
         }
 
         .game-message-container {
