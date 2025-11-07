@@ -24,20 +24,18 @@
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     
-	<style>
-        
-
-        
-    </style>
 	<link rel="stylesheet" href="styles.css">
+	<style>
+                
+    </style>
+	
 </head>
 <body>
     <!-- Подсветка для онбординга -->
     <div id="tutorial-highlight" class="tutorial-highlight" style="display: none;"></div>
 
-    <div class="container">
+    <div class="game-container">
         <nav class="navigation">
             <button class="hamburger" aria-label="Меню">
                 <span></span>
@@ -58,35 +56,40 @@
         <h1>Обучение игре Чаупар</h1>
 
         <div class="game-layout">
-            <div id="game-board" class="game-board"></div>
+			<div class="board-with-names">
+				<div class="game-board-container">
+				
+					<div id="game-board" class="game-board"></div>
+				</div>
 
-            <div class="dice-panel">
-            <!-- 1. Счетчик шагов и кнопка в одной строке -->
-            <div class="tutorial-controls">
-                <div id="tutorial-step-counter" class="tutorial-step-counter">
-                    <span class="step-number">Готовы начать?</span>
-                </div>
-                <button id="random-move-btn" disabled>Сделать случайный ход</button>
-            </div>
+				<div class="dice-panel">
+				<!-- 1. Счетчик шагов и кнопка в одной строке -->
+				<div class="tutorial-controls">
+					<div id="tutorial-step-counter" class="tutorial-step-counter">
+						<span class="step-number">Готовы начать?</span>
+					</div>
+					<button id="random-move-btn" disabled>Сделать случайный ход</button>
+				</div>
 
-            <!-- 3. Подсказки игры и журнал бросков в одной строке -->
-            <div class="info-section">
-                <div class="game-message-container">
-                    <div class="game-message-title">Подсказки и советы:</div>
-                    <div id="game-message" class="game-message">Добро пожаловать в обучение! Здесь вы можете изучить основы игры.</div>
-                </div>
-            </div>
+				<!-- 3. Подсказки игры и журнал бросков в одной строке -->
+				<div class="info-section">
+					<div class="game-message-container">
+						<div class="game-message-title">Подсказки и советы:</div>
+						<div id="game-message" class="game-message">Добро пожаловать в обучение! Здесь вы можете изучить основы игры.</div>
+					</div>
+				</div>
 
-            <!-- Скрытые элементы -->
-            <div style="display: none;">
-                <div id="current-player" class="current-player">
-                    Ходит: <span id="player-name">Красный</span>
-                </div>
-                <button id="roll-dice-btn">Бросить кубики</button>
-                <div id="dice-result" class="dice-result"></div>
-            </div>
+				<!-- Скрытые элементы -->
+				<div style="display: none;">
+					<div id="current-player" class="current-player">
+						Ходит: <span id="player-name">Красный</span>
+					</div>
+					<button id="roll-dice-btn">Бросить кубики</button>
+					<div id="dice-result" class="dice-result"></div>
+				</div>
+			</div>
         </div>
-        </div>
+		</div>
     </div>
 
     <script>
@@ -336,8 +339,21 @@
         function getCurrentPosition(piece) {
             const rect = piece.getBoundingClientRect();
             const boardRect = document.getElementById('game-board').getBoundingClientRect();
-            const x = rect.left - boardRect.left + 17;
-            const y = rect.top - boardRect.top + 17;
+
+            // Вычисляем адаптивное смещение в зависимости от размера экрана
+            let cellSize;
+            if (window.innerWidth <= 768) {
+                cellSize = window.innerWidth / 15;
+            } else {
+                const boardSize = Math.min(window.innerWidth * 0.9, 600);
+                cellSize = boardSize * 35 / 600;
+            }
+
+            // Смещение = половина клетки для попадания в центр
+            const offset = cellSize / 2;
+
+            const x = rect.left - boardRect.left + offset;
+            const y = rect.top - boardRect.top + offset;
             return positionToCoord(x, y);
         }
 
@@ -934,8 +950,10 @@
         }
 
         function showSingleMoveHint(move) {
+			console.log ('Мы в showSingleMoveHint');
             const cell = document.querySelector(`[data-coord="${move.coord}"]`);
             if (cell) {
+				//console.log ('cell:' + cell);
                 const hint = document.createElement('div');
                 hint.className = move.isTeleport ? 'move-hint teleport-hint' : 'move-hint';
 
@@ -957,7 +975,8 @@
         function getPiecePosition(piece) {
             const startZones = Object.values(START_ZONES).flat();
             const waitingZones = Object.values(WAITING_ZONES).flat();
-            const currentCoord = getCurrentPosition(piece);            
+            const currentCoord = getCurrentPosition(piece);
+			console.log ('currentCoord: ' + currentCoord);
 
             if (!currentCoord) {
                 return {type: 'unknown', coord: null};
@@ -978,11 +997,13 @@
         function calculatePossibleMoves(piece, steps = 12, dice1 = 0, dice2 = 0) {
             const playerNum = parseInt(piece.dataset.player);
             const position = getPiecePosition(piece);
+			console.log ('position.type = ' + position.type);
             const path = PLAYER_PATHS[playerNum];
             const possibleMoves = [];
 
             if (position.type === 'start') {
                 // Фишка в стартовой зоне - нужна 1 для выхода
+				console.log ('position.type tart');
                 const waitingZones = WAITING_ZONES[playerNum];
                 const hasOne = (dice1 === 1) || (dice2 === 1);
 
@@ -1056,14 +1077,17 @@
                     }
                 }
             }
+			else {console.log ('янишмагля');}
 
             return possibleMoves;
         }
 
         function calculateAndCacheValidMoves(piece) {
             // Получаем значения кубиков с учетом использованных
-            const dice1 = diceUsed[0] ? 0 : lastDiceRoll[0];
+            
+			const dice1 = diceUsed[0] ? 0 : lastDiceRoll[0];
             const dice2 = diceUsed[1] ? 0 : lastDiceRoll[1];
+			console.log ('dice1 = ' + dice1 + 'dice2 = ' + dice2);
 
             if (dice1 === 0 && dice2 === 0) {
                 return [];
@@ -1073,6 +1097,7 @@
             // Передаем отфильтрованные значения, чтобы calculatePossibleMoves правильно
             // определила доступность выхода из стартовой зоны (нужна единица!)
             const allPossibleMoves = calculatePossibleMoves(piece, 12, dice1, dice2);
+			console.log ('allPossibleMoves = ' + allPossibleMoves);
 
             // Фильтруем по доступным значениям неиспользованных кубиков
             const availableMoves = new Set();
@@ -1114,9 +1139,11 @@
             if (piece) {                
                 // Вычисляем и показываем возможные ходы
                 const validMoves = calculateAndCacheValidMoves(piece);
-                clearMoveHints();
-                validMoves.forEach(move => {
-                    showSingleMoveHint(move);
+                console.log ('Мы вычисляем и показываем возможные ходы для' + piece.dataset.id + ' а validMoves = ' + validMoves);
+				clearMoveHints();
+				console.log ('Мы прошли clearMoveHints');
+                validMoves.forEach(move => {                    
+					showSingleMoveHint(move);
                 });
             } else {
                 // Очищаем подсказки при снятии выделения
@@ -1489,15 +1516,6 @@
         // ================================
         // ФУНКЦИИ РАБОТЫ С ФИШКАМИ
         // ================================
-
-        // Получить текущую позицию фишки
-        function getCurrentPosition(piece) {
-            const rect = piece.getBoundingClientRect();
-            const boardRect = document.getElementById('game-board').getBoundingClientRect();
-            const x = rect.left - boardRect.left + 17;
-            const y = rect.top - boardRect.top + 17;
-            return positionToCoord(x, y);
-        }
 
         // Удалить фишку из клетки в gameBoard
         function removePieceFromCell(piece, coord) {

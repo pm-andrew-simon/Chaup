@@ -15,7 +15,7 @@ body {
         .game-container {
             max-width: 100%;
             margin: 0 auto;
-            padding: 0 10px;
+            padding: 35px 10px;
         }
 
         /* Игровой макет */
@@ -201,14 +201,15 @@ body {
         }
 
         .start-zone {
-            background: rgba(255, 255, 255, 0.4);
-            border: 1.5px solid rgba(0, 0, 0, 0.35);
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .waiting-zone {
             background: rgba(255, 255, 0, 0.3);
-            border: 1.5px solid rgba(255, 180, 0, 0.8);
+            border-radius: 8px;
+			border: none;
             box-shadow: inset 0 2px 4px rgba(255, 180, 0, 0.2);
         }
 
@@ -808,6 +809,7 @@ body {
             color: #ed8936;
             font-size: 16px;
             font-weight: 700;
+			white-space: nowrap;
         }
 
         .game-board-container {
@@ -840,6 +842,13 @@ body {
                 overflow-y: auto;
                 height: auto;
                 min-height: 100vh;
+            }
+			
+			.game-container {
+                max-width: 100%;
+				padding: 2px;
+				padding-top: 40px;
+                max-width: 100%;
             }
 
             .container {
@@ -926,13 +935,13 @@ body {
                 text-align: center;
             }
 
-            .game-layout {
+            /*.game-layout {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 10px;
                 margin: 0;
                 padding: 0;
-            }
+            }*/
 
             .game-board-container {
                 width: 100vw;
@@ -943,7 +952,7 @@ body {
                 overflow: hidden;
                 position: relative;
                 /* Разрешаем прокрутку через игровое поле */
-                touch-action: pan-y;
+                touch-action: auto;
             }
 
             /* Адаптивные стили для блоков с именами на мобильных */
@@ -979,15 +988,15 @@ body {
             }
 
             .game-board {
-                width: calc(100vw - 10px);
-                height: calc(100vw - 10px);
+                width: calc(100vw - 0px);
+                height: calc(100vw - 0px);
                 border-radius: 5px;
                 transform-origin: center center;
                 position: relative;
                 border: none;
                 /* Делаем игровое поле прокручиваемым */
                 pointer-events: auto;
-                touch-action: pan-y;
+                touch-action: auto;
                 margin: 0 auto 10px auto;
             }
 
@@ -1011,6 +1020,43 @@ body {
             .dice-dot {
                 width: calc(100vw / 15 * 5 / 35);
                 height: calc(100vw / 15 * 5 / 35);
+            }
+
+            /* Адаптивный размер подсказок на мобильных */
+            .move-hint {
+                width: calc(100vw / 15 * 0.7);
+                height: calc(100vw / 15 * 0.7);
+                font-size: calc(100vw / 15 * 0.35);
+                border-width: 1px;
+                min-width: 16px;
+                min-height: 16px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            }
+
+            /* Убеждаемся, что клетки кликабельны на мобильных */
+            .cell {
+                cursor: pointer;
+                /*position: relative;*/
+                touch-action: manipulation;
+            }
+
+            .possible-move {
+                cursor: pointer;
+                z-index: 1000;
+                /* Увеличиваем видимость кликабельной клетки */
+                background-color: rgba(0, 123, 255, 0.3) !important;
+                touch-action: manipulation;
+            }
+
+            /* Фишки на мобильных не должны блокировать клики */
+            .piece {
+                pointer-events: auto;
+                z-index: 10;
+            }
+
+            /* Но выбранная фишка должна быть выше */
+            .piece.selected {
+                z-index: 1001;
             }
 
             .dice-panel {

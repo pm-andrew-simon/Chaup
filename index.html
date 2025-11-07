@@ -216,6 +216,9 @@
         /* Фиксированное выравнивание: Player-4 всегда слева, Player-1 всегда справа */
         .player-names-top {
             position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         #player-name-4 {
@@ -229,6 +232,9 @@
         /* Фиксированное выравнивание: Player-2 всегда слева, Player-3 всегда справа */
         .player-names-bottom {
             position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         #player-name-2 {
@@ -466,14 +472,7 @@
             }
         }
 
-        /* Игровой макет */
-        .game-layout {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
+
 
 
 
@@ -700,11 +699,7 @@
                 min-height: 100vh;
             }
 
-            .game-container {
-                padding: 0;
-				padding-top: 40px;
-                max-width: 100%;
-            }
+            
 
             h1 {
                 margin: 5px 0;
@@ -733,63 +728,59 @@
                 font-size: 13px;
                 border-radius: 12px;
             }
+       
 
-            .game-layout {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-                margin: 0;
-                padding: 0;
-            }
-
-            .game-board-container {
-                width: 100vw;
-                height: 100vw;
-                max-width: none;
-                max-height: none;
-                margin: 0;
-                overflow: hidden;
-                position: relative;
-                /* Разрешаем прокрутку через игровое поле */
-                touch-action: pan-y;
-            }
+            
 
             /* Адаптивные стили для блоков с именами на мобильных */
             .player-names-top,
             .player-names-bottom {
                 width: 100vw;
-                padding: 0 10px;
+                max-width: 100vw;
+                padding: 0 5px;
                 box-sizing: border-box;
-                gap: 10px;
+                gap: 5px;
             }
 
             .player-name-box {
-                font-size: 14px;
-                padding: 8px 12px;
-                min-width: 100px;
+                font-size: 12px;
+                padding: 6px 4px;
+                /*min-width: 60px;*/
+                max-width: 120px;
+                width: auto;
+                flex-shrink: 1;
             }
 
-            /* Сохраняем выравнивание на мобильных */
-            #player-name-4 {
-                margin-right: auto;
+            .ai-toggle-btn {
+                width: 28px;
+                height: 28px;
+                min-width: 28px;
+                max-width: 28px;
+                min-height: 28px;
+                max-height: 28px;
+                font-size: 16px;
+                padding: 0;
+                flex-shrink: 0;
             }
 
-            #player-name-1 {
-                margin-left: auto;
+            /* Уменьшаем gap во внутренних flex-контейнерах на мобильных */
+            .player-names-top > div,
+            .player-names-bottom > div {
+                gap: 3px !important;
             }
 
-            #player-name-2 {
-                margin-right: auto;
-            }
-
+            /* Убираем margin: auto на мобильных, так как используем justify-content: space-between */
+            #player-name-4,
+            #player-name-1,
+            #player-name-2,
             #player-name-3 {
-                margin-left: auto;
+                margin: 0;
             }
 
             .game-board {
-                width: calc(100vw - 10px);
-                height: 100%;
-                border-radius: 5;
+                width: calc(100vw - 0px);
+                height: calc(100vw - 0px);
+                border-radius: 5px;
                 transform-origin: center center;
                 position: relative;
                 border: none;
@@ -2683,8 +2674,21 @@
         function getCurrentPosition(piece) {
             const rect = piece.getBoundingClientRect();
             const boardRect = document.getElementById('game-board').getBoundingClientRect();
-            const x = rect.left - boardRect.left + 17;
-            const y = rect.top - boardRect.top + 17;
+
+            // Вычисляем адаптивное смещение в зависимости от размера экрана
+            let cellSize;
+            if (window.innerWidth <= 768) {
+                cellSize = window.innerWidth / 15;
+            } else {
+                const boardSize = Math.min(window.innerWidth * 0.9, 600);
+                cellSize = boardSize * 35 / 600;
+            }
+
+            // Смещение = половина клетки для попадания в центр
+            const offset = cellSize / 2;
+
+            const x = rect.left - boardRect.left + offset;
+            const y = rect.top - boardRect.top + offset;
             return positionToCoord(x, y);
         }
 
@@ -4756,6 +4760,9 @@
                 return;
             }
 
+            // Сохраняем текущего игрока ДО выполнения ходов (для проверки в finally)
+            const playerAtStart = currentPlayer;
+
             // Увеличиваем счетчик активных вызовов
             activeRandomMoveCount++;
             console.log(`🔢 performRandomMove вызван, activeRandomMoveCount = ${activeRandomMoveCount}`);
@@ -5058,10 +5065,12 @@
 
                 // Разблокируем restore только когда ВСЕ вызовы завершены (включая рекурсивные)
                 if (activeRandomMoveCount === 0) {
-                    // Определяем следующего игрока
-                    const playerIndex = playersOrder.findIndex(p => p.player === currentPlayer);
+                    // Определяем следующего игрока на основе игрока, который был В НАЧАЛЕ этого вызова
+                    const playerIndex = playersOrder.findIndex(p => p.player === playerAtStart);
                     const nextIndex = (playerIndex + 1) % playersOrder.length;
                     const nextPlayer = playersOrder[nextIndex].player;
+
+                    console.log(`🔄 Проверка следующего игрока: playerAtStart=${playerAtStart}, currentPlayer(сейчас)=${currentPlayer}, nextPlayer=${nextPlayer}, aiPlayers:`, aiPlayers);
 
                     // Если следующий игрок тоже AI - НЕ сбрасываем флаг
                     if (!aiPlayers.includes(nextPlayer)) {
@@ -6343,6 +6352,25 @@
 
             // Обновляем состояние кубиков игроков после восстановления
             updatePlayerDiceStates();
+
+            // Проверяем, является ли текущий игрок AI (для мультиплеера)
+            // Если да - запускаем автоматический ход после восстановления состояния
+            if (gamePhase === 'playing' && aiPlayers.includes(currentPlayer)) {
+                console.log(`🤖 Восстановлено состояние с AI-игроком ${currentPlayer}, планируем автоматический ход`);
+                // Запускаем AI-ход с задержкой, чтобы дать время на завершение восстановления
+                setTimeout(() => {
+                    // Двойная проверка: не выполняется ли уже AI-ход, и актуально ли состояние
+                    if (!isPerformingRandomMove &&
+                        !isRestoringState &&
+                        gamePhase === 'playing' &&
+                        aiPlayers.includes(currentPlayer)) {
+                        console.log(`🚀 Запускаем AI-ход для игрока ${currentPlayer} после синхронизации`);
+                        performRandomMove();
+                    } else {
+                        console.log(`⏸️ AI-ход отменен: isPerformingRandomMove=${isPerformingRandomMove}, isRestoringState=${isRestoringState}, gamePhase=${gamePhase}, isAI=${aiPlayers.includes(currentPlayer)}`);
+                    }
+                }, 1500); // Задержка 1.5 секунды для завершения восстановления и анимации
+            }
 
             // Снимаем флаг восстановления через 1 секунду
             setTimeout(() => {
