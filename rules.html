@@ -29,13 +29,7 @@
             padding: 0;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-            line-height: 1.6;
-        }
+
 
         .container {
             max-width: 1200px;
@@ -43,115 +37,12 @@
             padding: 20px;
         }
 
-        .navigation {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 15px 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Единый стиль для всех элементов навигации */
-        .nav-links a,
-        .nav-links button,
-        .nav-button {
-            display: inline-block;
-            text-decoration: none;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(102, 126, 234, 0.3);
-            color: #4a5568;
-            font-weight: 600;
-            padding: 12px 24px;
-            border-radius: 15px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(5px);
-        }
-
-        /* Эффект при наведении и активном состоянии */
-        .nav-links a:hover,
-        .nav-links button:hover,
-        .nav-button:hover,
-        .nav-links a.current {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        /* Эффект при нажатии */
-        .nav-links a:active,
-        .nav-links button:active,
-        .nav-button:active {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        /* Дополнительные эффекты для текущей страницы */
-        .nav-links a.current {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #667eea;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        /* Специальные стили для игровых кнопок */
-        .nav-links a:first-child,
-        #load-game-btn {
-            position: relative;
-        }
-
-        .nav-links a:first-child::after,
-        #load-game-btn::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #667eea, transparent);
-            border-radius: 1px;
-        }
-
-        @keyframes fadeInLine {
-            from {
-                opacity: 0;
-                width: 0%;
-            }
-            to {
-                opacity: 1;
-                width: 80%;
-            }
-        }
 
         /* Скрытие кнопки сохранения на неигровых страницах */
         #save-game-btn {
             display: none;
         }
 
-        h1 {
-            text-align: center;
-            color: white;
-            font-size: clamp(28px, 5vw, 48px);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
-        }
 
         .content {
             background: rgba(255, 255, 255, 0.95);
@@ -288,7 +179,7 @@
             <h2>2. Подготовка</h2>
             <ul>
                 <li>Все фишки стоят в стартовой зоне своего цвета</li>
-                <li>Каждый бросает кости. Тот, у кого сумма выше — начинает игру</li>
+                <li>Каждый игрок бросает кости. Тот, у кого сумма выше — начинает игру</li>
                 <li>Дальше ход идёт по часовой стрелке</li>
             </ul>
 
@@ -304,7 +195,7 @@
                 <li>Фишки идут по своему пути по часовой стрелке</li>
                 <li>Перепрыгивать через другие фишки нельзя. Чтобы пройти, нужно «съесть» противника</li>
                 <li>Ходить можно только на то количество клеток, которое выпало на кубиках</li>
-                <li><strong>Правило большего хода:</strong> если можно походить только на меньшее значение — ход пропускается</li>
+                <li><strong>Правило большего хода:</strong> если можно сходить только на меньшее значение — ход пропускается</li>
             </ul>
 
             <h2>5. Специальные клетки: Дом, Телепорт, Храм, Тюрьма</h2>
@@ -354,7 +245,7 @@
                         <line class="temple-stroke" x1="542.67" y1="184.56" x2="542.67" y2="253.2"/>
                         <line class="temple-stroke" x1="157.71" y1="894.25" x2="922.29" y2="894.25"/>
                     </svg>Храм</h3>
-                    <p>Здесь ваша фишка защищена от сбивания. На этом поле может находиться только одна фишка одновременно. Фишка может покинуть Храм в любой свой ход. Мимо фишек, зашедших в Храм или Тюрьму, можно пройти.</p>
+                    <p>Здесь ваша фишка защищена от съедения. На этом поле может находиться только одна фишка одновременно. Фишка может покинуть Храм в любой свой ход. Мимо фишек, зашедших в Храм или Тюрьму, можно пройти.</p>
                 </div>
                 <div class="info-card">
                     <h3><svg width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" style="vertical-align: middle; margin-right: 8px;">
@@ -377,15 +268,15 @@
                 </div>
             </div>
 
-            <h2>6. Сбивание</h2>
+            <h2>6. Съедение фишки</h2>
             <p>Если вы встали на клетку противника — его фишка возвращается в стартовую зону и начинает путь заново.</p>
             <div class="highlight">
-                <strong>Важно:</strong> Фишку в Храме или Тюрьме сбить нельзя.
+                <strong>Важно:</strong> Фишку в Храме или Тюрьме съесть нельзя.
             </div>
 
             <h2>7. Особые правила бросков</h2>
             <ul>
-                <li>При «1:1» или «6:6» игрок бросает кубики заново, но не более трёх раз подряд</li>                
+                <li>При «1:1» или «6:6» игрок после выполнения хода бросает кубики заново и делает еще один ход, но не более трёх раз подряд</li>                
             </ul>
 
             <h2>8. Завершение игры</h2>

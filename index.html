@@ -2201,6 +2201,9 @@
 
             if (!dice1 || !dice2) return;
 
+            // Устанавливаем флаг блокировки синхронизации во время анимации
+            isRollingDice = true;
+
             // Снять выделение с фишки при броске кубиков
             updateSelectedPiece(null, true);
 
@@ -2268,6 +2271,9 @@
 
                 // Обработка результата
                 handleDiceResult(value1, value2);
+
+                // Снимаем флаг блокировки ПОСЛЕ завершения анимации и обработки
+                isRollingDice = false;
             };
 
             // Завершить анимацию через базовое время
@@ -5441,8 +5447,8 @@
                     filter: `CHPR_id=eq.${gameId}`
                 }, (payload) => {
                     if (payload.new && payload.new.game_state) {
-                        // Проверяем, не выполняется ли случайный ход
-                        if (isPerformingRandomMove) {
+                        // Проверяем, не выполняется ли случайный ход или анимация кубиков
+                        if (isPerformingRandomMove || isRollingDice) {
                             return;
                         }
                         restoreGameState(payload.new.game_state);

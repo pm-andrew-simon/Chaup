@@ -47,6 +47,7 @@ body {
         /* Единый стиль для всех элементов навигации */
         .nav-links a,
         .nav-links button,
+        .nav-links input,
         .nav-button {
             display: inline-block;
             text-decoration: none;
@@ -69,6 +70,7 @@ body {
         /* Эффект при наведении и активном состоянии */
         .nav-links a:hover,
         .nav-links button:hover,
+        .nav-links input:hover,
         .nav-button:hover,
         .nav-links a.current {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -81,6 +83,7 @@ body {
         /* Эффект при нажатии */
         .nav-links a:active,
         .nav-links button:active,
+        .nav-links input:active,
         .nav-button:active {
             transform: translateY(-1px);
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
@@ -926,6 +929,7 @@ body {
 
             .nav-links a,
             .nav-links button,
+            .nav-links input,
             .nav-button {
                 width: 100%;
                 max-width: 300px;
